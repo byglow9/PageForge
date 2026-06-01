@@ -1,0 +1,116 @@
+# Requirements: PageForge
+
+**Defined:** 2026-06-01
+**Core Value:** A partir de um template cadastrado uma vez, um usuário gera uma nova landing page completa e fiel ao layout apenas preenchendo um formulário — sem tocar em código.
+
+## v1 Requirements
+
+Requirements for initial release. Each maps to roadmap phases.
+
+### Authentication & Workspaces
+
+- [ ] **WS-01**: User can sign up and log in
+- [ ] **WS-02**: User can create a workspace
+- [ ] **WS-03**: User can invite members to a workspace by email
+- [ ] **WS-04**: Workspace members have roles (admin/editor/viewer) that control permitted actions
+- [ ] **WS-05**: All templates, LPs, and assets are isolated per workspace (no cross-workspace access)
+
+### Template Authoring
+
+- [ ] **TPL-01**: User can create a template by writing markup with tokens
+- [ ] **TPL-02**: System parses tokens into a typed field schema when the template is saved
+- [ ] **TPL-03**: User can assign a type to each token (text, rich text, image, color, button+URL, repeater)
+- [ ] **TPL-04**: User can define repeatable blocks (repeaters) that group multiple fields
+- [ ] **TPL-05**: User can edit an existing template
+- [ ] **TPL-06**: Templates are listed and selectable within the workspace
+
+### Brand Settings
+
+- [ ] **BRD-01**: User can configure global brand/contact values per workspace (e.g., logo, primary color, contact/WhatsApp)
+- [ ] **BRD-02**: Templates can reference global brand values, and generated LPs use them automatically
+
+### LP Generation
+
+- [ ] **GEN-01**: Selecting a template opens a dynamic form generated from its schema
+- [ ] **GEN-02**: Form supports all field types: text, rich text, image upload, color, and button+URL
+- [ ] **GEN-03**: User can add and remove items in repeatable blocks within the form
+- [ ] **GEN-04**: System validates required fields by type on submit (minimal validation)
+- [ ] **GEN-05**: System generates a static HTML LP by merging the filled values into the template markup
+- [ ] **GEN-06**: Rich-text and token values are sanitized so generated HTML is free of injected scripts (XSS)
+
+### Assets
+
+- [ ] **AST-01**: User can upload images for image fields, with stored asset management scoped to the workspace
+
+### LP Management
+
+- [ ] **LP-01**: User can preview a rendered LP at any time
+- [ ] **LP-02**: User can reopen and edit an LP's data and regenerate its HTML
+- [ ] **LP-03**: User can duplicate an existing LP to create a variation
+- [ ] **LP-04**: User can export/download the LP as a self-contained HTML bundle
+
+### Catalog
+
+- [ ] **CAT-01**: Generated LPs are saved to a catalog
+- [ ] **CAT-02**: User can organize LPs into folders
+- [ ] **CAT-03**: User can categorize/tag LPs
+- [ ] **CAT-04**: User can browse and search LPs in the catalog
+
+## v2 Requirements
+
+Deferred to future release. Tracked but not in current roadmap.
+
+### Hosting
+
+- **HOST-01**: Each published LP gets a hosted URL served by the platform (subdomain or /slug)
+
+### Validation
+
+- **VAL-01**: Author can define advanced validations (regex, image dimensions/size, numeric ranges)
+
+### Catalog
+
+- **PERM-01**: Folders can have per-member access permissions within a workspace
+
+### Templates
+
+- **SHARE-01**: A global/shared template repository usable across workspaces
+- **BUILD-01**: Visual field builder / upload+visual-mapping authoring mode
+
+### Analytics
+
+- **ANL-01**: A/B testing and analytics for generated LPs
+
+## Out of Scope
+
+Explicitly excluded. Documented to prevent scope creep.
+
+| Feature | Reason |
+|---------|--------|
+| Platform-hosted LP URLs | v1 delivers export/download only; hosting deferred to keep operations simple |
+| Advanced field validations | v1 uses minimal validation (type only) |
+| Per-folder member permissions | Permissions live at the workspace level in v1 |
+| Cross-workspace shared template repo | Templates are workspace-scoped in v1 |
+| Visual field builder / visual mapping | Authoring is markup-with-tokens in v1 |
+| A/B testing & analytics | Not core to the generation value in v1 |
+
+## Acceptance Anchor
+
+The real "Grécia" travel template (hero, repeatable highlight cards, "what's included" cards, day-by-day itinerary, differentiators, testimonials, CTA, footer) must be authorable end-to-end and used to generate, preview, edit, duplicate, and export a complete LP. This is the v1 acceptance test for the full pipeline.
+
+## Traceability
+
+Which phases cover which requirements. Updated during roadmap creation.
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| (populated during roadmap creation) | — | Pending |
+
+**Coverage:**
+- v1 requirements: 25 total
+- Mapped to phases: 0 (pending roadmap)
+- Unmapped: 25 ⚠️
+
+---
+*Requirements defined: 2026-06-01*
+*Last updated: 2026-06-01 after initial definition*
