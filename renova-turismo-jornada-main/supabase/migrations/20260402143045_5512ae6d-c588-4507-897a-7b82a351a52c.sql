@@ -1,0 +1,1 @@
+DROP POLICY "Allow authenticated select" ON public.contact_submissions;

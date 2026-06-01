@@ -61,7 +61,14 @@ export/ZIP bundle, catalog (Phases 4–5). Engine work here is pure library + te
   brand values passed into `render`.)
 
 ### Engine Decision (KEY DECISION GATE)
-- **D-10 (DEFERRED — research mandate):** The LiquidJS vs. logic-less-substitution choice is
+- **D-10 (RESOLVED 2026-06-01 — user-approved): engine = LiquidJS v10.27.0.** Research benchmarked
+  both paths against the same SSTI/XSS corpus (see `01-RESEARCH.md`); user approved LiquidJS at plan
+  time. Locked guardrails: pin `liquidjs@^10.27.0` (3 CVEs patched), use `ownPropertyOnly: true` +
+  `outputEscape: 'escape'`, and add an explicit `sanitizeUrl()` for `button`/`image` fields (the
+  `javascript:` scheme is a blind spot of Liquid's output escaping). The parser compiles our
+  engine-agnostic markup to Liquid (strip `:type`, comment-repeaters → `{% for %}`, rewrite repeater
+  tokens to `{{ item.field }}`). Original research mandate preserved below for traceability.
+- **D-10 (original DEFERRED — research mandate, now satisfied):** The LiquidJS vs. logic-less-substitution choice was
   **explicitly handed to the researcher** (`gsd-phase-researcher`). The researcher MUST benchmark
   **both** candidate backends against the **same SSTI/XSS payload corpus** (D-14) and recommend one;
   the user approves the choice at plan time. Because the grammar (D-01..D-09) is engine-agnostic and
