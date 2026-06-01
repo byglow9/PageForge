@@ -96,7 +96,7 @@ Explicitly excluded. Documented to prevent scope creep.
 
 ## Acceptance Anchor
 
-The real "Grécia" travel template (hero, repeatable highlight cards, "what's included" cards, day-by-day itinerary, differentiators, testimonials, CTA, footer) must be authorable end-to-end and used to generate, preview, edit, duplicate, and export a complete LP. This is the v1 acceptance test for the full pipeline.
+The real "Grécia" travel template (hero, repeatable highlight cards, "what's included" cards, day-by-day itinerary, differentiators, testimonials, CTA, footer) must be authorable end-to-end and used to generate, preview, edit, duplicate, and export a complete LP. This is the v1 acceptance test for the full pipeline. Verified in **Phase 5**.
 
 ## Traceability
 
@@ -104,13 +104,42 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (populated during roadmap creation) | — | Pending |
+| WS-01 | Phase 2 | Pending |
+| WS-02 | Phase 2 | Pending |
+| WS-03 | Phase 2 | Pending |
+| WS-04 | Phase 2 | Pending |
+| WS-05 | Phase 2 | Pending |
+| TPL-01 | Phase 3 | Pending |
+| TPL-02 | Phase 1 | Pending |
+| TPL-03 | Phase 3 | Pending |
+| TPL-04 | Phase 1 | Pending |
+| TPL-05 | Phase 3 | Pending |
+| TPL-06 | Phase 3 | Pending |
+| BRD-01 | Phase 3 | Pending |
+| BRD-02 | Phase 3 | Pending |
+| GEN-01 | Phase 4 | Pending |
+| GEN-02 | Phase 4 | Pending |
+| GEN-03 | Phase 4 | Pending |
+| GEN-04 | Phase 4 | Pending |
+| GEN-05 | Phase 1 | Pending |
+| GEN-06 | Phase 1 | Pending |
+| AST-01 | Phase 4 | Pending |
+| LP-01 | Phase 4 | Pending |
+| LP-02 | Phase 4 | Pending |
+| LP-03 | Phase 4 | Pending |
+| LP-04 | Phase 4 | Pending |
+| CAT-01 | Phase 5 | Pending |
+| CAT-02 | Phase 5 | Pending |
+| CAT-03 | Phase 5 | Pending |
+| CAT-04 | Phase 5 | Pending |
 
 **Coverage:**
-- v1 requirements: 25 total
-- Mapped to phases: 0 (pending roadmap)
-- Unmapped: 25 ⚠️
+- v1 requirements: 28 total (WS:5, TPL:6, BRD:2, GEN:6, AST:1, LP:4, CAT:4)
+- Mapped to phases: 28
+- Unmapped: 0 ✓
+
+> Note: the previous header said "25 total"; the enumerated requirement list actually contains 28 distinct IDs. All 28 are mapped. Each requirement is assigned to exactly one phase. Phase 1 owns the engine-level requirements (TPL-02 parse-to-schema, TPL-04 repeater semantics, GEN-05 merge, GEN-06 sanitization); their authoring/UI counterparts (TPL-01/03/05/06) live in Phase 3 as distinct IDs — no duplication.
 
 ---
 *Requirements defined: 2026-06-01*
-*Last updated: 2026-06-01 after initial definition*
+*Last updated: 2026-06-01 after roadmap creation (traceability mapped)*
