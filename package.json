@@ -1,0 +1,24 @@
+{
+  "name": "pageforge-engine",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "liquidjs": "^10.27.0",
+    "sanitize-html": "^2.17.4",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/sanitize-html": "^2.13.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^4.1.8"
+  }
+}
