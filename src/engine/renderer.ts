@@ -43,12 +43,13 @@ function processRepeaterItems(
 
       if (field.type === 'richtext') {
         safeItem[field.name] = sanitizeRichText(rawStr);
-      } else if (field.type === 'button') {
+      } else if (field.type === 'button' || field.type === 'image') {
+        // image: src pode conter javascript: — mesmo sanitizeUrl que button (D-12)
         safeItem[field.name] = sanitizeUrl(rawStr);
       } else if (field.type === 'color') {
         safeItem[field.name] = sanitizeCssColor(rawStr);
       } else {
-        // text, image: escapados pelo outputEscape do LiquidJS
+        // text: escapado pelo outputEscape do LiquidJS
         safeItem[field.name] = fieldValue;
       }
     }
@@ -105,12 +106,13 @@ export async function render(
 
     if (field.type === 'richtext') {
       safeValues[field.name] = sanitizeRichText(String(raw ?? ''));
-    } else if (field.type === 'button') {
+    } else if (field.type === 'button' || field.type === 'image') {
+      // image: src pode conter javascript:/data: — mesmo sanitizeUrl que button (D-12)
       safeValues[field.name] = sanitizeUrl(String(raw ?? ''));
     } else if (field.type === 'color') {
       safeValues[field.name] = sanitizeCssColor(String(raw ?? ''));
     } else {
-      // text, image: passados como-está (LiquidJS escapa via outputEscape)
+      // text: passado como-está (LiquidJS escapa via outputEscape)
       safeValues[field.name] = raw;
     }
   }

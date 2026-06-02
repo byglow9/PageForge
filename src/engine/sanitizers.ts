@@ -46,20 +46,33 @@ export function sanitizeRichText(html: string): string {
 }
 
 // --- URL Sanitization (D-12) —— campos button e image (href/src) ---
-// Allowlist de schemes: http, https, mailto, tel.
-// Qualquer outro scheme → retorna '#'.
+// Estratégia: allowlist de schemes absolutos + permitir URLs relativas (sem scheme).
+// Schemes permitidos: http, https, mailto, tel, + paths relativos (/..., ./, ../...).
+// Schemes bloqueados: javascript:, data:, vbscript: e qualquer outro scheme não listado.
 // Source: 01-RESEARCH.md §Escaping Context-Aware + CONTEXT.md D-12
 // Nota: LiquidJS outputEscape NÃO bloqueia javascript: em URLs — esse é o Pitfall 2 documentado.
 
 const ALLOWED_URL_SCHEMES = /^(https?:\/\/|mailto:|tel:)/i;
+// URLs relativas (sem scheme): começam com /, ./, ../, ou são só path/fragment
+const RELATIVE_URL = /^(\/|\.\/|\.\.\/|#)/;
+// Qualquer colon antes de // ou antes de letra indica um scheme
+const HAS_SCHEME = /^[a-zA-Z][a-zA-Z0-9+\-.]*:/;
 
 export function sanitizeUrl(raw: string): string {
   const trimmed = raw.trim();
   if (!trimmed) return '';
-  if (!ALLOWED_URL_SCHEMES.test(trimmed)) {
-    // Rejeitar: devolver '#' — nunca o valor original
-    return '#';
+
+  // Se começa com um scheme (foo:), só permite os schemes da allowlist
+  if (HAS_SCHEME.test(trimmed)) {
+    if (!ALLOWED_URL_SCHEMES.test(trimmed)) {
+      // Bloqueia: javascript:, data:, vbscript:, etc.
+      return '#';
+    }
+    return trimmed;
   }
+
+  // URL relativa (sem scheme): segura pois não executa código
+  // (ex: /assets/img.jpg, ./img.jpg, #ancora)
   return trimmed;
 }
 

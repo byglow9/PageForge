@@ -85,6 +85,14 @@ describe('sanitizeUrl (D-12 — scheme allowlist)', () => {
   it('retorna vazio para string vazia', () => {
     expect(sanitizeUrl('')).toBe('');
   });
+
+  it('permite caminhos relativos /assets/img.jpg (sem scheme)', () => {
+    expect(sanitizeUrl('/assets/img.jpg')).toBe('/assets/img.jpg');
+  });
+
+  it('permite caminhos relativos ./img.jpg (sem scheme)', () => {
+    expect(sanitizeUrl('./img.jpg')).toBe('./img.jpg');
+  });
 });
 
 describe('sanitizeCssColor (D-12 — regex allowlist)', () => {
