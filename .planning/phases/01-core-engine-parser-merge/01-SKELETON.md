@@ -29,7 +29,7 @@ Um desenvolvedor chama `parse(markup)` e recebe um schema tipado, e chama `rende
 - [x] Compilation — `compileToLiquid(markup, schema) → string Liquid`
 - [x] Rendering — `render(markup, values, brand) → Promise<string>` via LiquidJS
 - [x] Sanitização — `sanitizeRichText`, `sanitizeUrl`, `sanitizeCssColor`
-- [x] Test suite — parser assertions, golden-file (fixture Grécia), corpus SSTI/XSS (50 combinações tipo×payload)
+- [x] Test suite — parser assertions, golden-file (fixture Grécia), corpus SSTI/XSS (60 combinações: 10 payloads × 6 contextos, incl. dentro de repeater)
 - [ ] UI — zero (fora de escopo para Fase 1)
 - [ ] DB — zero (fora de escopo para Fase 1)
 - [ ] Deployment — zero (entregável é `pnpm test` passando)
