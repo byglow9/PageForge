@@ -12,7 +12,7 @@ A partir de um template cadastrado uma vez, um usuário gera uma nova landing pa
 
 ### Validated
 
-(None yet — ship to validate)
+- **Engine core (Fase 1, 2026-06-02):** `parse(markup) → Schema` e `render(markup, values, brand) → HTML estático` provados contra o template Grécia real (UI-less). Detecção dos 6 tipos de campo, repeaters (0/1/N), e tokens globais `brand.*`; geração de HTML estático layout-fiel; segurança SSTI/XSS validada por corpus (118 testes). Cobre TPL-02, TPL-04, GEN-05, GEN-06 no nível de engine. A UI de authoring/form/persistência permanece hipótese (Fases 3-4).
 
 ### Active
 
@@ -89,4 +89,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-01 after initialization*
+*Last updated: 2026-06-02 — Fase 1 (Core Engine) completa e verificada*
