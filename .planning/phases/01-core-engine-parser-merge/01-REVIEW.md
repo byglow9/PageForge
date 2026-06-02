@@ -20,7 +20,17 @@ findings:
   warning: 5
   info: 1
   total: 8
-status: issues_found
+status: resolved
+resolution:
+  resolved_in: c91c36c
+  resolved: 2026-06-02
+  notes: >
+    CR-01, CR-02, WR-01, WR-03, WR-04 corrigidos com cobertura de teste
+    (tests/engine/hardening.test.ts, 10 testes; suite total 118 verde).
+    WR-02 (RELATIVE_URL morto) removido junto à correção de WR-01.
+    WR-05 (brand.* dentro de repeater renderiza vazio) aceito como limitação
+    conhecida da v1 — brand globais são consumidos fora de repeaters no escopo atual.
+    IN-01 (corpus sem payload em brand) endereçado pelos testes CR-01.
 ---
 
 # Fase 01: Relatório de Code Review — Core Engine (Parser + Compiler + Renderer + Sanitizers)
