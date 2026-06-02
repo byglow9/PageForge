@@ -30,8 +30,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Given the Grécia markup plus hand-written values, the merge engine produces complete, layout-faithful static HTML, correctly iterating repeaters for 0, 1, and N items.
   3. SSTI payloads (e.g. `{{constructor.constructor('return 1')()}}`, `{{__proto__}}`) render inert (literal/empty), with no `eval`/`compile` on user markup — proven by a payload test corpus.
   4. Every field type fuzzed with XSS payloads (`"><img src=x onerror=...>`, `javascript:`, malformed color/URL) produces inert HTML via context-aware escaping; rich text is sanitized to a strict tag allowlist.
-**Plans**: TBD (1-3 plans)
-**KEY DECISION GATE**: Resolve LiquidJS vs. logic-less substitution engine at the start of this phase; define the token grammar (token, repeater, global syntax) and the AST/escaping security model. Both candidate paths must pass the same SSTI/XSS payload corpus.
+**Plans**: 3 plans
+**KEY DECISION GATE**: RESOLVIDO (D-10, 2026-06-01) — engine = LiquidJS v10.27.0 com outputEscape:'escape' + ownPropertyOnly:true.
+
+Plans:
+- [ ] 01-01-PLAN.md — Scaffold (package.json, tsconfig, vitest.config) + schema Zod + stubs do engine + teste e2e RED
+- [ ] 01-02-PLAN.md — Parser + compiler + renderer implementados + fixture Grécia + testes parser/renderer/golden-file
+- [ ] 01-03-PLAN.md — Sanitizadores reais (sanitize-html, sanitizeUrl, sanitizeCssColor) + corpus de segurança 50 payloads
 
 ### Phase 2: Multi-Tenancy Foundation
 **Goal**: Establish workspaces, authentication, and role-based access with isolation enforced at a layer that cannot be forgotten — before any scoped data exists.
@@ -91,7 +96,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Core Engine (Parser + Merge) | 0/TBD | Not started | - |
+| 1. Core Engine (Parser + Merge) | 0/3 | Planning done | - |
 | 2. Multi-Tenancy Foundation | 0/TBD | Not started | - |
 | 3. Template Authoring + Brand Config | 0/TBD | Not started | - |
 | 4. LP Generation, Assets, Preview & Export | 0/TBD | Not started | - |
