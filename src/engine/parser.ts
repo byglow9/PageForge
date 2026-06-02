@@ -84,6 +84,26 @@ export function parse(markup: string): ParsedSchema {
         seenRepeaters.add(open.name);
         repeaters.push(open.name);
       }
+    } else {
+      // Bloco repeat aberto sem fechamento correspondente (D-04 tolerante)
+      warnings.push({
+        token: open.name,
+        message: `Bloco repeat "${open.name}" aberto sem <!-- /repeat:${open.name} --> correspondente — ignorado`,
+      });
+    }
+  }
+
+  // Detectar repeaters aninhados — v1 é flat-only (D-08). Aninhamento produz
+  // output incorreto silencioso (loops com a mesma variável 'item'); avisar (WR-04/D-04).
+  for (const inner of repeaterRanges) {
+    const outer = repeaterRanges.find(
+      (r) => r !== inner && inner.start > r.start && inner.end <= r.end
+    );
+    if (outer) {
+      warnings.push({
+        token: inner.name,
+        message: `Repeater "${inner.name}" está aninhado dentro de "${outer.name}" — repeaters aninhados não são suportados na v1 (flat-only, D-08)`,
+      });
     }
   }
 

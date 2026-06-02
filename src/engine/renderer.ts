@@ -117,8 +117,27 @@ export async function render(
     }
   }
 
-  // Montar scope final: valores seguros + brand
-  const scope = { ...safeValues, brand };
+  // Sanitizar valores de brand por tipo de campo declarado (CR-01).
+  // Campos brand.* são pulados no loop acima (field.global) e iriam direto ao
+  // scope sem sanitização — brand.logo:image com 'javascript:' ou brand.x:richtext
+  // (renderizado via | raw) seriam vetores de XSS. Sanitizamos pelo tipo aqui.
+  const safeBrand: Record<string, unknown> = { ...brand };
+  for (const field of schema.fields) {
+    if (!field.global) continue;
+    const localName = field.name.replace(/^brand\./, '');
+    const raw = (brand as Record<string, unknown>)[localName];
+    if (field.type === 'richtext') {
+      safeBrand[localName] = sanitizeRichText(String(raw ?? ''));
+    } else if (field.type === 'button' || field.type === 'image') {
+      safeBrand[localName] = sanitizeUrl(String(raw ?? ''));
+    } else if (field.type === 'color') {
+      safeBrand[localName] = sanitizeCssColor(String(raw ?? ''));
+    }
+    // text: LiquidJS outputEscape cuida do escaping de entidades HTML
+  }
+
+  // Montar scope final: valores seguros + brand sanitizado
+  const scope = { ...safeValues, brand: safeBrand };
 
   return engine.parseAndRender(compiledLiquid, scope);
 }

@@ -53,14 +53,18 @@ export function sanitizeRichText(html: string): string {
 // Nota: LiquidJS outputEscape NÃO bloqueia javascript: em URLs — esse é o Pitfall 2 documentado.
 
 const ALLOWED_URL_SCHEMES = /^(https?:\/\/|mailto:|tel:)/i;
-// URLs relativas (sem scheme): começam com /, ./, ../, ou são só path/fragment
-const RELATIVE_URL = /^(\/|\.\/|\.\.\/|#)/;
 // Qualquer colon antes de // ou antes de letra indica um scheme
 const HAS_SCHEME = /^[a-zA-Z][a-zA-Z0-9+\-.]*:/;
 
 export function sanitizeUrl(raw: string): string {
   const trimmed = raw.trim();
   if (!trimmed) return '';
+
+  // Protocol-relative (//host): o browser herda o protocolo da página → open
+  // redirect / carregamento de recurso externo. Bloquear (WR-01).
+  if (trimmed.startsWith('//')) {
+    return '#';
+  }
 
   // Se começa com um scheme (foo:), só permite os schemes da allowlist
   if (HAS_SCHEME.test(trimmed)) {
@@ -71,8 +75,8 @@ export function sanitizeUrl(raw: string): string {
     return trimmed;
   }
 
-  // URL relativa (sem scheme): segura pois não executa código
-  // (ex: /assets/img.jpg, ./img.jpg, #ancora)
+  // URL relativa (sem scheme e não protocol-relative): segura pois não executa
+  // código (ex: /assets/img.jpg, ./img.jpg, #ancora)
   return trimmed;
 }
 
@@ -83,12 +87,25 @@ export function sanitizeUrl(raw: string): string {
 // a regex base passou (edge cases como 'red; expression(...)').
 // Source: OWASP XSS Prevention Cheat Sheet + MediaWiki CSS whitelist + 01-RESEARCH.md
 
+// Formatos funcionais/hex aceitos. O ramo de palavra-livre [a-z]+ foi removido
+// (WR-03): aceitava qualquer string alfabética (ex: 'notacolor', 'inherit').
 const CSS_COLOR_PATTERN =
-  /^(#[0-9a-f]{3,8}|rgb\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)|rgba\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*[\d.]+\s*\)|hsl\(\s*\d+\s*,\s*\d+%?\s*,\s*\d+%?\s*\)|hsla\(\s*\d+\s*,\s*\d+%?\s*,\s*\d+%?\s*,\s*[\d.]+\s*\)|[a-z]+)$/i;
+  /^(#[0-9a-f]{3,8}|rgb\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)|rgba\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*[\d.]+\s*\)|hsl\(\s*\d+\s*,\s*\d+%?\s*,\s*\d+%?\s*\)|hsla\(\s*\d+\s*,\s*\d+%?\s*,\s*\d+%?\s*,\s*[\d.]+\s*\))$/i;
+
+// Cores nomeadas / keywords CSS permitidas (allowlist explícita, WR-03).
+const NAMED_COLORS = new Set([
+  'transparent', 'currentcolor', 'inherit', 'initial', 'unset',
+  'black', 'white', 'red', 'green', 'blue', 'yellow', 'orange', 'purple',
+  'pink', 'brown', 'gray', 'grey', 'silver', 'gold', 'cyan', 'magenta',
+  'navy', 'teal', 'olive', 'maroon', 'lime', 'aqua', 'fuchsia', 'beige',
+  'coral', 'crimson', 'indigo', 'ivory', 'khaki', 'lavender', 'salmon',
+  'tan', 'turquoise', 'violet', 'wheat',
+]);
 
 export function sanitizeCssColor(raw: string): string {
   const trimmed = raw.trim();
-  if (!CSS_COLOR_PATTERN.test(trimmed)) {
+  const isValid = CSS_COLOR_PATTERN.test(trimmed) || NAMED_COLORS.has(trimmed.toLowerCase());
+  if (!isValid) {
     return ''; // Cor inválida → vazio (usa fallback do CSS)
   }
   // Rejeitar qualquer ocorrência de expressões perigosas (check secundário de segurança)
