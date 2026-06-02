@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ seo_titulo:text }}</title>
+  <meta name="description" content="{{ seo_descricao:text }}">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="#inicio">
+      <img src="{{ brand.logo:image }}" alt="Logo" class="navbar-logo">
+    </a>
+    <ul class="nav-links">
+      <li><a href="#inicio">Início</a></li>
+      <li><a href="#sobre">Sobre</a></li>
+      <li><a href="#roteiro">Roteiro</a></li>
+      <li><a href="#contato">Contato</a></li>
+    </ul>
+    <a href="{{ brand.whatsapp:button }}" target="_blank" rel="noopener noreferrer" class="btn-reservar">
+      Reservar
+    </a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="inicio" class="hero">
+  <img src="{{ hero_imagem:image }}" alt="Vista aérea de Santorini" class="hero-bg">
+  <div class="hero-content">
+    <div class="hero-text">
+      <p class="hero-subtitle">{{ hero_subtitulo:text }}</p>
+      <h1 class="hero-title">
+        <span>{{ hero_titulo_linha1:text }}</span>
+        <span>{{ hero_titulo_linha2:text }}</span>
+        <span class="hero-title-outline">{{ hero_titulo_linha3:text }}</span>
+      </h1>
+      <div class="hero-descricao">{{ hero_descricao:richtext }}</div>
+      <div class="hero-ctas">
+        <a href="{{ cta_primary_url:button }}" class="btn-primary">{{ cta_primary_label:text }}</a>
+        <a href="#roteiro" class="btn-secondary">Ver Roteiro</a>
+      </div>
+      <div class="social-links">
+        <a href="{{ brand.instagram:button }}" target="_blank" rel="noopener noreferrer" aria-label="Instagram">Instagram</a>
+        <a href="{{ brand.facebook:button }}" target="_blank" rel="noopener noreferrer" aria-label="Facebook">Facebook</a>
+        <a href="{{ brand.youtube:button }}" target="_blank" rel="noopener noreferrer" aria-label="YouTube">YouTube</a>
+      </div>
+    </div>
+
+    <!-- Destaques (floating cards) -->
+    <div class="hero-cards">
+      <!-- repeat:destaques -->
+      <article class="card-destaque">
+        <div class="card-destaque-img">
+          <img src="{{ item.imagem:image }}" alt="{{ item.titulo:text }}" loading="lazy">
+        </div>
+        <div class="card-destaque-body">
+          <h3 class="card-destaque-titulo">{{ item.titulo:text }}</h3>
+          <p class="card-destaque-descricao">{{ item.descricao:richtext }}</p>
+          <a href="#sobre" class="btn-card">Saiba mais</a>
+        </div>
+      </article>
+      <!-- /repeat:destaques -->
+    </div>
+  </div>
+</section>
+
+<!-- SOBRE A VIAGEM -->
+<section id="sobre" class="sobre">
+  <div class="sobre-inner">
+    <div class="sobre-text">
+      <p class="sobre-subtitle">A viagem</p>
+      <h2 class="sobre-titulo">Sobre a Jornada</h2>
+      <div class="sobre-descricao">{{ sobre_descricao_1:richtext }}</div>
+      <div class="sobre-descricao">{{ sobre_descricao_2:richtext }}</div>
+    </div>
+
+    <div class="info-cards-grid">
+      <!-- repeat:info_cards -->
+      <div class="card-info">
+        <p class="card-info-label">{{ item.label:text }}</p>
+        <p class="card-info-valor">{{ item.valor:text }}</p>
+      </div>
+      <!-- /repeat:info_cards -->
+    </div>
+  </div>
+</section>
+
+<!-- INCLUSOS -->
+<section class="inclusos">
+  <div class="inclusos-inner">
+    <div class="section-header">
+      <p class="section-subtitle">Tudo pensado para você</p>
+      <h2 class="section-titulo">O que está incluso</h2>
+    </div>
+
+    <div class="inclusos-grid">
+      <!-- repeat:inclusos -->
+      <div class="card-incluso">
+        <h3 class="card-incluso-titulo">{{ item.titulo:text }}</h3>
+        <p class="card-incluso-texto">{{ item.texto:text }}</p>
+      </div>
+      <!-- /repeat:inclusos -->
+    </div>
+  </div>
+</section>
+
+<!-- ROTEIRO -->
+<section id="roteiro" class="roteiro">
+  <div class="roteiro-inner">
+    <div class="section-header">
+      <p class="section-subtitle">Sua jornada, dia a dia</p>
+      <h2 class="section-titulo">Roteiro Grécia</h2>
+      <p class="roteiro-subtitulo">{{ roteiro_subtitulo:text }}</p>
+    </div>
+
+    <div class="roteiro-slides">
+      <!-- repeat:roteiro -->
+      <div class="card-roteiro">
+        <div class="card-roteiro-img">
+          <img src="{{ item.imagem:image }}" alt="{{ item.imagem_alt:text }}" loading="lazy">
+          <span class="card-roteiro-dia">{{ item.dia:text }}</span>
+        </div>
+        <div class="card-roteiro-body">
+          <p class="card-roteiro-regiao-en">{{ item.regiao_en:text }}</p>
+          <h3 class="card-roteiro-regiao">{{ item.regiao:text }}</h3>
+          <h4 class="card-roteiro-titulo">{{ item.titulo:text }}</h4>
+          <div class="card-roteiro-descricao">{{ item.descricao:richtext }}</div>
+          <p class="card-roteiro-destaque">{{ item.destaque:text }}</p>
+        </div>
+      </div>
+      <!-- /repeat:roteiro -->
+    </div>
+
+    <div class="roteiro-cta">
+      <a href="{{ brand.whatsapp:button }}" target="_blank" rel="noopener noreferrer" class="btn-primary">
+        {{ cta_roteiro_label:text }}
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- POR QUE RENOVA (diferenciais) -->
+<section class="por-que-renova">
+  <div class="por-que-inner">
+    <div class="section-header">
+      <p class="section-subtitle">Viaje com quem entende</p>
+      <h2 class="section-titulo">Por que a Renova</h2>
+    </div>
+
+    <div class="diferenciais-grid">
+      <!-- repeat:diferenciais -->
+      <div class="card-diferencial">
+        <h3 class="card-diferencial-titulo">{{ item.titulo:text }}</h3>
+        <p class="card-diferencial-texto">{{ item.texto:text }}</p>
+      </div>
+      <!-- /repeat:diferenciais -->
+    </div>
+  </div>
+</section>
+
+<!-- DEPOIMENTOS -->
+<section id="depoimentos" class="depoimentos">
+  <div class="depoimentos-inner">
+    <div class="section-header">
+      <p class="section-subtitle">O que dizem nossos viajantes</p>
+      <h2 class="section-titulo">Depoimentos</h2>
+    </div>
+
+    <div class="depoimentos-grid">
+      <!-- repeat:depoimentos -->
+      <div class="card-depoimento">
+        <div class="card-depoimento-quote">{{ item.quote:richtext }}</div>
+        <div class="card-depoimento-autor">
+          <p class="card-depoimento-nome">{{ item.nome:text }}</p>
+          <p class="card-depoimento-localidade">{{ item.localidade:text }}</p>
+        </div>
+      </div>
+      <!-- /repeat:depoimentos -->
+    </div>
+  </div>
+</section>
+
+<!-- INSCREVA-SE / CTA -->
+<section id="contato" class="inscrevase">
+  <div class="inscrevase-inner">
+    <div class="inscrevase-text">
+      <p class="inscrevase-subtitle">{{ inscrevase_subtitulo:text }}</p>
+      <h2 class="inscrevase-titulo">{{ inscrevase_titulo_1:text }}</h2>
+      <h2 class="inscrevase-titulo-outline">{{ inscrevase_titulo_2:text }}</h2>
+      <div class="inscrevase-descricao">{{ inscrevase_descricao:richtext }}</div>
+      <a href="{{ brand.whatsapp:button }}" target="_blank" rel="noopener noreferrer" class="btn-primary">
+        {{ inscrevase_cta_label:text }}
+      </a>
+    </div>
+
+    <div class="inscrevase-form">
+      <h3>Receba a proposta</h3>
+      <form>
+        <div class="form-group">
+          <label for="nome">Nome completo</label>
+          <input type="text" id="nome" placeholder="Seu nome" required>
+        </div>
+        <div class="form-group">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" placeholder="seu@email.com" required>
+        </div>
+        <div class="form-group">
+          <label for="telefone">Telefone / WhatsApp</label>
+          <input type="tel" id="telefone" placeholder="(00) 00000-0000" required>
+        </div>
+        <button type="submit" class="btn-primary btn-full">Garantir Meu Lugar</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-logo">
+      <img src="{{ brand.logo:image }}" alt="Renova Turismo" class="footer-logo-img">
+      <p>Aqui nós gostamos de pessoas.</p>
+    </div>
+
+    <div class="footer-social">
+      <a href="{{ brand.instagram:button }}" target="_blank" rel="noopener noreferrer" aria-label="Instagram">Instagram</a>
+      <a href="{{ brand.facebook:button }}" target="_blank" rel="noopener noreferrer" aria-label="Facebook">Facebook</a>
+      <a href="{{ brand.youtube:button }}" target="_blank" rel="noopener noreferrer" aria-label="YouTube">YouTube</a>
+    </div>
+
+    <div class="footer-contact">
+      <a href="tel:{{ brand.phone:text }}">{{ brand.phone:text }}</a>
+      <a href="mailto:{{ brand.email:text }}">{{ brand.email:text }}</a>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>© 2026 Renova Turismo. Todos os direitos reservados.</p>
+  </div>
+</footer>
+
+</body>
+</html>
