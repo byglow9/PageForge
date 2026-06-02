@@ -54,11 +54,11 @@
       <!-- repeat:destaques -->
       <article class="card-destaque">
         <div class="card-destaque-img">
-          <img src="{{ item.imagem:image }}" alt="{{ item.titulo:text }}" loading="lazy">
+          <img src="{{ imagem:image }}" alt="{{ titulo:text }}" loading="lazy">
         </div>
         <div class="card-destaque-body">
-          <h3 class="card-destaque-titulo">{{ item.titulo:text }}</h3>
-          <p class="card-destaque-descricao">{{ item.descricao:richtext }}</p>
+          <h3 class="card-destaque-titulo">{{ titulo:text }}</h3>
+          <p class="card-destaque-descricao">{{ descricao:richtext }}</p>
           <a href="#sobre" class="btn-card">Saiba mais</a>
         </div>
       </article>
@@ -80,8 +80,8 @@
     <div class="info-cards-grid">
       <!-- repeat:info_cards -->
       <div class="card-info">
-        <p class="card-info-label">{{ item.label:text }}</p>
-        <p class="card-info-valor">{{ item.valor:text }}</p>
+        <p class="card-info-label">{{ label:text }}</p>
+        <p class="card-info-valor">{{ valor:text }}</p>
       </div>
       <!-- /repeat:info_cards -->
     </div>
@@ -99,8 +99,8 @@
     <div class="inclusos-grid">
       <!-- repeat:inclusos -->
       <div class="card-incluso">
-        <h3 class="card-incluso-titulo">{{ item.titulo:text }}</h3>
-        <p class="card-incluso-texto">{{ item.texto:text }}</p>
+        <h3 class="card-incluso-titulo">{{ titulo:text }}</h3>
+        <p class="card-incluso-texto">{{ texto:text }}</p>
       </div>
       <!-- /repeat:inclusos -->
     </div>
@@ -120,15 +120,15 @@
       <!-- repeat:roteiro -->
       <div class="card-roteiro">
         <div class="card-roteiro-img">
-          <img src="{{ item.imagem:image }}" alt="{{ item.imagem_alt:text }}" loading="lazy">
-          <span class="card-roteiro-dia">{{ item.dia:text }}</span>
+          <img src="{{ imagem:image }}" alt="{{ imagem_alt:text }}" loading="lazy">
+          <span class="card-roteiro-dia">{{ dia:text }}</span>
         </div>
         <div class="card-roteiro-body">
-          <p class="card-roteiro-regiao-en">{{ item.regiao_en:text }}</p>
-          <h3 class="card-roteiro-regiao">{{ item.regiao:text }}</h3>
-          <h4 class="card-roteiro-titulo">{{ item.titulo:text }}</h4>
-          <div class="card-roteiro-descricao">{{ item.descricao:richtext }}</div>
-          <p class="card-roteiro-destaque">{{ item.destaque:text }}</p>
+          <p class="card-roteiro-regiao-en">{{ regiao_en:text }}</p>
+          <h3 class="card-roteiro-regiao">{{ regiao:text }}</h3>
+          <h4 class="card-roteiro-titulo">{{ titulo:text }}</h4>
+          <div class="card-roteiro-descricao">{{ descricao:richtext }}</div>
+          <p class="card-roteiro-destaque">{{ destaque:text }}</p>
         </div>
       </div>
       <!-- /repeat:roteiro -->
@@ -153,8 +153,8 @@
     <div class="diferenciais-grid">
       <!-- repeat:diferenciais -->
       <div class="card-diferencial">
-        <h3 class="card-diferencial-titulo">{{ item.titulo:text }}</h3>
-        <p class="card-diferencial-texto">{{ item.texto:text }}</p>
+        <h3 class="card-diferencial-titulo">{{ titulo:text }}</h3>
+        <p class="card-diferencial-texto">{{ texto:text }}</p>
       </div>
       <!-- /repeat:diferenciais -->
     </div>
@@ -172,10 +172,10 @@
     <div class="depoimentos-grid">
       <!-- repeat:depoimentos -->
       <div class="card-depoimento">
-        <div class="card-depoimento-quote">{{ item.quote:richtext }}</div>
+        <div class="card-depoimento-quote">{{ quote:richtext }}</div>
         <div class="card-depoimento-autor">
-          <p class="card-depoimento-nome">{{ item.nome:text }}</p>
-          <p class="card-depoimento-localidade">{{ item.localidade:text }}</p>
+          <p class="card-depoimento-nome">{{ nome:text }}</p>
+          <p class="card-depoimento-localidade">{{ localidade:text }}</p>
         </div>
       </div>
       <!-- /repeat:depoimentos -->

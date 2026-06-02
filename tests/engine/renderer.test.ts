@@ -22,8 +22,10 @@ describe('render() — basic behavior', () => {
       { msg: '"><script>alert(1)</script>' },
       {}
     );
+    // Inerte: nenhuma tag <script> executável; os ângulos do payload são escapados.
+    // (O texto 'alert(1)' permanece como conteúdo escapado inofensivo — isso é correto.)
     expect(html).not.toContain('<script');
-    expect(html).not.toContain('alert(1)');
+    expect(html).toContain('&lt;script&gt;');
   });
 });
 
@@ -34,7 +36,9 @@ describe('Fixture Grécia — Golden File (GEN-05, TPL-04)', () => {
     expect(html).toContain('id="inicio"');
     expect(html).toContain('id="roteiro"');
     expect(html).toContain('id="depoimentos"');
-    await expect(html).toMatchFileSnapshot('tests/__snapshots__/grecia.output.html');
+    await expect(html).toMatchFileSnapshot(
+      join(process.cwd(), 'tests/__snapshots__/grecia.output.html')
+    );
   });
 
   it('repeater roteiro com 0 itens renderiza sem crash e sem cards', async () => {
