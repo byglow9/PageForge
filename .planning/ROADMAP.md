@@ -12,7 +12,7 @@ PageForge delivers its core value — generate a complete, layout-faithful landi
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Core Engine (Parser + Merge)** - UI-less spike proving token parsing and safe static-HTML merge against the real Grécia template; locks the engine decision.
+- [x] **Phase 1: Core Engine (Parser + Merge)** - UI-less spike proving token parsing and safe static-HTML merge against the real Grécia template; locks the engine decision. (completed 2026-06-02)
 - [ ] **Phase 2: Multi-Tenancy Foundation** - Auth, workspaces, RBAC, and per-workspace isolation across every table and storage path.
 - [ ] **Phase 3: Template Authoring + Brand Config** - Author markup templates with all six field types (incl. repeaters) and configure reusable global brand/contact values.
 - [ ] **Phase 4: LP Generation, Assets, Preview & Export** - Schema-driven dynamic form (with repeater add/remove + image upload) producing previewable, editable, duplicable, exportable static-HTML LPs.
@@ -41,7 +41,7 @@ Plans:
 - [x] 01-02-PLAN.md — Parser + compiler + renderer implementados + fixture Grécia + testes parser/renderer/golden-file
 
 **Wave 3** *(blocked on Wave 2 completion)*
-- [ ] 01-03-PLAN.md — Sanitizadores reais (sanitize-html, sanitizeUrl, sanitizeCssColor) + corpus de segurança 60 testes (10 payloads × 6 contextos)
+- [x] 01-03-PLAN.md — Sanitizadores reais (sanitize-html, sanitizeUrl, sanitizeCssColor) + corpus de segurança 60 testes (10 payloads × 6 contextos)
 
 ### Phase 2: Multi-Tenancy Foundation
 **Goal**: Establish workspaces, authentication, and role-based access with isolation enforced at a layer that cannot be forgotten — before any scoped data exists.
@@ -101,7 +101,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Core Engine (Parser + Merge) | 1/3 | In Progress|  |
+| 1. Core Engine (Parser + Merge) | 3/3 | Complete   | 2026-06-02 |
 | 2. Multi-Tenancy Foundation | 0/TBD | Not started | - |
 | 3. Template Authoring + Brand Config | 0/TBD | Not started | - |
 | 4. LP Generation, Assets, Preview & Export | 0/TBD | Not started | - |

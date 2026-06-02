@@ -36,7 +36,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **GEN-03**: User can add and remove items in repeatable blocks within the form
 - [ ] **GEN-04**: System validates required fields by type on submit (minimal validation)
 - [x] **GEN-05**: System generates a static HTML LP by merging the filled values into the template markup
-- [ ] **GEN-06**: Rich-text and token values are sanitized so generated HTML is free of injected scripts (XSS)
+- [x] **GEN-06**: Rich-text and token values are sanitized so generated HTML is free of injected scripts (XSS)
 
 ### Assets
 
@@ -122,7 +122,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | GEN-03 | Phase 4 | Pending |
 | GEN-04 | Phase 4 | Pending |
 | GEN-05 | Phase 1 | Complete |
-| GEN-06 | Phase 1 | Pending |
+| GEN-06 | Phase 1 | Complete |
 | AST-01 | Phase 4 | Pending |
 | LP-01 | Phase 4 | Pending |
 | LP-02 | Phase 4 | Pending |
