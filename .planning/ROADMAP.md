@@ -38,7 +38,7 @@ Plans:
 - [x] 01-01-PLAN.md — Scaffold (package.json, tsconfig, vitest.config) + schema Zod + stubs do engine + teste e2e RED
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 01-02-PLAN.md — Parser + compiler + renderer implementados + fixture Grécia + testes parser/renderer/golden-file
+- [x] 01-02-PLAN.md — Parser + compiler + renderer implementados + fixture Grécia + testes parser/renderer/golden-file
 
 **Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 01-03-PLAN.md — Sanitizadores reais (sanitize-html, sanitizeUrl, sanitizeCssColor) + corpus de segurança 60 testes (10 payloads × 6 contextos)
