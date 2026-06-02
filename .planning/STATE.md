@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 1 context gathered
-last_updated: "2026-06-02T12:42:44.553Z"
-last_activity: 2026-06-02 -- Phase 1 planning complete
+stopped_at: Completed 01-01-PLAN.md
+last_updated: "2026-06-02T13:11:08.033Z"
+last_activity: 2026-06-02
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 3
-  completed_plans: 0
-  percent: 0
+  completed_plans: 1
+  percent: 33
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-01)
 
 **Core value:** A partir de um template cadastrado uma vez, um usuário gera uma nova landing page completa e fiel ao layout apenas preenchendo um formulário — sem tocar em código.
-**Current focus:** Phase 1 — Core Engine (Parser + Merge)
+**Current focus:** Phase 01 — Core Engine (Parser + Merge)
 
 ## Current Position
 
-Phase: 1 of 5 (Core Engine — Parser + Merge)
-Plan: 0 of TBD in current phase
+Phase: 01 (Core Engine (Parser + Merge)) — EXECUTING
+Plan: 2 of 3
 Status: Ready to execute
-Last activity: 2026-06-02 -- Phase 1 planning complete
+Last activity: 2026-06-02
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [███░░░░░░░] 33%
 
 ## Performance Metrics
 
@@ -52,6 +52,7 @@ Progress: [░░░░░░░░░░] 0%
 - Trend: —
 
 *Updated after each plan completion*
+| Phase 01-core-engine-parser-merge P01 | 223 | 3 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -63,6 +64,9 @@ Recent decisions affecting current work:
 - [Roadmap]: Engine-first, UI-less spike (Phase 1) before any consuming feature — highest risk/leverage.
 - [Roadmap]: Multi-tenancy (Phase 2) landed early as un-retrofittable foundation; `workspace_id` + RLS backstop everywhere.
 - [Roadmap, OPEN]: LiquidJS vs. logic-less substitution engine — KEY DECISION GATE to resolve at start of Phase 1.
+- [Phase ?]: ESM + NodeNext: type:module + moduleResolution:NodeNext para imports .js em runtime Node
+- [Phase ?]: pnpm 11: allowBuilds:esbuild em pnpm-workspace.yaml (pnpm.onlyBuiltDependencies obsoleto)
+- [Phase ?]: D-03/D-05 implementados: FieldTypeSchema 6 tipos; schema mínimo (name, type, repeater, global) via Zod
 
 ### Pending Todos
 
@@ -83,6 +87,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-01T20:02:13.939Z
-Stopped at: Phase 1 context gathered
-Resume file: .planning/phases/01-core-engine-parser-merge/01-CONTEXT.md
+Last session: 2026-06-02T13:11:08.027Z
+Stopped at: Completed 01-01-PLAN.md
+Resume file: None

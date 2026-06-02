@@ -35,7 +35,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 Plans:
 **Wave 1**
-- [ ] 01-01-PLAN.md — Scaffold (package.json, tsconfig, vitest.config) + schema Zod + stubs do engine + teste e2e RED
+- [x] 01-01-PLAN.md — Scaffold (package.json, tsconfig, vitest.config) + schema Zod + stubs do engine + teste e2e RED
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 01-02-PLAN.md — Parser + compiler + renderer implementados + fixture Grécia + testes parser/renderer/golden-file
@@ -101,7 +101,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Core Engine (Parser + Merge) | 0/3 | Planning done | - |
+| 1. Core Engine (Parser + Merge) | 1/3 | In Progress|  |
 | 2. Multi-Tenancy Foundation | 0/TBD | Not started | - |
 | 3. Template Authoring + Brand Config | 0/TBD | Not started | - |
 | 4. LP Generation, Assets, Preview & Export | 0/TBD | Not started | - |

@@ -18,7 +18,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Template Authoring
 
 - [ ] **TPL-01**: User can create a template by writing markup with tokens
-- [ ] **TPL-02**: System parses tokens into a typed field schema when the template is saved
+- [x] **TPL-02**: System parses tokens into a typed field schema when the template is saved
 - [ ] **TPL-03**: User can assign a type to each token (text, rich text, image, color, button+URL, repeater)
 - [ ] **TPL-04**: User can define repeatable blocks (repeaters) that group multiple fields
 - [ ] **TPL-05**: User can edit an existing template
@@ -35,7 +35,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **GEN-02**: Form supports all field types: text, rich text, image upload, color, and button+URL
 - [ ] **GEN-03**: User can add and remove items in repeatable blocks within the form
 - [ ] **GEN-04**: System validates required fields by type on submit (minimal validation)
-- [ ] **GEN-05**: System generates a static HTML LP by merging the filled values into the template markup
+- [x] **GEN-05**: System generates a static HTML LP by merging the filled values into the template markup
 - [ ] **GEN-06**: Rich-text and token values are sanitized so generated HTML is free of injected scripts (XSS)
 
 ### Assets
@@ -110,7 +110,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | WS-04 | Phase 2 | Pending |
 | WS-05 | Phase 2 | Pending |
 | TPL-01 | Phase 3 | Pending |
-| TPL-02 | Phase 1 | Pending |
+| TPL-02 | Phase 1 | Complete |
 | TPL-03 | Phase 3 | Pending |
 | TPL-04 | Phase 1 | Pending |
 | TPL-05 | Phase 3 | Pending |
@@ -121,7 +121,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | GEN-02 | Phase 4 | Pending |
 | GEN-03 | Phase 4 | Pending |
 | GEN-04 | Phase 4 | Pending |
-| GEN-05 | Phase 1 | Pending |
+| GEN-05 | Phase 1 | Complete |
 | GEN-06 | Phase 1 | Pending |
 | AST-01 | Phase 4 | Pending |
 | LP-01 | Phase 4 | Pending |
