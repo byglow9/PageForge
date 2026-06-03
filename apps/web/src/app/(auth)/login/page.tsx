@@ -45,9 +45,9 @@ export default function LoginPage() {
       return;
     }
 
-    // Login succeeded — redirect to workspace selector
+    // Login succeeded — redirect to workspace list
     // (Using window.location for simplicity; will use Next.js router when auth guard is wired)
-    window.location.href = "/workspaces/new";
+    window.location.href = "/workspaces";
   }
 
   if (formState.status === "verification_required") {

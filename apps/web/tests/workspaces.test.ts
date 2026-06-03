@@ -12,7 +12,7 @@
  * that access the DB to keep this as a unit/integration contract test.
  */
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   CreateWorkspaceSchema,
   UpdateWorkspaceSchema,
