@@ -1,6 +1,8 @@
-export const metadata = {
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
   title: "PageForge",
-  description: "Landing page generation platform",
+  description: "Landing page generation platform for agencies and marketing teams",
 };
 
 export default function RootLayout({
@@ -10,7 +12,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        {children}
+      </body>
     </html>
   );
 }
