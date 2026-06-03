@@ -78,6 +78,12 @@ None yet.
 - [Phase 1]: Engine choice (LiquidJS vs. logic-less substitution) is unresolved across research docs. Resolve at Phase 1 start; both paths must pass the same SSTI/XSS payload corpus. May warrant `/gsd-research-phase`.
 - [Phase 4/5]: Schema-change vs. existing-LP reconciliation policy and globals snapshot-vs-live at generate time need a decision during planning.
 
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260603-ju4 | Fix Phase-2 workspace-creation RLS bug + email-verification token (sendOnSignUp) + commit kysely/trustedOrigins fixes | 2026-06-03 | 9cd3826 | [260603-ju4](./quick/260603-ju4-fix-phase-2-workspace-creation-rls-bug-a/) |
+
 ## Deferred Items
 
 Items acknowledged and carried forward from previous milestone close:
