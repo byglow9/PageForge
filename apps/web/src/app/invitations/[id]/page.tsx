@@ -3,7 +3,7 @@
  *
  * This Server Component handles the copyable invite link flow (D-06, D-07).
  *
- * Security (D-07, D-12, T-02-03-01, T-02-03-04):
+ * Security (D-07, D-12, T-02-03-01, T-02-03-04, T-02-07-01, T-02-07-02):
  * - The invitation record is looked up server-side by ID.
  * - workspaceId and role are read from the invitation row — never from client input.
  * - Signed-out users are redirected to /login or /signup with the invitation ID
@@ -11,6 +11,8 @@
  * - Unverified (signed-in) users are redirected to /verify-email.
  * - Expired, accepted, and revoked invitations show an appropriate message.
  * - On acceptance, the user is redirected to /w/{slug}.
+ * - invitationId is passed to AcceptButton from server-rendered await params;
+ *   the client never sources it from URL search params or form fields (T-02-07-01).
  *
  * Account-on-accept (D-07): if the invitee has no account, they click "Sign up"
  * which takes them to /signup?invitationId={id}. After signup+verify they land
@@ -22,7 +24,7 @@ import {
   lookupInvitation,
   isInvitationExpired,
 } from "@/lib/workspaces/invitations";
-import { acceptInvitationAction } from "@/lib/workspaces/actions";
+import { AcceptButton } from "./AcceptButton";
 
 interface InvitationPageProps {
   params: Promise<{ id: string }>;
@@ -116,12 +118,10 @@ export default async function InvitationPage({
     );
   }
 
-  async function submitAcceptInvitation(): Promise<void> {
-    "use server";
-    await acceptInvitationAction(id);
-  }
-
-  // Case 3: Signed in and verified — show accept prompt
+  // Case 3: Signed in and verified — show accept prompt.
+  // AcceptButton is a client island that calls acceptInvitationAction imperatively,
+  // allowing the returned {ok:false, error} to be surfaced in the UI (UAT Test 7).
+  // invitationId flows from server-rendered await params — never from client input (T-02-07-01).
   return (
     <div>
       <h1>Workspace invitation</h1>
@@ -142,10 +142,7 @@ export default async function InvitationPage({
           .
         </small>
       </p>
-      {/* Accept form — Server Action POST, never a GET mutation */}
-      <form action={submitAcceptInvitation}>
-        <button type="submit">Accept invitation</button>
-      </form>
+      <AcceptButton invitationId={id} />
       <p>
         <a href="/">Decline</a>
       </p>
