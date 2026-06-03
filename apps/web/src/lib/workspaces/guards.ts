@@ -104,18 +104,28 @@ export async function getWorkspaceContext(
 ): Promise<WorkspaceContext | null> {
   const user = await requireVerifiedUser();
 
-  const workspace = await prisma.workspace.findUnique({
+  // Resolve workspace identity + membership from the AUTHORITATIVE better-auth
+  // tables (organization/member), which are NOT under row-level security.
+  //
+  // The app-level workspace/workspace_member tables are RLS-protected tenant
+  // DATA mirrors and must NOT be used to resolve identity here: this slug→id
+  // lookup runs BEFORE any `app.current_workspace_id` context exists, so a
+  // FORCE-RLS policy keyed on that setting would hide every row (including the
+  // owner's own membership) and bounce the user back to /workspaces/new.
+  // Reading authz from the canonical better-auth member also resolves review
+  // finding WR-03 (authz must read the authoritative member, not the mirror).
+  const organization = await prisma.organization.findUnique({
     where: { slug },
   });
 
-  if (!workspace) {
+  if (!organization) {
     return null;
   }
 
-  const membership = await prisma.workspaceMember.findUnique({
+  const membership = await prisma.member.findUnique({
     where: {
-      workspaceId_userId: {
-        workspaceId: workspace.id,
+      organizationId_userId: {
+        organizationId: organization.id,
         userId: user.id,
       },
     },
@@ -133,8 +143,8 @@ export async function getWorkspaceContext(
   }
 
   return {
-    workspaceId: workspace.id,
-    workspaceSlug: workspace.slug,
+    workspaceId: organization.id,
+    workspaceSlug: organization.slug,
     userId: user.id,
     role: roleParsed.data,
   };
