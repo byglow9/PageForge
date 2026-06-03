@@ -383,3 +383,140 @@ describe("createWorkspaceAction — RLS context fix (D-13, T-02-02-04)", () => {
     expect(setConfigPos).toBeLessThan(workspaceCreatePos);
   });
 });
+
+// -----------------------------------------------------------------------
+// getUserWorkspaces — listing helper (D-05, T-02-08-02, T-02-08-03)
+// -----------------------------------------------------------------------
+
+describe("getUserWorkspaces — listing helper (D-05, WS-01, T-02-08-02, T-02-08-03)", () => {
+  /**
+   * Tests mock Prisma via vi.doMock to avoid needing a live DB.
+   * The helper MUST query organization/member (non-RLS tables), NOT
+   * workspace/workspaceMember (RLS-protected tables).
+   */
+
+  function makeMockMember(overrides: {
+    userId?: string;
+    organizationId?: string;
+    role?: string;
+    orgName?: string;
+    orgSlug?: string;
+  } = {}) {
+    const organizationId = overrides.organizationId ?? "org-1";
+    const orgName = overrides.orgName ?? "Acme Agency";
+    const orgSlug = overrides.orgSlug ?? "acme-agency";
+    return {
+      id: "member-1",
+      organizationId,
+      userId: overrides.userId ?? "user-1",
+      role: overrides.role ?? "owner",
+      createdAt: new Date(),
+      organization: {
+        id: organizationId,
+        name: orgName,
+        slug: orgSlug,
+        logo: null,
+        metadata: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    };
+  }
+
+  beforeEach(() => {
+    vi.resetModules();
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+    vi.resetModules();
+  });
+
+  it("returns an empty array when the user has no memberships", async () => {
+    vi.doMock("@/lib/db/prisma", () => ({
+      prisma: {
+        member: {
+          findMany: vi.fn().mockResolvedValue([]),
+        },
+      },
+    }));
+
+    const { getUserWorkspaces } = await import("@/lib/workspaces/listing");
+    const result = await getUserWorkspaces("user-with-no-memberships");
+    expect(result).toEqual([]);
+  });
+
+  it("returns mapped UserWorkspace[] from a two-member result", async () => {
+    const members = [
+      makeMockMember({ organizationId: "org-1", orgName: "Alpha Agency", orgSlug: "alpha-agency", role: "owner" }),
+      makeMockMember({ organizationId: "org-2", orgName: "Beta Studio", orgSlug: "beta-studio", role: "editor" }),
+    ];
+
+    vi.doMock("@/lib/db/prisma", () => ({
+      prisma: {
+        member: {
+          findMany: vi.fn().mockResolvedValue(members),
+        },
+      },
+    }));
+
+    const { getUserWorkspaces } = await import("@/lib/workspaces/listing");
+    const result = await getUserWorkspaces("user-1");
+
+    expect(result).toHaveLength(2);
+    expect(result[0]).toEqual({
+      workspaceId: "org-1",
+      name: "Alpha Agency",
+      slug: "alpha-agency",
+      role: "owner",
+    });
+    expect(result[1]).toEqual({
+      workspaceId: "org-2",
+      name: "Beta Studio",
+      slug: "beta-studio",
+      role: "editor",
+    });
+  });
+
+  it("includes workspaceId = organization.id in the result (T-02-08-03)", async () => {
+    const member = makeMockMember({ organizationId: "org-canonical-id", orgName: "Test Org", orgSlug: "test-org" });
+
+    vi.doMock("@/lib/db/prisma", () => ({
+      prisma: {
+        member: {
+          findMany: vi.fn().mockResolvedValue([member]),
+        },
+      },
+    }));
+
+    const { getUserWorkspaces } = await import("@/lib/workspaces/listing");
+    const result = await getUserWorkspaces("user-1");
+
+    expect(result[0].workspaceId).toBe("org-canonical-id");
+  });
+
+  it("does not call prisma.workspace or prisma.workspaceMember (T-02-08-03)", async () => {
+    const workspaceFindMany = vi.fn();
+    const workspaceMemberFindMany = vi.fn();
+
+    vi.doMock("@/lib/db/prisma", () => ({
+      prisma: {
+        member: {
+          findMany: vi.fn().mockResolvedValue([]),
+        },
+        workspace: {
+          findMany: workspaceFindMany,
+        },
+        workspaceMember: {
+          findMany: workspaceMemberFindMany,
+        },
+      },
+    }));
+
+    const { getUserWorkspaces } = await import("@/lib/workspaces/listing");
+    await getUserWorkspaces("user-no-rls");
+
+    expect(workspaceFindMany).not.toHaveBeenCalled();
+    expect(workspaceMemberFindMany).not.toHaveBeenCalled();
+  });
+});
