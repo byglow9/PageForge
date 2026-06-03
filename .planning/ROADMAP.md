@@ -67,13 +67,13 @@ Plans:
 - [x] 02-03-PLAN.md — Copyable invitation links, account-on-accept, member role management, and final cross-tenant isolation verification
 
 **Wave 4** *(gap closure — blocked on Wave 3 completion)*
-- [ ] 02-04-PLAN.md — Fix invitation email match guard (CR-01), convert acceptance to POST server action (CR-03), parameterize SET LOCAL (WR-01), extend RLS migration to real tenant tables (CR-02)
+- [x] 02-04-PLAN.md — Fix invitation email match guard (CR-01), convert acceptance to POST server action (CR-03), parameterize SET LOCAL (WR-01), extend RLS migration to real tenant tables (CR-02)
 
 **Wave 5** *(gap closure — blocked on Wave 4 completion; [BLOCKING] schema push)*
-- [ ] 02-05-PLAN.md — Apply RLS migration to live DB [BLOCKING], wire members page forms to server actions (CR-04)
+- [x] 02-05-PLAN.md — Apply RLS migration to live DB [BLOCKING], wire members page forms to server actions (CR-04)
 
 **Wave 6** *(gap closure — blocked on Wave 5 completion)*
-- [ ] 02-06-PLAN.md — Per-endpoint cross-tenant integration tests against live PostgreSQL with RLS active (SC-3)
+- [x] 02-06-PLAN.md — Per-endpoint cross-tenant integration tests against live PostgreSQL with RLS active (SC-3)
 
 ### Phase 3: Template Authoring + Brand Config
 **Goal**: Let users author and edit token-markup templates with all six field types and configure reusable global brand/contact values, persisting markup + parsed schema scoped to the workspace.
