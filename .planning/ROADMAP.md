@@ -60,7 +60,7 @@ Plans:
 - [x] 02-01-PLAN.md — Next.js app package, Prisma baseline, better-auth email/password, mandatory email verification, and auth pages
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 02-02-PLAN.md — Explicit workspace creation, slug-derived workspace context, RBAC guards, tenant-scoped data helper, and RLS migration
+- [x] 02-02-PLAN.md — Explicit workspace creation, slug-derived workspace context, RBAC guards, tenant-scoped data helper, and RLS migration
 
 **Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 02-03-PLAN.md — Copyable invitation links, account-on-accept, member role management, and final cross-tenant isolation verification
@@ -112,7 +112,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Core Engine (Parser + Merge) | 3/3 | Complete   | 2026-06-02 |
-| 2. Multi-Tenancy Foundation | 1/3 | In Progress|  |
+| 2. Multi-Tenancy Foundation | 2/3 | In Progress|  |
 | 3. Template Authoring + Brand Config | 0/TBD | Not started | - |
 | 4. LP Generation, Assets, Preview & Export | 0/TBD | Not started | - |
 | 5. Catalog & Grécia Acceptance | 0/TBD | Not started | - |
