@@ -316,6 +316,81 @@ describe("acceptInvitation — security checks (T-02-03-01, T-02-03-04)", () => 
     ).rejects.toThrow("not found");
   });
 
+  it("rejects email mismatch before membership creation", async () => {
+    const mockWorkspaceUpsert = vi.fn();
+
+    vi.doMock("@/lib/db/prisma", () => ({
+      prisma: {
+        workspaceInvitation: {
+          findUnique: vi.fn().mockResolvedValue(baseInvitation),
+          update: vi.fn(),
+        },
+        workspace: { findUnique: vi.fn() },
+        $transaction: vi.fn().mockImplementation(async (fn) => {
+          const tx = {
+            workspaceMember: { upsert: mockWorkspaceUpsert },
+            member: { upsert: vi.fn() },
+            workspaceInvitation: { update: vi.fn() },
+          };
+          return fn(tx);
+        }),
+      },
+    }));
+
+    const { acceptInvitation } = await import("@/lib/workspaces/invitations");
+    await expect(
+      acceptInvitation("inv-test", {
+        id: "user-other",
+        email: "other@example.com",
+        emailVerified: true,
+      })
+    ).rejects.toThrow("This invitation was issued to a different email address.");
+    expect(mockWorkspaceUpsert).not.toHaveBeenCalled();
+  });
+
+  it("matches invitation email case-insensitively", async () => {
+    const mockWorkspaceUpsert = vi.fn().mockResolvedValue({});
+    const mockMemberUpsert = vi.fn().mockResolvedValue({});
+    const mockInvitationUpdate = vi.fn().mockResolvedValue({});
+
+    vi.doMock("@/lib/db/prisma", () => ({
+      prisma: {
+        workspaceInvitation: {
+          findUnique: vi.fn().mockResolvedValue({
+            ...baseInvitation,
+            email: "invitee@example.com",
+          }),
+          update: mockInvitationUpdate,
+        },
+        workspace: {
+          findUnique: vi.fn().mockResolvedValue({
+            id: "ws-test",
+            name: "Test WS",
+            slug: "test-ws",
+          }),
+        },
+        $transaction: vi.fn().mockImplementation(async (fn) => {
+          const tx = {
+            workspaceMember: { upsert: mockWorkspaceUpsert },
+            member: { upsert: mockMemberUpsert },
+            workspaceInvitation: { update: mockInvitationUpdate },
+          };
+          return fn(tx);
+        }),
+      },
+    }));
+
+    const { acceptInvitation } = await import("@/lib/workspaces/invitations");
+    const result = await acceptInvitation("inv-test", {
+      id: "user-1",
+      email: "Invitee@Example.COM",
+      emailVerified: true,
+    });
+
+    expect(result.slug).toBe("test-ws");
+    expect(mockWorkspaceUpsert).toHaveBeenCalledTimes(1);
+  });
+
   it("uses workspaceId and role from invitation record, not from user input (T-02-03-04)", async () => {
     const mockWorkspaceUpsert = vi.fn().mockResolvedValue({});
     const mockMemberUpsert = vi.fn().mockResolvedValue({});
@@ -360,7 +435,58 @@ describe("acceptInvitation — security checks (T-02-03-01, T-02-03-04)", () => 
           workspaceId: "ws-test",
           role: "editor", // from invitation record
         }),
+        update: {},
       })
+    );
+  });
+
+  it("does not overwrite existing member role on re-accept", async () => {
+    const mockWorkspaceUpsert = vi.fn().mockResolvedValue({
+      id: "wm-1",
+      workspaceId: "ws-test",
+      userId: "user-1",
+      role: "admin",
+    });
+    const mockMemberUpsert = vi.fn().mockResolvedValue({
+      id: "m-1",
+      organizationId: "ws-test",
+      userId: "user-1",
+      role: "admin",
+    });
+    const mockInvitationUpdate = vi.fn().mockResolvedValue({});
+
+    vi.doMock("@/lib/db/prisma", () => ({
+      prisma: {
+        workspaceInvitation: {
+          findUnique: vi.fn().mockResolvedValue(baseInvitation),
+          update: mockInvitationUpdate,
+        },
+        workspace: {
+          findUnique: vi.fn().mockResolvedValue({
+            id: "ws-test",
+            name: "Test WS",
+            slug: "test-ws",
+          }),
+        },
+        $transaction: vi.fn().mockImplementation(async (fn) => {
+          const tx = {
+            workspaceMember: { upsert: mockWorkspaceUpsert },
+            member: { upsert: mockMemberUpsert },
+            workspaceInvitation: { update: mockInvitationUpdate },
+          };
+          return fn(tx);
+        }),
+      },
+    }));
+
+    const { acceptInvitation } = await import("@/lib/workspaces/invitations");
+    await acceptInvitation("inv-test", verifiedUser);
+
+    expect(mockWorkspaceUpsert).toHaveBeenCalledWith(
+      expect.objectContaining({ update: {} })
+    );
+    expect(mockMemberUpsert).toHaveBeenCalledWith(
+      expect.objectContaining({ update: {} })
     );
   });
 

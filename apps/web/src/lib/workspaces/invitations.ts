@@ -190,6 +190,7 @@ export function isInvitationExpired(invitation: InvitationRecord): boolean {
  *    never from any client-supplied parameter.
  * 4. A duplicate membership is silently treated as already accepted
  *    (idempotent — the user may have refreshed after a partial success).
+ * 5. The accepting user's email must match the invitation email.
  *
  * @param invitationId - The invitation ID from the URL (not trusted beyond lookup).
  * @param user         - Verified, authenticated user context.
@@ -224,6 +225,12 @@ export async function acceptInvitation(
     throw new Error("This invitation has expired.");
   }
 
+  if (
+    invitation.email.trim().toLowerCase() !== user.email.trim().toLowerCase()
+  ) {
+    throw new Error("This invitation was issued to a different email address.");
+  }
+
   // Security: workspaceId and role come from the invitation row (T-02-03-04)
   const { workspaceId, role } = invitation;
 
@@ -238,8 +245,9 @@ export async function acceptInvitation(
 
   // Create membership in a transaction — mark invitation accepted atomically
   await prisma.$transaction(async (tx) => {
-    // Create app-level WorkspaceMember
-    // Use upsert for idempotency: if the user is already a member, update their role
+    // Create app-level WorkspaceMember.
+    // Use upsert for idempotency: if the user is already a member, do not
+    // overwrite their existing role.
     await tx.workspaceMember.upsert({
       where: {
         workspaceId_userId: {
@@ -252,10 +260,7 @@ export async function acceptInvitation(
         userId: user.id,
         role, // role from the invitation record (not from client) — T-02-03-04
       },
-      update: {
-        // If already a member (e.g. duplicate accept), update role to invitation role
-        role,
-      },
+      update: {},
     });
 
     // Create better-auth organization Member record
@@ -273,9 +278,7 @@ export async function acceptInvitation(
         userId: user.id,
         role, // from invitation record only (T-02-03-04)
       },
-      update: {
-        role,
-      },
+      update: {},
     });
 
     // Mark invitation as accepted
