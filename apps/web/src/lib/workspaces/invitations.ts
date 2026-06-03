@@ -60,6 +60,26 @@ export interface AcceptInvitationResult {
   slug: string;
 }
 
+function toInvitationRecord(invitation: {
+  id: string;
+  workspaceId: string;
+  email: string;
+  role: string;
+  status: string;
+  expiresAt: Date;
+  createdAt: Date;
+}): InvitationRecord {
+  return {
+    id: invitation.id,
+    workspaceId: invitation.workspaceId,
+    email: invitation.email,
+    role: invitation.role as Role,
+    status: invitation.status as "pending" | "accepted" | "revoked",
+    expiresAt: invitation.expiresAt,
+    createdAt: invitation.createdAt,
+  };
+}
+
 // -----------------------------------------------------------------------
 // createInvitation
 // -----------------------------------------------------------------------
@@ -83,26 +103,22 @@ export async function createInvitation(
 
   const expiresAt = new Date(Date.now() + INVITATION_TTL_SECONDS * 1000);
 
-  const invitation = await prisma.workspaceInvitation.create({
-    data: {
-      id: randomUUID(),
-      workspaceId, // always from server context (D-12)
-      email,
-      role,
-      expiresAt,
-      status: "pending",
-    },
+  const invitation = await prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT set_config('app.current_workspace_id', ${workspaceId}, true)`;
+
+    return tx.workspaceInvitation.create({
+      data: {
+        id: randomUUID(),
+        workspaceId, // always from server context (D-12)
+        email,
+        role,
+        expiresAt,
+        status: "pending",
+      },
+    });
   });
 
-  return {
-    id: invitation.id,
-    workspaceId: invitation.workspaceId,
-    email: invitation.email,
-    role: invitation.role as Role,
-    status: invitation.status as "pending" | "accepted" | "revoked",
-    expiresAt: invitation.expiresAt,
-    createdAt: invitation.createdAt,
-  };
+  return toInvitationRecord(invitation);
 }
 
 // -----------------------------------------------------------------------
@@ -145,21 +161,17 @@ export function getInvitationUrl(
 export async function lookupInvitation(
   invitationId: string
 ): Promise<InvitationRecord | null> {
-  const invitation = await prisma.workspaceInvitation.findUnique({
-    where: { id: invitationId },
+  const invitation = await prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT set_config('app.current_invitation_id', ${invitationId}, true)`;
+
+    return tx.workspaceInvitation.findUnique({
+      where: { id: invitationId },
+    });
   });
 
   if (!invitation) return null;
 
-  return {
-    id: invitation.id,
-    workspaceId: invitation.workspaceId,
-    email: invitation.email,
-    role: invitation.role as Role,
-    status: invitation.status as "pending" | "accepted" | "revoked",
-    expiresAt: invitation.expiresAt,
-    createdAt: invitation.createdAt,
-  };
+  return toInvitationRecord(invitation);
 }
 
 // -----------------------------------------------------------------------
@@ -234,17 +246,22 @@ export async function acceptInvitation(
   // Security: workspaceId and role come from the invitation row (T-02-03-04)
   const { workspaceId, role } = invitation;
 
-  // Look up the workspace slug for redirect
-  const workspace = await prisma.workspace.findUnique({
-    where: { id: workspaceId },
-  });
-
-  if (!workspace) {
-    throw new Error("The workspace associated with this invitation no longer exists.");
-  }
+  let workspaceSlug: string | null = null;
 
   // Create membership in a transaction — mark invitation accepted atomically
   await prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT set_config('app.current_workspace_id', ${workspaceId}, true)`;
+
+    const workspace = await tx.workspace.findUnique({
+      where: { id: workspaceId },
+    });
+
+    if (!workspace) {
+      throw new Error("The workspace associated with this invitation no longer exists.");
+    }
+
+    workspaceSlug = workspace.slug;
+
     // Create app-level WorkspaceMember.
     // Use upsert for idempotency: if the user is already a member, do not
     // overwrite their existing role.
@@ -288,10 +305,14 @@ export async function acceptInvitation(
     });
   });
 
+  if (!workspaceSlug) {
+    throw new Error("The workspace associated with this invitation no longer exists.");
+  }
+
   return {
     workspaceId,
     role,
-    slug: workspace.slug,
+    slug: workspaceSlug,
   };
 }
 
@@ -312,23 +333,24 @@ export async function revokeInvitation(
   invitationId: string,
   workspaceId: string
 ): Promise<void> {
-  const invitation = await lookupInvitation(invitationId);
+  await prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT set_config('app.current_workspace_id', ${workspaceId}, true)`;
 
-  if (!invitation) {
-    throw new Error("Invitation not found.");
-  }
+    const invitation = await tx.workspaceInvitation.findUnique({
+      where: { id: invitationId },
+    });
 
-  if (invitation.workspaceId !== workspaceId) {
-    // Security: prevent revoking invitations from other workspaces
-    throw new Error("Invitation not found.");
-  }
+    if (!invitation) {
+      throw new Error("Invitation not found.");
+    }
 
-  if (invitation.status !== "pending") {
-    throw new Error("Only pending invitations can be revoked.");
-  }
+    if (invitation.status !== "pending") {
+      throw new Error("Only pending invitations can be revoked.");
+    }
 
-  await prisma.workspaceInvitation.update({
-    where: { id: invitationId },
-    data: { status: "revoked" },
+    await tx.workspaceInvitation.update({
+      where: { id: invitationId },
+      data: { status: "revoked" },
+    });
   });
 }

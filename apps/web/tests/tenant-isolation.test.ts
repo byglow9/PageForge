@@ -17,7 +17,8 @@
  * The app-layer isolation tests run without a database connection.
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { randomUUID } from "crypto";
+import { describe, it, expect, vi, beforeAll, beforeEach, afterAll, afterEach } from "vitest";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -416,3 +417,160 @@ describe("Cross-workspace direct-ID read denial (WS-05, T-02-02-03)", () => {
     expect(wsAResult).not.toBe(wsBResult);
   });
 });
+
+// -----------------------------------------------------------------------
+// DB-required RLS integration tests (live PostgreSQL)
+// -----------------------------------------------------------------------
+
+describe.skipIf(!process.env.DATABASE_URL)(
+  "DB-required RLS integration tests (WS-05, CR-02)",
+  () => {
+    let prisma: typeof import("@/lib/db/prisma").prisma;
+    let withTenantDb: typeof import("@/lib/db/tenant-db").withTenantDb;
+    let wsAId: string;
+    let wsBId: string;
+    let wsAMemberId: string;
+    let wsBMemberId: string;
+
+    async function createWorkspaceFixture(
+      workspaceId: string,
+      slug: string,
+      memberId: string,
+      userId: string
+    ) {
+      await prisma.$transaction(async (tx) => {
+        await tx.$executeRaw`SELECT set_config('app.current_workspace_id', ${workspaceId}, true)`;
+        await tx.workspace.create({
+          data: {
+            id: workspaceId,
+            name: `RLS ${slug}`,
+            slug,
+          },
+        });
+        await tx.workspaceMember.create({
+          data: {
+            id: memberId,
+            workspaceId,
+            userId,
+            role: "admin",
+          },
+        });
+      });
+    }
+
+    async function deleteWorkspaceFixture(workspaceId: string) {
+      try {
+        await prisma.$transaction(async (tx) => {
+          await tx.$executeRaw`SELECT set_config('app.current_workspace_id', ${workspaceId}, true)`;
+          await tx.workspace.deleteMany({ where: { id: workspaceId } });
+        });
+      } catch {
+        // Cleanup should not mask the test failure that triggered it.
+      }
+    }
+
+    beforeAll(async () => {
+      vi.doUnmock("@/lib/db/prisma");
+      vi.resetModules();
+      ({ prisma } = await import("@/lib/db/prisma"));
+      ({ withTenantDb } = await import("@/lib/db/tenant-db"));
+
+      wsAId = randomUUID();
+      wsBId = randomUUID();
+      wsAMemberId = randomUUID();
+      wsBMemberId = randomUUID();
+
+      await createWorkspaceFixture(
+        wsAId,
+        `rls-a-${randomUUID()}`,
+        wsAMemberId,
+        randomUUID()
+      );
+      await createWorkspaceFixture(
+        wsBId,
+        `rls-b-${randomUUID()}`,
+        wsBMemberId,
+        randomUUID()
+      );
+    });
+
+    afterAll(async () => {
+      await deleteWorkspaceFixture(wsAId);
+      await deleteWorkspaceFixture(wsBId);
+    });
+
+    it("omitting app.current_workspace_id blocks workspace_member reads", async () => {
+      const rows = await prisma.$queryRaw<Array<{ id: string }>>`
+        SELECT id FROM "workspace_member" WHERE id = ${wsAMemberId}
+      `;
+
+      expect(rows).toHaveLength(0);
+    });
+
+    it("RLS blocks cross-workspace reads when app.current_workspace_id is set to wsA", async () => {
+      await prisma.$transaction(async (tx) => {
+        await tx.$executeRaw`SELECT set_config('app.current_workspace_id', ${wsAId}, true)`;
+
+        const ownRows = await tx.$queryRaw<Array<{ id: string }>>`
+          SELECT id FROM "workspace_member" WHERE id = ${wsAMemberId}
+        `;
+        const crossRows = await tx.$queryRaw<Array<{ id: string }>>`
+          SELECT id FROM "workspace_member" WHERE id = ${wsBMemberId}
+        `;
+        const workspaceBRows = await tx.$queryRaw<Array<{ id: string }>>`
+          SELECT id FROM "workspace_member" WHERE "workspaceId" = ${wsBId}
+        `;
+
+        expect(ownRows).toHaveLength(1);
+        expect(crossRows).toHaveLength(0);
+        expect(workspaceBRows).toHaveLength(0);
+      });
+    });
+
+    it("withTenantDb scopes probe reads to the correct workspace", async () => {
+      const probe = await withTenantDb({ workspaceId: wsAId }, async (db) => {
+        return db.tenantIsolationProbe.create("db-required rls probe");
+      });
+
+      const crossWorkspaceRead = await withTenantDb(
+        { workspaceId: wsBId },
+        async (db) => db.tenantIsolationProbe.findById(probe.id)
+      );
+
+      expect(crossWorkspaceRead).toBeNull();
+    });
+
+    it("workspace_member table has RLS active in live DB", async () => {
+      const result = await prisma.$queryRaw<Array<{ tablename: string; rowsecurity: boolean }>>`
+        SELECT tablename, rowsecurity FROM pg_tables WHERE tablename = 'workspace_member'
+      `;
+
+      expect(result[0]).toEqual({
+        tablename: "workspace_member",
+        rowsecurity: true,
+      });
+    });
+
+    it("workspace_invitation table has RLS active in live DB", async () => {
+      const result = await prisma.$queryRaw<Array<{ tablename: string; rowsecurity: boolean }>>`
+        SELECT tablename, rowsecurity FROM pg_tables WHERE tablename = 'workspace_invitation'
+      `;
+
+      expect(result[0]).toEqual({
+        tablename: "workspace_invitation",
+        rowsecurity: true,
+      });
+    });
+
+    it("workspace table has RLS active in live DB", async () => {
+      const result = await prisma.$queryRaw<Array<{ tablename: string; rowsecurity: boolean }>>`
+        SELECT tablename, rowsecurity FROM pg_tables WHERE tablename = 'workspace'
+      `;
+
+      expect(result[0]).toEqual({
+        tablename: "workspace",
+        rowsecurity: true,
+      });
+    });
+  }
+);

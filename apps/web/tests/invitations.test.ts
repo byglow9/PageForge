@@ -14,7 +14,10 @@
  * 10. No automated email is sent (D-06).
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { randomUUID } from "crypto";
+import { describe, it, expect, vi, beforeAll, beforeEach, afterAll, afterEach } from "vitest";
+import { prisma } from "@/lib/db/prisma";
+import { withTenantDb } from "@/lib/db/tenant-db";
 import {
   CreateInvitationSchema,
   getInvitationUrl,
@@ -211,6 +214,45 @@ describe("acceptInvitation — security checks (T-02-03-01, T-02-03-04)", () => 
     emailVerified: false,
   };
 
+  function mockPrismaInvitationFlow({
+    invitation = baseInvitation,
+    workspace = {
+      id: "ws-test",
+      name: "Test WS",
+      slug: "test-ws",
+    },
+    workspaceUpsert = vi.fn().mockResolvedValue({}),
+    memberUpsert = vi.fn().mockResolvedValue({}),
+    invitationUpdate = vi.fn().mockResolvedValue({}),
+  }: {
+    invitation?: InvitationRecord | null;
+    workspace?: { id: string; name: string; slug: string } | null;
+    workspaceUpsert?: ReturnType<typeof vi.fn>;
+    memberUpsert?: ReturnType<typeof vi.fn>;
+    invitationUpdate?: ReturnType<typeof vi.fn>;
+  } = {}) {
+    const tx = {
+      $executeRaw: vi.fn().mockResolvedValue(undefined),
+      workspaceInvitation: {
+        findUnique: vi.fn().mockResolvedValue(invitation),
+        update: invitationUpdate,
+      },
+      workspace: {
+        findUnique: vi.fn().mockResolvedValue(workspace),
+      },
+      workspaceMember: { upsert: workspaceUpsert },
+      member: { upsert: memberUpsert },
+    };
+
+    vi.doMock("@/lib/db/prisma", () => ({
+      prisma: {
+        $transaction: vi.fn().mockImplementation(async (fn) => fn(tx)),
+      },
+    }));
+
+    return tx;
+  }
+
   beforeEach(() => {
     vi.resetModules();
   });
@@ -233,18 +275,7 @@ describe("acceptInvitation — security checks (T-02-03-01, T-02-03-04)", () => 
       expiresAt: new Date(Date.now() - 1000), // expired
     };
 
-    vi.doMock("@/lib/db/prisma", () => ({
-      prisma: {
-        workspaceInvitation: {
-          findUnique: vi.fn().mockResolvedValue(expiredInvitation),
-          update: vi.fn(),
-        },
-        workspace: {
-          findUnique: vi.fn(),
-        },
-        $transaction: vi.fn(),
-      },
-    }));
+    mockPrismaInvitationFlow({ invitation: expiredInvitation });
 
     const { acceptInvitation } = await import("@/lib/workspaces/invitations");
     await expect(
@@ -258,16 +289,7 @@ describe("acceptInvitation — security checks (T-02-03-01, T-02-03-04)", () => 
       status: "accepted",
     };
 
-    vi.doMock("@/lib/db/prisma", () => ({
-      prisma: {
-        workspaceInvitation: {
-          findUnique: vi.fn().mockResolvedValue(acceptedInvitation),
-          update: vi.fn(),
-        },
-        workspace: { findUnique: vi.fn() },
-        $transaction: vi.fn(),
-      },
-    }));
+    mockPrismaInvitationFlow({ invitation: acceptedInvitation });
 
     const { acceptInvitation } = await import("@/lib/workspaces/invitations");
     await expect(
@@ -281,16 +303,7 @@ describe("acceptInvitation — security checks (T-02-03-01, T-02-03-04)", () => 
       status: "revoked",
     };
 
-    vi.doMock("@/lib/db/prisma", () => ({
-      prisma: {
-        workspaceInvitation: {
-          findUnique: vi.fn().mockResolvedValue(revokedInvitation),
-          update: vi.fn(),
-        },
-        workspace: { findUnique: vi.fn() },
-        $transaction: vi.fn(),
-      },
-    }));
+    mockPrismaInvitationFlow({ invitation: revokedInvitation });
 
     const { acceptInvitation } = await import("@/lib/workspaces/invitations");
     await expect(
@@ -299,16 +312,7 @@ describe("acceptInvitation — security checks (T-02-03-01, T-02-03-04)", () => 
   });
 
   it("returns not found for non-existent invitation", async () => {
-    vi.doMock("@/lib/db/prisma", () => ({
-      prisma: {
-        workspaceInvitation: {
-          findUnique: vi.fn().mockResolvedValue(null),
-          update: vi.fn(),
-        },
-        workspace: { findUnique: vi.fn() },
-        $transaction: vi.fn(),
-      },
-    }));
+    mockPrismaInvitationFlow({ invitation: null });
 
     const { acceptInvitation } = await import("@/lib/workspaces/invitations");
     await expect(
@@ -319,23 +323,7 @@ describe("acceptInvitation — security checks (T-02-03-01, T-02-03-04)", () => 
   it("rejects email mismatch before membership creation", async () => {
     const mockWorkspaceUpsert = vi.fn();
 
-    vi.doMock("@/lib/db/prisma", () => ({
-      prisma: {
-        workspaceInvitation: {
-          findUnique: vi.fn().mockResolvedValue(baseInvitation),
-          update: vi.fn(),
-        },
-        workspace: { findUnique: vi.fn() },
-        $transaction: vi.fn().mockImplementation(async (fn) => {
-          const tx = {
-            workspaceMember: { upsert: mockWorkspaceUpsert },
-            member: { upsert: vi.fn() },
-            workspaceInvitation: { update: vi.fn() },
-          };
-          return fn(tx);
-        }),
-      },
-    }));
+    mockPrismaInvitationFlow({ workspaceUpsert: mockWorkspaceUpsert });
 
     const { acceptInvitation } = await import("@/lib/workspaces/invitations");
     await expect(
@@ -353,32 +341,15 @@ describe("acceptInvitation — security checks (T-02-03-01, T-02-03-04)", () => 
     const mockMemberUpsert = vi.fn().mockResolvedValue({});
     const mockInvitationUpdate = vi.fn().mockResolvedValue({});
 
-    vi.doMock("@/lib/db/prisma", () => ({
-      prisma: {
-        workspaceInvitation: {
-          findUnique: vi.fn().mockResolvedValue({
-            ...baseInvitation,
-            email: "invitee@example.com",
-          }),
-          update: mockInvitationUpdate,
-        },
-        workspace: {
-          findUnique: vi.fn().mockResolvedValue({
-            id: "ws-test",
-            name: "Test WS",
-            slug: "test-ws",
-          }),
-        },
-        $transaction: vi.fn().mockImplementation(async (fn) => {
-          const tx = {
-            workspaceMember: { upsert: mockWorkspaceUpsert },
-            member: { upsert: mockMemberUpsert },
-            workspaceInvitation: { update: mockInvitationUpdate },
-          };
-          return fn(tx);
-        }),
+    mockPrismaInvitationFlow({
+      invitation: {
+        ...baseInvitation,
+        email: "invitee@example.com",
       },
-    }));
+      workspaceUpsert: mockWorkspaceUpsert,
+      memberUpsert: mockMemberUpsert,
+      invitationUpdate: mockInvitationUpdate,
+    });
 
     const { acceptInvitation } = await import("@/lib/workspaces/invitations");
     const result = await acceptInvitation("inv-test", {
@@ -396,29 +367,11 @@ describe("acceptInvitation — security checks (T-02-03-01, T-02-03-04)", () => 
     const mockMemberUpsert = vi.fn().mockResolvedValue({});
     const mockInvitationUpdate = vi.fn().mockResolvedValue({});
 
-    vi.doMock("@/lib/db/prisma", () => ({
-      prisma: {
-        workspaceInvitation: {
-          findUnique: vi.fn().mockResolvedValue(baseInvitation),
-          update: mockInvitationUpdate,
-        },
-        workspace: {
-          findUnique: vi.fn().mockResolvedValue({
-            id: "ws-test",
-            name: "Test WS",
-            slug: "test-ws",
-          }),
-        },
-        $transaction: vi.fn().mockImplementation(async (fn) => {
-          const tx = {
-            workspaceMember: { upsert: mockWorkspaceUpsert },
-            member: { upsert: mockMemberUpsert },
-            workspaceInvitation: { update: mockInvitationUpdate },
-          };
-          return fn(tx);
-        }),
-      },
-    }));
+    mockPrismaInvitationFlow({
+      workspaceUpsert: mockWorkspaceUpsert,
+      memberUpsert: mockMemberUpsert,
+      invitationUpdate: mockInvitationUpdate,
+    });
 
     const { acceptInvitation } = await import("@/lib/workspaces/invitations");
     const result = await acceptInvitation("inv-test", verifiedUser);
@@ -455,29 +408,11 @@ describe("acceptInvitation — security checks (T-02-03-01, T-02-03-04)", () => 
     });
     const mockInvitationUpdate = vi.fn().mockResolvedValue({});
 
-    vi.doMock("@/lib/db/prisma", () => ({
-      prisma: {
-        workspaceInvitation: {
-          findUnique: vi.fn().mockResolvedValue(baseInvitation),
-          update: mockInvitationUpdate,
-        },
-        workspace: {
-          findUnique: vi.fn().mockResolvedValue({
-            id: "ws-test",
-            name: "Test WS",
-            slug: "test-ws",
-          }),
-        },
-        $transaction: vi.fn().mockImplementation(async (fn) => {
-          const tx = {
-            workspaceMember: { upsert: mockWorkspaceUpsert },
-            member: { upsert: mockMemberUpsert },
-            workspaceInvitation: { update: mockInvitationUpdate },
-          };
-          return fn(tx);
-        }),
-      },
-    }));
+    mockPrismaInvitationFlow({
+      workspaceUpsert: mockWorkspaceUpsert,
+      memberUpsert: mockMemberUpsert,
+      invitationUpdate: mockInvitationUpdate,
+    });
 
     const { acceptInvitation } = await import("@/lib/workspaces/invitations");
     await acceptInvitation("inv-test", verifiedUser);
@@ -505,29 +440,11 @@ describe("acceptInvitation — security checks (T-02-03-01, T-02-03-04)", () => 
     });
     const mockInvitationUpdate = vi.fn().mockResolvedValue({});
 
-    vi.doMock("@/lib/db/prisma", () => ({
-      prisma: {
-        workspaceInvitation: {
-          findUnique: vi.fn().mockResolvedValue(baseInvitation),
-          update: mockInvitationUpdate,
-        },
-        workspace: {
-          findUnique: vi.fn().mockResolvedValue({
-            id: "ws-test",
-            name: "Test WS",
-            slug: "test-ws",
-          }),
-        },
-        $transaction: vi.fn().mockImplementation(async (fn) => {
-          const tx = {
-            workspaceMember: { upsert: mockWorkspaceUpsert },
-            member: { upsert: mockMemberUpsert },
-            workspaceInvitation: { update: mockInvitationUpdate },
-          };
-          return fn(tx);
-        }),
-      },
-    }));
+    mockPrismaInvitationFlow({
+      workspaceUpsert: mockWorkspaceUpsert,
+      memberUpsert: mockMemberUpsert,
+      invitationUpdate: mockInvitationUpdate,
+    });
 
     const { acceptInvitation } = await import("@/lib/workspaces/invitations");
     await acceptInvitation("inv-test", verifiedUser);
@@ -612,3 +529,187 @@ describe("D-06: No automated invitation email in v1", () => {
     expect(url).toContain("/invitations/some-invite-id");
   });
 });
+
+// -----------------------------------------------------------------------
+// DB-required invitation authorization tests (live PostgreSQL)
+// -----------------------------------------------------------------------
+
+describe.skipIf(!process.env.DATABASE_URL)(
+  "DB-required invitation authorization tests (WS-03, WS-05, CR-01)",
+  () => {
+    let wsAId: string;
+    let wsBId: string;
+    let wsASlug: string;
+    let wsBSlug: string;
+    let userAId: string;
+    let userBId: string;
+    let userAEmail: string;
+    let userBEmail: string;
+
+    async function createWorkspacePair(workspaceId: string, slug: string) {
+      await prisma.organization.create({
+        data: {
+          id: workspaceId,
+          name: `Invite ${slug}`,
+          slug,
+        },
+      });
+
+      await prisma.$transaction(async (tx) => {
+        await tx.$executeRaw`SELECT set_config('app.current_workspace_id', ${workspaceId}, true)`;
+        await tx.workspace.create({
+          data: {
+            id: workspaceId,
+            name: `Invite ${slug}`,
+            slug,
+          },
+        });
+      });
+    }
+
+    async function createWorkspaceInvitation(email: string) {
+      return prisma.$transaction(async (tx) => {
+        await tx.$executeRaw`SELECT set_config('app.current_workspace_id', ${wsAId}, true)`;
+        return tx.workspaceInvitation.create({
+          data: {
+            id: randomUUID(),
+            workspaceId: wsAId,
+            email,
+            role: "editor",
+            expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            status: "pending",
+          },
+        });
+      });
+    }
+
+    async function deleteWorkspace(workspaceId: string) {
+      try {
+        await prisma.$transaction(async (tx) => {
+          await tx.$executeRaw`SELECT set_config('app.current_workspace_id', ${workspaceId}, true)`;
+          await tx.workspace.deleteMany({ where: { id: workspaceId } });
+        });
+      } catch {
+        // Keep cleanup best-effort so it does not hide assertion failures.
+      }
+
+      await prisma.organization.deleteMany({ where: { id: workspaceId } });
+    }
+
+    beforeAll(async () => {
+      const suffix = randomUUID();
+      wsAId = randomUUID();
+      wsBId = randomUUID();
+      wsASlug = `invite-a-${suffix}`;
+      wsBSlug = `invite-b-${suffix}`;
+      userAId = randomUUID();
+      userBId = randomUUID();
+      userAEmail = `invite-a-${suffix}@example.com`;
+      userBEmail = `invite-b-${suffix}@example.com`;
+
+      await prisma.user.createMany({
+        data: [
+          {
+            id: userAId,
+            name: "Invite User A",
+            email: userAEmail,
+            emailVerified: true,
+          },
+          {
+            id: userBId,
+            name: "Invite User B",
+            email: userBEmail,
+            emailVerified: true,
+          },
+        ],
+      });
+      await createWorkspacePair(wsAId, wsASlug);
+      await createWorkspacePair(wsBId, wsBSlug);
+    });
+
+    beforeEach(() => {
+      vi.doUnmock("@/lib/db/prisma");
+      vi.resetModules();
+    });
+
+    afterAll(async () => {
+      await deleteWorkspace(wsAId);
+      await deleteWorkspace(wsBId);
+      await prisma.user.deleteMany({ where: { id: { in: [userAId, userBId] } } });
+    });
+
+    it("rejects email mismatch against real DB data", async () => {
+      const invitation = await createWorkspaceInvitation(userAEmail);
+      const { acceptInvitation } = await import("@/lib/workspaces/invitations");
+
+      await expect(
+        acceptInvitation(invitation.id, {
+          id: userBId,
+          email: userBEmail,
+          emailVerified: true,
+        })
+      ).rejects.toThrow("different email address");
+    });
+
+    it("accepts a matching email and creates a WorkspaceMember row", async () => {
+      const invitation = await createWorkspaceInvitation(userAEmail);
+      const { acceptInvitation } = await import("@/lib/workspaces/invitations");
+
+      const result = await acceptInvitation(invitation.id, {
+        id: userAId,
+        email: userAEmail,
+        emailVerified: true,
+      });
+
+      const member = await prisma.$transaction(async (tx) => {
+        await tx.$executeRaw`SELECT set_config('app.current_workspace_id', ${wsAId}, true)`;
+        return tx.workspaceMember.findFirst({
+          where: {
+            workspaceId: wsAId,
+            userId: userAId,
+          },
+        });
+      });
+
+      expect(result).toEqual({
+        workspaceId: wsAId,
+        role: "editor",
+        slug: wsASlug,
+      });
+      expect(member).toEqual(
+        expect.objectContaining({
+          workspaceId: wsAId,
+          userId: userAId,
+          role: "editor",
+        })
+      );
+    });
+
+    it("proves userA has no app-level membership in workspace B", async () => {
+      const member = await prisma.$transaction(async (tx) => {
+        await tx.$executeRaw`SELECT set_config('app.current_workspace_id', ${wsBId}, true)`;
+        return tx.workspaceMember.findFirst({
+          where: {
+            workspaceId: wsBId,
+            userId: userAId,
+          },
+        });
+      });
+
+      expect(member).toBeNull();
+      expect(wsBSlug).toContain("invite-b-");
+    });
+
+    it("withTenantDb denies direct-ID reads from another workspace context", async () => {
+      const probe = await withTenantDb({ workspaceId: wsAId }, async (db) => {
+        return db.tenantIsolationProbe.create("invitation auth isolation probe");
+      });
+
+      const result = await withTenantDb({ workspaceId: wsBId }, async (db) => {
+        return db.tenantIsolationProbe.findById(probe.id);
+      });
+
+      expect(result).toBeNull();
+    });
+  }
+);
