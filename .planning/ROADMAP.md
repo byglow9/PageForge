@@ -53,7 +53,17 @@ Plans:
   2. A workspace owner can invite members by email, and members are assigned roles (admin/editor/viewer) that gate permitted actions.
   3. A user in workspace A cannot read or edit workspace B's templates, LPs, brand config, or assets by ID — proven by per-endpoint cross-tenant access tests.
   4. Tenant context is derived from the server session only (never client-supplied), and `workspace_id` scoping is enforced at the data layer with an RLS backstop.
-**Plans**: TBD (1-3 plans)
+**Plans**: 3 plans
+
+Plans:
+**Wave 1**
+- [ ] 02-01-PLAN.md — Next.js app package, Prisma baseline, better-auth email/password, mandatory email verification, and auth pages
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 02-02-PLAN.md — Explicit workspace creation, slug-derived workspace context, RBAC guards, tenant-scoped data helper, and RLS migration
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 02-03-PLAN.md — Copyable invitation links, account-on-accept, member role management, and final cross-tenant isolation verification
 
 ### Phase 3: Template Authoring + Brand Config
 **Goal**: Let users author and edit token-markup templates with all six field types and configure reusable global brand/contact values, persisting markup + parsed schema scoped to the workspace.
