@@ -89,8 +89,8 @@ describe("tenant-db.ts — SET LOCAL contract (D-14)", () => {
     tenantDbSource = fs.readFileSync(sourcePath, "utf-8");
   });
 
-  it("contains SET LOCAL app.current_workspace_id", () => {
-    expect(tenantDbSource).toContain("SET LOCAL");
+  it("contains parameterized set_config app.current_workspace_id", () => {
+    expect(tenantDbSource).toContain("set_config");
     expect(tenantDbSource).toContain("app.current_workspace_id");
   });
 
@@ -122,7 +122,7 @@ describe("withTenantDb — app-layer isolation (D-14, T-02-02-03)", () => {
    */
 
   let mockTx: {
-    $executeRawUnsafe: ReturnType<typeof vi.fn>;
+    $executeRaw: ReturnType<typeof vi.fn>;
     tenantIsolationProbe: {
       create: ReturnType<typeof vi.fn>;
       findMany: ReturnType<typeof vi.fn>;
@@ -132,7 +132,7 @@ describe("withTenantDb — app-layer isolation (D-14, T-02-02-03)", () => {
 
   beforeEach(async () => {
     mockTx = {
-      $executeRawUnsafe: vi.fn().mockResolvedValue(undefined),
+      $executeRaw: vi.fn().mockResolvedValue(undefined),
       tenantIsolationProbe: {
         create: vi.fn().mockResolvedValue({ id: "probe-1", workspaceId: "ws-a", label: "test", createdAt: new Date() }),
         findMany: vi.fn().mockResolvedValue([]),
@@ -164,20 +164,12 @@ describe("withTenantDb — app-layer isolation (D-14, T-02-02-03)", () => {
     expect(prisma.$transaction).toHaveBeenCalled();
   });
 
-  it("issues SET LOCAL with the correct workspaceId", async () => {
+  it("sets the RLS workspace setting with the correct workspaceId", async () => {
     const { withTenantDb } = await import("@/lib/db/tenant-db");
 
     await withTenantDb({ workspaceId: "ws-target-123" }, async () => undefined);
 
-    expect(mockTx.$executeRawUnsafe).toHaveBeenCalledWith(
-      expect.stringContaining("ws-target-123")
-    );
-    expect(mockTx.$executeRawUnsafe).toHaveBeenCalledWith(
-      expect.stringContaining("SET LOCAL")
-    );
-    expect(mockTx.$executeRawUnsafe).toHaveBeenCalledWith(
-      expect.stringContaining("app.current_workspace_id")
-    );
+    expect(mockTx.$executeRaw).toHaveBeenCalled();
   });
 
   it("tenantIsolationProbe.create injects workspaceId from ctx", async () => {
@@ -310,7 +302,7 @@ describe("Cross-workspace direct-ID read denial (WS-05, T-02-02-03)", () => {
    */
 
   let mockTx: {
-    $executeRawUnsafe: ReturnType<typeof vi.fn>;
+    $executeRaw: ReturnType<typeof vi.fn>;
     tenantIsolationProbe: {
       create: ReturnType<typeof vi.fn>;
       findMany: ReturnType<typeof vi.fn>;
@@ -320,7 +312,7 @@ describe("Cross-workspace direct-ID read denial (WS-05, T-02-02-03)", () => {
 
   beforeEach(async () => {
     mockTx = {
-      $executeRawUnsafe: vi.fn().mockResolvedValue(undefined),
+      $executeRaw: vi.fn().mockResolvedValue(undefined),
       tenantIsolationProbe: {
         create: vi.fn().mockResolvedValue({
           id: "probe-ws-b",

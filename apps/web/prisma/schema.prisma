@@ -183,7 +183,7 @@ model WorkspaceInvitation {
 
 /// TenantIsolationProbe is an exemplar tenant-owned table used in
 /// cross-tenant access tests (Phase 2 isolation verification).
-/// RLS policy: workspace_id = current_setting('app.current_workspace_id', true)::uuid
+/// RLS policy: workspace_id = current_setting('app.current_workspace_id', true)::text
 model TenantIsolationProbe {
   id          String   @id @default(cuid())
   workspaceId String

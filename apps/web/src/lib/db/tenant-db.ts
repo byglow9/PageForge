@@ -77,8 +77,8 @@ export interface TenantClient {
  *
  * The function:
  * 1. Opens a `$transaction`.
- * 2. Runs `SET LOCAL app.current_workspace_id = '{workspaceId}'` — the RLS
- *    policy on tenant-owned tables reads this setting.
+ * 2. Sets `app.current_workspace_id` transaction-locally — the RLS policy on
+ *    tenant-owned tables reads this setting.
  * 3. Passes a `TenantClient` to the callback. The client exposes only
  *    tenant-scoped helpers (never the raw transaction).
  * 4. Commits on success; rolls back on error.
@@ -95,14 +95,9 @@ export async function withTenantDb<T>(
 
   return prisma.$transaction(async (tx) => {
     // D-13, D-14: Set the transaction-local workspace ID for the RLS policy.
-    // Using $executeRaw to issue the SET LOCAL command.
-    // We use parameterized substitution with a safe concatenation here
-    // because SET LOCAL does not support $1 parameters in PostgreSQL.
-    // The workspaceId is server-derived and validated by requireWorkspace —
-    // it is never a raw user-provided string.
-    await tx.$executeRawUnsafe(
-      `SET LOCAL "app.current_workspace_id" = '${workspaceId}'`
-    );
+    // set_config() accepts bind parameters, unlike SET LOCAL syntax, so this
+    // avoids interpolating workspaceId into SQL.
+    await tx.$executeRaw`SELECT set_config('app.current_workspace_id', ${workspaceId}, true)`;
 
     // Build the tenant-scoped client for the callback
     const tenantClient: TenantClient = {
