@@ -1,0 +1,196 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================================
+// Better Auth tables — required by the Prisma adapter
+// ============================================================
+
+model User {
+  id            String    @id
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  sessions      Session[]
+  accounts      Account[]
+  members       Member[]
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  ipAddress String?
+  userAgent String?
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  activeOrganizationId String?
+
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
+
+  @@map("verification")
+}
+
+// ============================================================
+// Organization / Workspace tables — better-auth organization plugin
+// ============================================================
+
+model Organization {
+  id          String   @id
+  name        String
+  slug        String   @unique
+  logo        String?
+  metadata    String?
+  createdAt   DateTime @default(now())
+
+  members     Member[]
+  invitations Invitation[]
+
+  // Workspace-specific fields
+  updatedAt   DateTime @updatedAt
+
+  @@map("organization")
+}
+
+model Member {
+  id             String   @id
+  organizationId String
+  userId         String
+  role           String
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+  @@map("member")
+}
+
+model Invitation {
+  id             String    @id
+  organizationId String
+  email          String
+  role           String?
+  status         String    @default("pending")
+  expiresAt      DateTime
+  inviterId      String
+  createdAt      DateTime  @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("invitation")
+}
+
+// ============================================================
+// PageForge workspace entities
+// ============================================================
+
+/// Workspace mirrors the Organization for tenant-owned data.
+/// Every tenant-owned table carries workspaceId (= organizationId).
+model Workspace {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Tenant-owned tables link back here
+  members     WorkspaceMember[]
+  invitations WorkspaceInvitation[]
+  probes      TenantIsolationProbe[]
+
+  @@map("workspace")
+}
+
+/// WorkspaceMember tracks role at the app level (mirrors better-auth Member).
+/// The authoritative source is the better-auth member table; this mirrors
+/// it for direct Prisma queries in tenant-scoped helpers.
+model WorkspaceMember {
+  id          String   @id @default(cuid())
+  workspaceId String
+  userId      String
+  role        String
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+  @@map("workspace_member")
+}
+
+/// WorkspaceInvitation records invite metadata for the copyable-link flow.
+model WorkspaceInvitation {
+  id          String    @id @default(cuid())
+  workspaceId String
+  email       String
+  role        String
+  expiresAt   DateTime
+  status      String    @default("pending")
+  createdAt   DateTime  @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@map("workspace_invitation")
+}
+
+/// TenantIsolationProbe is an exemplar tenant-owned table used in
+/// cross-tenant access tests (Phase 2 isolation verification).
+/// RLS policy: workspace_id = current_setting('app.current_workspace_id', true)::uuid
+model TenantIsolationProbe {
+  id          String   @id @default(cuid())
+  workspaceId String
+  label       String
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@map("tenant_isolation_probe")
+}
