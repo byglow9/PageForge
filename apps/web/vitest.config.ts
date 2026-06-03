@@ -6,10 +6,6 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: "node",
-    environmentMatchGlobs: [
-      // Use jsdom for React component tests
-      ["tests/components/**", "jsdom"],
-    ],
     globals: true,
     setupFiles: [],
   },
