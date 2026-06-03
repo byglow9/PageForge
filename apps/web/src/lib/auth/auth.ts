@@ -20,6 +20,12 @@ import { sendEmail } from "@/lib/email/send-email";
 import { ac, roles } from "@/lib/auth/permissions";
 
 export const auth = betterAuth({
+  trustedOrigins: [
+    process.env.BETTER_AUTH_URL ?? "http://localhost:3000",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+  ],
+
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
@@ -47,6 +53,8 @@ export const auth = betterAuth({
         html: `<p>Welcome to PageForge!</p><p>Click the link below to verify your email address and activate your account:</p><p><a href="${url}">${url}</a></p><p>This link expires in 24 hours.</p><p>If you did not create a PageForge account, you can safely ignore this email.</p>`,
       });
     },
+    // D-02: generate and send verification token at signup
+    sendOnSignUp: true,
     // Also send verification on login attempt if email is still unverified
     sendOnSignIn: true,
     expiresIn: 60 * 60 * 24, // 24 hours
