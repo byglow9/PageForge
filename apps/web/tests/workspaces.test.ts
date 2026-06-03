@@ -365,3 +365,21 @@ describe("updateWorkspaceSettingsAction — restricted to owner/admin (D-11)", (
     expect(result.success).toBe(false);
   });
 });
+
+describe("createWorkspaceAction — RLS context fix (D-13, T-02-02-04)", () => {
+  it("sets app.current_workspace_id before workspace insert (RLS backstop)", async () => {
+    const fs = await import("fs");
+    const path = await import("path");
+    const source = fs.readFileSync(
+      path.join(__dirname, "../src/lib/workspaces/actions.ts"),
+      "utf-8"
+    );
+    expect(source).toContain("set_config('app.current_workspace_id'");
+    // Verify set_config appears before workspace.create in the source
+    const setConfigPos = source.indexOf("set_config('app.current_workspace_id'");
+    const workspaceCreatePos = source.indexOf("tx.workspace.create");
+    expect(setConfigPos).toBeGreaterThan(-1);
+    expect(workspaceCreatePos).toBeGreaterThan(-1);
+    expect(setConfigPos).toBeLessThan(workspaceCreatePos);
+  });
+});

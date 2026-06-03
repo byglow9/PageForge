@@ -100,6 +100,16 @@ describe("Auth configuration — email/password requirements (D-01, D-02, D-03)"
     const authModule = await import("@/lib/auth/auth");
     expect(authModule).toHaveProperty("auth");
   });
+
+  it("emailVerification config includes sendOnSignUp: true (D-02)", async () => {
+    const fs = await import("fs");
+    const path = await import("path");
+    const source = fs.readFileSync(
+      path.join(__dirname, "../src/lib/auth/auth.ts"),
+      "utf-8"
+    );
+    expect(source).toContain("sendOnSignUp: true");
+  });
 });
 
 describe("Role vocabulary — D-08 (four roles)", () => {

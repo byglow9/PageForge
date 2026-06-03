@@ -94,6 +94,11 @@ export async function createWorkspaceAction(
 
   try {
     await prisma.$transaction(async (tx) => {
+      // D-13, T-ju4-02: Set the transaction-local workspace ID so the RLS policy
+      // on the workspace and workspace_member tables allows the inserts.
+      // Tagged template ensures workspaceId is parameterized — never interpolated.
+      await tx.$executeRaw`SELECT set_config('app.current_workspace_id', ${workspaceId}, true)`;
+
       // Create the app-level workspace record with explicit ID
       await tx.workspace.create({
         data: { id: workspaceId, name, slug },
