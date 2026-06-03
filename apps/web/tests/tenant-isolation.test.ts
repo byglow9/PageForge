@@ -295,3 +295,132 @@ describe("Cross-workspace access denial contract (WS-05)", () => {
     expect(typeof tenantDb.withWorkspaceTenantDb).toBe("function");
   });
 });
+
+// -----------------------------------------------------------------------
+// Cross-workspace direct-ID read denial (D-14, T-02-02-03, WS-05)
+// -----------------------------------------------------------------------
+
+describe("Cross-workspace direct-ID read denial (WS-05, T-02-02-03)", () => {
+  /**
+   * These tests prove that a direct-ID read from workspace B, while
+   * authenticated as workspace A, returns null.
+   *
+   * This is the "read denial" contract: app-level workspaceId filter means
+   * findById("probe-from-ws-b") returns null when ctx.workspaceId = "ws-a".
+   */
+
+  let mockTx: {
+    $executeRawUnsafe: ReturnType<typeof vi.fn>;
+    tenantIsolationProbe: {
+      create: ReturnType<typeof vi.fn>;
+      findMany: ReturnType<typeof vi.fn>;
+      findFirst: ReturnType<typeof vi.fn>;
+    };
+  };
+
+  beforeEach(async () => {
+    mockTx = {
+      $executeRawUnsafe: vi.fn().mockResolvedValue(undefined),
+      tenantIsolationProbe: {
+        create: vi.fn().mockResolvedValue({
+          id: "probe-ws-b",
+          workspaceId: "ws-b",
+          label: "ws-b probe",
+          createdAt: new Date(),
+        }),
+        findMany: vi.fn().mockResolvedValue([]),
+        findFirst: vi.fn().mockResolvedValue(null), // cross-workspace lookup returns null
+      },
+    };
+
+    vi.doMock("@/lib/db/prisma", () => ({
+      prisma: {
+        $transaction: vi.fn().mockImplementation(async (fn) => fn(mockTx)),
+      },
+    }));
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+    vi.resetModules();
+  });
+
+  it("cross-workspace read by direct ID returns null (app-layer isolation, WS-05)", async () => {
+    vi.resetModules();
+    vi.doMock("@/lib/db/prisma", () => ({
+      prisma: {
+        $transaction: vi.fn().mockImplementation(async (fn: (tx: typeof mockTx) => Promise<unknown>) => fn(mockTx)),
+      },
+    }));
+
+    const { withTenantDb } = await import("@/lib/db/tenant-db");
+
+    // Workspace A context; probe ID belongs to workspace B
+    const result = await withTenantDb({ workspaceId: "ws-a" }, async (db) => {
+      return db.tenantIsolationProbe.findById("probe-from-ws-b");
+    });
+
+    // App-level isolation: WHERE workspaceId = "ws-a" AND id = "probe-from-ws-b"
+    // Since that probe has workspaceId = "ws-b", DB returns null
+    expect(result).toBeNull();
+
+    // Verify the WHERE clause included workspaceId = "ws-a"
+    expect(mockTx.tenantIsolationProbe.findFirst).toHaveBeenCalledWith({
+      where: {
+        id: "probe-from-ws-b",
+        workspaceId: "ws-a", // app-level filter
+      },
+    });
+  });
+
+  it("cross-workspace edit/write denied — create injects ctx workspaceId (not caller arg)", async () => {
+    const { withTenantDb } = await import("@/lib/db/tenant-db");
+
+    // Even if a caller tries to write to a different workspace, the ctx injects the correct one
+    await withTenantDb({ workspaceId: "ws-a" }, async (db) => {
+      // The create helper only uses ctx.workspaceId — the label param is untrusted content only
+      await db.tenantIsolationProbe.create("label-from-caller");
+    });
+
+    expect(mockTx.tenantIsolationProbe.create).toHaveBeenCalledWith({
+      data: {
+        workspaceId: "ws-a", // always from ctx, never overridden by caller
+        label: "label-from-caller",
+      },
+    });
+  });
+
+  it("list always scoped to ctx workspaceId — cross-workspace rows never returned (WS-05)", async () => {
+    const { withTenantDb } = await import("@/lib/db/tenant-db");
+
+    // List as workspace A — the query must filter to ws-a, not include ws-b rows
+    await withTenantDb({ workspaceId: "ws-a" }, async (db) => {
+      return db.tenantIsolationProbe.list();
+    });
+
+    expect(mockTx.tenantIsolationProbe.findMany).toHaveBeenCalledWith({
+      where: { workspaceId: "ws-a" },
+    });
+    // The query must NOT have an empty or missing workspaceId filter
+    const call = mockTx.tenantIsolationProbe.findMany.mock.calls[0][0];
+    expect(call.where.workspaceId).toBe("ws-a");
+  });
+
+  it("two different workspace contexts produce isolated queries", async () => {
+    const { withTenantDb } = await import("@/lib/db/tenant-db");
+
+    // Workspace A context
+    const wsAResult = await withTenantDb({ workspaceId: "ws-a" }, async (db) => {
+      return db.workspaceId;
+    });
+    // Workspace B context
+    const wsBResult = await withTenantDb({ workspaceId: "ws-b" }, async (db) => {
+      return db.workspaceId;
+    });
+
+    // Each context is isolated — workspaceId correctly reflects the context
+    expect(wsAResult).toBe("ws-a");
+    expect(wsBResult).toBe("ws-b");
+    expect(wsAResult).not.toBe(wsBResult);
+  });
+});
