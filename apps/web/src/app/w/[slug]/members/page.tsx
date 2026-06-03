@@ -13,14 +13,51 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db/prisma";
 import { requireWorkspace } from "@/lib/workspaces/guards";
 import { can } from "@/lib/workspaces/guards";
+import * as workspaceActions from "@/lib/workspaces/actions";
+import * as invitationLinks from "@/lib/workspaces/invitations";
+import type { CreateInvitationInput } from "@/lib/workspaces/invitations";
+import type { Role } from "@/lib/auth/permissions";
 
 interface MembersPageProps {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ inviteUrl?: string }>;
 }
 
-export default async function MembersPage({ params }: MembersPageProps) {
+export default async function MembersPage({
+  params,
+  searchParams,
+}: MembersPageProps) {
   const { slug } = await params;
+  const { inviteUrl } = await searchParams;
   const ctx = await requireWorkspace(slug);
+
+  async function inviteAction(formData: FormData): Promise<void> {
+    "use server";
+    const email = String(formData.get("email") ?? "");
+    const role = String(formData.get("role") ?? "") as CreateInvitationInput["role"];
+    const result = await workspaceActions.createInvitationAction(slug, { email, role });
+    if (result.ok) {
+      redirect(
+        `/w/${slug}/members?inviteUrl=${encodeURIComponent(result.data.inviteUrl)}`
+      );
+    }
+    redirect(`/w/${slug}/members`);
+  }
+
+  async function changeRoleAction(formData: FormData): Promise<void> {
+    "use server";
+    const memberId = String(formData.get("memberId") ?? "");
+    const role = String(formData.get("role") ?? "") as Role;
+    await workspaceActions.changeMemberRoleAction(slug, memberId, role);
+    redirect(`/w/${slug}/members`);
+  }
+
+  async function removeAction(formData: FormData): Promise<void> {
+    "use server";
+    const memberId = String(formData.get("memberId") ?? "");
+    await workspaceActions.removeMemberAction(slug, memberId);
+    redirect(`/w/${slug}/members`);
+  }
 
   // Fetch all workspace members with their user info
   const members = await prisma.workspaceMember.findMany({
@@ -61,11 +98,16 @@ export default async function MembersPage({ params }: MembersPageProps) {
       {canManage && (
         <section>
           <h2>Invite a member</h2>
+          {inviteUrl && (
+            <p>
+              Copyable invite link: <code>{inviteUrl}</code>
+            </p>
+          )}
           <p>
             Enter an email address and select a role to generate a copyable invite link.
             No email is sent automatically (v1 — D-06).
           </p>
-          <form action={`/api/workspaces/${slug}/invitations`} method="POST">
+          <form action={inviteAction}>
             <div>
               <label htmlFor="invite-email">Email address</label>
               <input
@@ -104,9 +146,7 @@ export default async function MembersPage({ params }: MembersPageProps) {
             </thead>
             <tbody>
               {invitations.map((inv) => {
-                const baseUrl =
-                  process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-                const inviteUrl = `${baseUrl}/invitations/${inv.id}`;
+                const inviteUrl = invitationLinks.getInvitationUrl(inv.id);
                 return (
                   <tr key={inv.id}>
                     <td>{inv.email}</td>
@@ -159,10 +199,10 @@ export default async function MembersPage({ params }: MembersPageProps) {
                       {!isCurrentUser && member.role !== "owner" && (
                         <>
                           <form
-                            action={`/api/workspaces/${slug}/members/${member.id}/role`}
-                            method="POST"
+                            action={changeRoleAction}
                             style={{ display: "inline" }}
                           >
+                            <input type="hidden" name="memberId" value={member.id} />
                             <select name="role" defaultValue={member.role}>
                               <option value="admin">Admin</option>
                               <option value="editor">Editor</option>
@@ -171,10 +211,10 @@ export default async function MembersPage({ params }: MembersPageProps) {
                             <button type="submit">Change role</button>
                           </form>
                           <form
-                            action={`/api/workspaces/${slug}/members/${member.id}/remove`}
-                            method="POST"
+                            action={removeAction}
                             style={{ display: "inline", marginLeft: "0.5rem" }}
                           >
+                            <input type="hidden" name="memberId" value={member.id} />
                             <button type="submit">Remove</button>
                           </form>
                         </>
