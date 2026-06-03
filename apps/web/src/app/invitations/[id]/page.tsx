@@ -17,25 +17,21 @@
  * back here and can accept.
  */
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth/auth";
 import {
   lookupInvitation,
   isInvitationExpired,
-  acceptInvitation,
 } from "@/lib/workspaces/invitations";
+import { acceptInvitationAction } from "@/lib/workspaces/actions";
 
 interface InvitationPageProps {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ action?: string }>;
 }
 
 export default async function InvitationPage({
   params,
-  searchParams,
 }: InvitationPageProps) {
   const { id } = await params;
-  const { action } = await searchParams;
 
   // Look up invitation server-side
   const invitation = await lookupInvitation(id);
@@ -120,30 +116,12 @@ export default async function InvitationPage({
     );
   }
 
-  // Case 3: Signed in and verified + action=accept → process acceptance
-  if (action === "accept") {
-    try {
-      const result = await acceptInvitation(id, {
-        id: session.user.id,
-        email: session.user.email,
-        emailVerified: session.user.emailVerified,
-      });
-      // Redirect to the workspace after acceptance (D-05)
-      redirect(`/w/${result.slug}`);
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "An unexpected error occurred.";
-      return (
-        <div>
-          <h1>Unable to accept invitation</h1>
-          <p>{message}</p>
-          <a href="/">Go to home</a>
-        </div>
-      );
-    }
+  async function submitAcceptInvitation(): Promise<void> {
+    "use server";
+    await acceptInvitationAction(id);
   }
 
-  // Case 4: Signed in and verified — show accept prompt
+  // Case 3: Signed in and verified — show accept prompt
   return (
     <div>
       <h1>Workspace invitation</h1>
@@ -164,8 +142,8 @@ export default async function InvitationPage({
           .
         </small>
       </p>
-      {/* Accept form — posts to this same page with action=accept */}
-      <form action={`/invitations/${id}?action=accept`} method="GET">
+      {/* Accept form — Server Action POST, never a GET mutation */}
+      <form action={submitAcceptInvitation}>
         <button type="submit">Accept invitation</button>
       </form>
       <p>

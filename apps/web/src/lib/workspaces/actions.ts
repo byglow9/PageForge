@@ -23,6 +23,7 @@ import {
 import { requireVerifiedUser, requireWorkspaceRole } from "./guards";
 import {
   CreateInvitationSchema,
+  acceptInvitation,
   createInvitation,
   getInvitationUrl,
   type CreateInvitationInput,
@@ -193,6 +194,38 @@ export async function createInvitationAction(
     console.error("[createInvitationAction] error:", err);
     return { ok: false, error: "Failed to create invitation. Please try again." };
   }
+}
+
+// -----------------------------------------------------------------------
+// acceptInvitationAction
+// -----------------------------------------------------------------------
+
+/**
+ * Accept a pending invitation for the authenticated, verified user.
+ *
+ * The invitation ID comes from the server-rendered invitation page form. The
+ * workspaceId and role still come only from the invitation record.
+ */
+export async function acceptInvitationAction(
+  invitationId: string
+): Promise<ActionResult> {
+  const user = await requireVerifiedUser();
+
+  let slug: string;
+  try {
+    const result = await acceptInvitation(invitationId, {
+      id: user.id,
+      email: user.email,
+      emailVerified: user.emailVerified,
+    });
+    slug = result.slug;
+  } catch (err: unknown) {
+    const message =
+      err instanceof Error ? err.message : "Failed to accept invitation.";
+    return { ok: false, error: message };
+  }
+
+  redirect(`/w/${slug}`);
 }
 
 // -----------------------------------------------------------------------
