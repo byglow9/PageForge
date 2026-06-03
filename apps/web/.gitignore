@@ -1,0 +1,22 @@
+# Next.js
+.next/
+out/
+
+# Build artifacts
+dist/
+tsconfig.tsbuildinfo
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Dependencies (managed by pnpm workspace)
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Prisma (keep migrations, ignore shadow db)
+prisma/*.db
