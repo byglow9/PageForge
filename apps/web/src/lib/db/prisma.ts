@@ -10,9 +10,12 @@
  * They must use the tenant-scoped helpers from `./tenant-db.ts` (plan 02).
  * Direct raw client access bypasses workspace_id injection and RLS setup.
  *
+ * Prisma 7 uses a driver adapter pattern. @prisma/adapter-pg is required.
+ *
  * @internal
  */
-import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from "@/generated/prisma/client";
 
 declare global {
   // Allow global `var` declaration to persist the Prisma client across hot reloads in dev
@@ -20,14 +23,13 @@ declare global {
   var __prisma: PrismaClient | undefined;
 }
 
-const prisma =
-  global.__prisma ??
-  new PrismaClient({
-    log:
-      process.env.NODE_ENV === "development"
-        ? ["query", "warn", "error"]
-        : ["warn", "error"],
-  });
+function createPrismaClient(): PrismaClient {
+  const connectionString = process.env.DATABASE_URL ?? "";
+  const adapter = new PrismaPg({ connectionString });
+  return new PrismaClient({ adapter });
+}
+
+const prisma = global.__prisma ?? createPrismaClient();
 
 if (process.env.NODE_ENV !== "production") {
   global.__prisma = prisma;
