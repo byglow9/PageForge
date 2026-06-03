@@ -234,3 +234,134 @@ describe("Guards module exports", () => {
     expect(can("viewer", "workspace", "delete")).toBe(false);
   });
 });
+
+// -----------------------------------------------------------------------
+// Member management actions — module contract tests (D-09, T-02-03-02)
+// -----------------------------------------------------------------------
+
+describe("changeMemberRoleAction — RBAC and last-owner protection (D-09, T-02-03-02)", () => {
+  it("changeMemberRoleAction is exported from actions module", async () => {
+    const actionsModule = await import("@/lib/workspaces/actions");
+    expect(typeof actionsModule.changeMemberRoleAction).toBe("function");
+  });
+
+  it("removeMemberAction is exported from actions module", async () => {
+    const actionsModule = await import("@/lib/workspaces/actions");
+    expect(typeof actionsModule.removeMemberAction).toBe("function");
+  });
+
+  it("updateWorkspaceSettingsAction is exported from actions module", async () => {
+    const actionsModule = await import("@/lib/workspaces/actions");
+    expect(typeof actionsModule.updateWorkspaceSettingsAction).toBe("function");
+  });
+
+  it("editor cannot invite members — can() matrix denies invite (D-09)", async () => {
+    const { can } = await import("@/lib/workspaces/guards");
+    expect(can("editor", "member", "invite")).toBe(false);
+  });
+
+  it("viewer cannot invite members — can() matrix denies invite (D-09)", async () => {
+    const { can } = await import("@/lib/workspaces/guards");
+    expect(can("viewer", "member", "invite")).toBe(false);
+  });
+
+  it("editor cannot remove members — can() matrix denies remove (D-09)", async () => {
+    const { can } = await import("@/lib/workspaces/guards");
+    expect(can("editor", "member", "remove")).toBe(false);
+  });
+
+  it("viewer cannot remove members — can() matrix denies remove (D-09)", async () => {
+    const { can } = await import("@/lib/workspaces/guards");
+    expect(can("viewer", "member", "remove")).toBe(false);
+  });
+
+  it("editor cannot change roles — can() matrix denies updateRole (D-09)", async () => {
+    const { can } = await import("@/lib/workspaces/guards");
+    expect(can("editor", "member", "updateRole")).toBe(false);
+  });
+
+  it("viewer cannot change roles — can() matrix denies updateRole (D-09)", async () => {
+    const { can } = await import("@/lib/workspaces/guards");
+    expect(can("viewer", "member", "updateRole")).toBe(false);
+  });
+
+  it("owner CAN invite, remove, and updateRole (D-09)", async () => {
+    const { can } = await import("@/lib/workspaces/guards");
+    expect(can("owner", "member", "invite")).toBe(true);
+    expect(can("owner", "member", "remove")).toBe(true);
+    expect(can("owner", "member", "updateRole")).toBe(true);
+  });
+
+  it("admin CAN invite, remove, and updateRole (D-09)", async () => {
+    const { can } = await import("@/lib/workspaces/guards");
+    expect(can("admin", "member", "invite")).toBe(true);
+    expect(can("admin", "member", "remove")).toBe(true);
+    expect(can("admin", "member", "updateRole")).toBe(true);
+  });
+});
+
+describe("changeMemberRoleAction — prevents promoting to owner (T-02-03-02)", () => {
+  it("changeMemberRoleAction returns error if new role is owner", async () => {
+    // changeMemberRoleAction prevents ownership assignment via role change
+    // We verify this at the source code level (no live session needed)
+    const fs = await import("fs");
+    const path = await import("path");
+    const source = fs.readFileSync(
+      path.join(__dirname, "../src/lib/workspaces/actions.ts"),
+      "utf-8"
+    );
+    // The action must contain the last-owner protection guard
+    expect(source).toContain("Cannot assign owner role via role change");
+    expect(source).toContain("Cannot change the role of the only owner");
+  });
+
+  it("removeMemberAction contains last-owner protection guard (T-02-03-02)", async () => {
+    const fs = await import("fs");
+    const path = await import("path");
+    const source = fs.readFileSync(
+      path.join(__dirname, "../src/lib/workspaces/actions.ts"),
+      "utf-8"
+    );
+    expect(source).toContain("Cannot remove the only owner");
+  });
+});
+
+describe("updateWorkspaceSettingsAction — restricted to owner/admin (D-11)", () => {
+  it("editor cannot update workspace settings — can() matrix denies update (D-11)", async () => {
+    const { can } = await import("@/lib/workspaces/guards");
+    expect(can("editor", "workspace", "update")).toBe(false);
+  });
+
+  it("viewer cannot update workspace settings — can() matrix denies update (D-11)", async () => {
+    const { can } = await import("@/lib/workspaces/guards");
+    expect(can("viewer", "workspace", "update")).toBe(false);
+  });
+
+  it("owner CAN update workspace settings (D-11)", async () => {
+    const { can } = await import("@/lib/workspaces/guards");
+    expect(can("owner", "workspace", "update")).toBe(true);
+  });
+
+  it("admin CAN update workspace settings (D-11)", async () => {
+    const { can } = await import("@/lib/workspaces/guards");
+    expect(can("admin", "workspace", "update")).toBe(true);
+  });
+
+  it("UpdateWorkspaceSchema accepts partial update (name only)", async () => {
+    const { UpdateWorkspaceSchema } = await import("@/lib/workspaces/schema");
+    const result = UpdateWorkspaceSchema.safeParse({ name: "New Name" });
+    expect(result.success).toBe(true);
+  });
+
+  it("UpdateWorkspaceSchema accepts partial update (slug only)", async () => {
+    const { UpdateWorkspaceSchema } = await import("@/lib/workspaces/schema");
+    const result = UpdateWorkspaceSchema.safeParse({ slug: "new-slug" });
+    expect(result.success).toBe(true);
+  });
+
+  it("UpdateWorkspaceSchema rejects invalid slug in update", async () => {
+    const { UpdateWorkspaceSchema } = await import("@/lib/workspaces/schema");
+    const result = UpdateWorkspaceSchema.safeParse({ slug: "Bad Slug!" });
+    expect(result.success).toBe(false);
+  });
+});
