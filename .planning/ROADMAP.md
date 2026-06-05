@@ -89,8 +89,20 @@ Plans:
   2. Each token is assigned one of the six types (text, rich text, image, color, button+URL, repeater), with parse warnings surfaced for unknown types or unclosed repeater blocks.
   3. A user can edit an existing template and see its schema re-derived; templates are listed and selectable within the workspace.
   4. A user can configure global brand/contact values (logo, primary color, WhatsApp) once per workspace, and templates can reference those globals.
-**Plans**: TBD (1-3 plans)
-**UI hint**: yes
+**Plans**: 4 plans
+
+Plans:
+**Wave 1**
+- [ ] 03-01-PLAN.md — Engine wiring + shadcn bootstrap + Prisma schema (Template + BrandConfig) + TenantClient extension + Zod schemas + metadata.ts + test scaffolds (RED)
+
+**Wave 2** *(blocked on Wave 1 — [BLOCKING] schema push)*
+- [ ] 03-02-PLAN.md — Prisma migrate dev --create-only, append RLS policies, prisma migrate deploy
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 03-03-PLAN.md — Template authoring slice: Server Actions + workspace layout + template list/new/edit pages + TemplateEditor + SchemaPanel + TemplateCard + DeleteTemplateDialog
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [ ] 03-04-PLAN.md — Brand config slice: Server Actions + brand page + BrandConfigForm + tenant isolation test extension
 
 ### Phase 4: LP Generation, Assets, Preview & Export
 **Goal**: Deliver the core promise — selecting a template generates a dynamic form whose filled values merge into a previewable, editable, duplicable, and exportable static-HTML landing page, with image upload and globals resolved automatically.
@@ -127,6 +139,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Core Engine (Parser + Merge) | 3/3 | Complete   | 2026-06-02 |
 | 2. Multi-Tenancy Foundation | 6/8 | Gap Closure | - |
-| 3. Template Authoring + Brand Config | 0/TBD | Not started | - |
+| 3. Template Authoring + Brand Config | 0/4 | Planning complete | - |
 | 4. LP Generation, Assets, Preview & Export | 0/TBD | Not started | - |
 | 5. Catalog & Grécia Acceptance | 0/TBD | Not started | - |
