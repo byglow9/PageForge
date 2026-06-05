@@ -74,6 +74,21 @@ export type WorkspaceInvitation = Prisma.WorkspaceInvitationModel
  * Model TenantIsolationProbe
  * TenantIsolationProbe is an exemplar tenant-owned table used in
  * cross-tenant access tests (Phase 2 isolation verification).
- * RLS policy: workspace_id = current_setting('app.current_workspace_id', true)::uuid
+ * RLS policy: workspace_id = current_setting('app.current_workspace_id', true)::text
  */
 export type TenantIsolationProbe = Prisma.TenantIsolationProbeModel
+/**
+ * Model Template
+ * Template stores the markup (with tokens) and the derived schema for a landing page template.
+ * schema and metadataOverlay are stored as Json (jsonb in Postgres).
+ * schemaVersion is incremented atomically on every save (D-10).
+ * RLS policy: workspace_id = current_setting('app.current_workspace_id', true)::text
+ */
+export type Template = Prisma.TemplateModel
+/**
+ * Model BrandConfig
+ * BrandConfig holds workspace-level brand and contact settings (logo, primary color, WhatsApp).
+ * workspaceId is @unique so there is at most one BrandConfig per workspace (upsert-friendly).
+ * RLS policy: workspace_id = current_setting('app.current_workspace_id', true)::text
+ */
+export type BrandConfig = Prisma.BrandConfigModel

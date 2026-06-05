@@ -146,6 +146,8 @@ model Workspace {
   members     WorkspaceMember[]
   invitations WorkspaceInvitation[]
   probes      TenantIsolationProbe[]
+  templates   Template[]
+  brandConfig BrandConfig?
 
   @@map("workspace")
 }
@@ -193,4 +195,42 @@ model TenantIsolationProbe {
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@map("tenant_isolation_probe")
+}
+
+/// Template stores the markup (with tokens) and the derived schema for a landing page template.
+/// schema and metadataOverlay are stored as Json (jsonb in Postgres).
+/// schemaVersion is incremented atomically on every save (D-10).
+/// RLS policy: workspace_id = current_setting('app.current_workspace_id', true)::text
+model Template {
+  id              String   @id @default(cuid())
+  workspaceId     String
+  name            String
+  markup          String   @db.Text
+  schema          Json
+  metadataOverlay Json
+  schemaVersion   Int      @default(1)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@map("template")
+}
+
+/// BrandConfig holds workspace-level brand and contact settings (logo, primary color, WhatsApp).
+/// workspaceId is @unique so there is at most one BrandConfig per workspace (upsert-friendly).
+/// RLS policy: workspace_id = current_setting('app.current_workspace_id', true)::text
+model BrandConfig {
+  id           String   @id @default(cuid())
+  workspaceId  String   @unique
+  logoUrl      String?
+  primaryColor String?
+  whatsapp     String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@map("brand_config")
 }

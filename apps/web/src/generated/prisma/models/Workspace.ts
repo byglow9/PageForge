@@ -186,6 +186,8 @@ export type WorkspaceWhereInput = {
   members?: Prisma.WorkspaceMemberListRelationFilter
   invitations?: Prisma.WorkspaceInvitationListRelationFilter
   probes?: Prisma.TenantIsolationProbeListRelationFilter
+  templates?: Prisma.TemplateListRelationFilter
+  brandConfig?: Prisma.XOR<Prisma.BrandConfigNullableScalarRelationFilter, Prisma.BrandConfigWhereInput> | null
 }
 
 export type WorkspaceOrderByWithRelationInput = {
@@ -197,6 +199,8 @@ export type WorkspaceOrderByWithRelationInput = {
   members?: Prisma.WorkspaceMemberOrderByRelationAggregateInput
   invitations?: Prisma.WorkspaceInvitationOrderByRelationAggregateInput
   probes?: Prisma.TenantIsolationProbeOrderByRelationAggregateInput
+  templates?: Prisma.TemplateOrderByRelationAggregateInput
+  brandConfig?: Prisma.BrandConfigOrderByWithRelationInput
 }
 
 export type WorkspaceWhereUniqueInput = Prisma.AtLeast<{
@@ -211,6 +215,8 @@ export type WorkspaceWhereUniqueInput = Prisma.AtLeast<{
   members?: Prisma.WorkspaceMemberListRelationFilter
   invitations?: Prisma.WorkspaceInvitationListRelationFilter
   probes?: Prisma.TenantIsolationProbeListRelationFilter
+  templates?: Prisma.TemplateListRelationFilter
+  brandConfig?: Prisma.XOR<Prisma.BrandConfigNullableScalarRelationFilter, Prisma.BrandConfigWhereInput> | null
 }, "id" | "slug">
 
 export type WorkspaceOrderByWithAggregationInput = {
@@ -244,6 +250,8 @@ export type WorkspaceCreateInput = {
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
   invitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutWorkspaceInput
   probes?: Prisma.TenantIsolationProbeCreateNestedManyWithoutWorkspaceInput
+  templates?: Prisma.TemplateCreateNestedManyWithoutWorkspaceInput
+  brandConfig?: Prisma.BrandConfigCreateNestedOneWithoutWorkspaceInput
 }
 
 export type WorkspaceUncheckedCreateInput = {
@@ -255,6 +263,8 @@ export type WorkspaceUncheckedCreateInput = {
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
   invitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutWorkspaceInput
   probes?: Prisma.TenantIsolationProbeUncheckedCreateNestedManyWithoutWorkspaceInput
+  templates?: Prisma.TemplateUncheckedCreateNestedManyWithoutWorkspaceInput
+  brandConfig?: Prisma.BrandConfigUncheckedCreateNestedOneWithoutWorkspaceInput
 }
 
 export type WorkspaceUpdateInput = {
@@ -266,6 +276,8 @@ export type WorkspaceUpdateInput = {
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
   invitations?: Prisma.WorkspaceInvitationUpdateManyWithoutWorkspaceNestedInput
   probes?: Prisma.TenantIsolationProbeUpdateManyWithoutWorkspaceNestedInput
+  templates?: Prisma.TemplateUpdateManyWithoutWorkspaceNestedInput
+  brandConfig?: Prisma.BrandConfigUpdateOneWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUncheckedUpdateInput = {
@@ -277,6 +289,8 @@ export type WorkspaceUncheckedUpdateInput = {
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
   invitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutWorkspaceNestedInput
   probes?: Prisma.TenantIsolationProbeUncheckedUpdateManyWithoutWorkspaceNestedInput
+  templates?: Prisma.TemplateUncheckedUpdateManyWithoutWorkspaceNestedInput
+  brandConfig?: Prisma.BrandConfigUncheckedUpdateOneWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateManyInput = {
@@ -374,6 +388,34 @@ export type WorkspaceUpdateOneRequiredWithoutProbesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.WorkspaceUpdateToOneWithWhereWithoutProbesInput, Prisma.WorkspaceUpdateWithoutProbesInput>, Prisma.WorkspaceUncheckedUpdateWithoutProbesInput>
 }
 
+export type WorkspaceCreateNestedOneWithoutTemplatesInput = {
+  create?: Prisma.XOR<Prisma.WorkspaceCreateWithoutTemplatesInput, Prisma.WorkspaceUncheckedCreateWithoutTemplatesInput>
+  connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutTemplatesInput
+  connect?: Prisma.WorkspaceWhereUniqueInput
+}
+
+export type WorkspaceUpdateOneRequiredWithoutTemplatesNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkspaceCreateWithoutTemplatesInput, Prisma.WorkspaceUncheckedCreateWithoutTemplatesInput>
+  connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutTemplatesInput
+  upsert?: Prisma.WorkspaceUpsertWithoutTemplatesInput
+  connect?: Prisma.WorkspaceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkspaceUpdateToOneWithWhereWithoutTemplatesInput, Prisma.WorkspaceUpdateWithoutTemplatesInput>, Prisma.WorkspaceUncheckedUpdateWithoutTemplatesInput>
+}
+
+export type WorkspaceCreateNestedOneWithoutBrandConfigInput = {
+  create?: Prisma.XOR<Prisma.WorkspaceCreateWithoutBrandConfigInput, Prisma.WorkspaceUncheckedCreateWithoutBrandConfigInput>
+  connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutBrandConfigInput
+  connect?: Prisma.WorkspaceWhereUniqueInput
+}
+
+export type WorkspaceUpdateOneRequiredWithoutBrandConfigNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkspaceCreateWithoutBrandConfigInput, Prisma.WorkspaceUncheckedCreateWithoutBrandConfigInput>
+  connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutBrandConfigInput
+  upsert?: Prisma.WorkspaceUpsertWithoutBrandConfigInput
+  connect?: Prisma.WorkspaceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkspaceUpdateToOneWithWhereWithoutBrandConfigInput, Prisma.WorkspaceUpdateWithoutBrandConfigInput>, Prisma.WorkspaceUncheckedUpdateWithoutBrandConfigInput>
+}
+
 export type WorkspaceCreateWithoutMembersInput = {
   id?: string
   name: string
@@ -382,6 +424,8 @@ export type WorkspaceCreateWithoutMembersInput = {
   updatedAt?: Date | string
   invitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutWorkspaceInput
   probes?: Prisma.TenantIsolationProbeCreateNestedManyWithoutWorkspaceInput
+  templates?: Prisma.TemplateCreateNestedManyWithoutWorkspaceInput
+  brandConfig?: Prisma.BrandConfigCreateNestedOneWithoutWorkspaceInput
 }
 
 export type WorkspaceUncheckedCreateWithoutMembersInput = {
@@ -392,6 +436,8 @@ export type WorkspaceUncheckedCreateWithoutMembersInput = {
   updatedAt?: Date | string
   invitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutWorkspaceInput
   probes?: Prisma.TenantIsolationProbeUncheckedCreateNestedManyWithoutWorkspaceInput
+  templates?: Prisma.TemplateUncheckedCreateNestedManyWithoutWorkspaceInput
+  brandConfig?: Prisma.BrandConfigUncheckedCreateNestedOneWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutMembersInput = {
@@ -418,6 +464,8 @@ export type WorkspaceUpdateWithoutMembersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invitations?: Prisma.WorkspaceInvitationUpdateManyWithoutWorkspaceNestedInput
   probes?: Prisma.TenantIsolationProbeUpdateManyWithoutWorkspaceNestedInput
+  templates?: Prisma.TemplateUpdateManyWithoutWorkspaceNestedInput
+  brandConfig?: Prisma.BrandConfigUpdateOneWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUncheckedUpdateWithoutMembersInput = {
@@ -428,6 +476,8 @@ export type WorkspaceUncheckedUpdateWithoutMembersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutWorkspaceNestedInput
   probes?: Prisma.TenantIsolationProbeUncheckedUpdateManyWithoutWorkspaceNestedInput
+  templates?: Prisma.TemplateUncheckedUpdateManyWithoutWorkspaceNestedInput
+  brandConfig?: Prisma.BrandConfigUncheckedUpdateOneWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateWithoutInvitationsInput = {
@@ -438,6 +488,8 @@ export type WorkspaceCreateWithoutInvitationsInput = {
   updatedAt?: Date | string
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
   probes?: Prisma.TenantIsolationProbeCreateNestedManyWithoutWorkspaceInput
+  templates?: Prisma.TemplateCreateNestedManyWithoutWorkspaceInput
+  brandConfig?: Prisma.BrandConfigCreateNestedOneWithoutWorkspaceInput
 }
 
 export type WorkspaceUncheckedCreateWithoutInvitationsInput = {
@@ -448,6 +500,8 @@ export type WorkspaceUncheckedCreateWithoutInvitationsInput = {
   updatedAt?: Date | string
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
   probes?: Prisma.TenantIsolationProbeUncheckedCreateNestedManyWithoutWorkspaceInput
+  templates?: Prisma.TemplateUncheckedCreateNestedManyWithoutWorkspaceInput
+  brandConfig?: Prisma.BrandConfigUncheckedCreateNestedOneWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutInvitationsInput = {
@@ -474,6 +528,8 @@ export type WorkspaceUpdateWithoutInvitationsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
   probes?: Prisma.TenantIsolationProbeUpdateManyWithoutWorkspaceNestedInput
+  templates?: Prisma.TemplateUpdateManyWithoutWorkspaceNestedInput
+  brandConfig?: Prisma.BrandConfigUpdateOneWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUncheckedUpdateWithoutInvitationsInput = {
@@ -484,6 +540,8 @@ export type WorkspaceUncheckedUpdateWithoutInvitationsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
   probes?: Prisma.TenantIsolationProbeUncheckedUpdateManyWithoutWorkspaceNestedInput
+  templates?: Prisma.TemplateUncheckedUpdateManyWithoutWorkspaceNestedInput
+  brandConfig?: Prisma.BrandConfigUncheckedUpdateOneWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateWithoutProbesInput = {
@@ -494,6 +552,8 @@ export type WorkspaceCreateWithoutProbesInput = {
   updatedAt?: Date | string
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
   invitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutWorkspaceInput
+  templates?: Prisma.TemplateCreateNestedManyWithoutWorkspaceInput
+  brandConfig?: Prisma.BrandConfigCreateNestedOneWithoutWorkspaceInput
 }
 
 export type WorkspaceUncheckedCreateWithoutProbesInput = {
@@ -504,6 +564,8 @@ export type WorkspaceUncheckedCreateWithoutProbesInput = {
   updatedAt?: Date | string
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
   invitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutWorkspaceInput
+  templates?: Prisma.TemplateUncheckedCreateNestedManyWithoutWorkspaceInput
+  brandConfig?: Prisma.BrandConfigUncheckedCreateNestedOneWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutProbesInput = {
@@ -530,6 +592,8 @@ export type WorkspaceUpdateWithoutProbesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
   invitations?: Prisma.WorkspaceInvitationUpdateManyWithoutWorkspaceNestedInput
+  templates?: Prisma.TemplateUpdateManyWithoutWorkspaceNestedInput
+  brandConfig?: Prisma.BrandConfigUpdateOneWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUncheckedUpdateWithoutProbesInput = {
@@ -540,6 +604,136 @@ export type WorkspaceUncheckedUpdateWithoutProbesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
   invitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutWorkspaceNestedInput
+  templates?: Prisma.TemplateUncheckedUpdateManyWithoutWorkspaceNestedInput
+  brandConfig?: Prisma.BrandConfigUncheckedUpdateOneWithoutWorkspaceNestedInput
+}
+
+export type WorkspaceCreateWithoutTemplatesInput = {
+  id?: string
+  name: string
+  slug: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
+  invitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutWorkspaceInput
+  probes?: Prisma.TenantIsolationProbeCreateNestedManyWithoutWorkspaceInput
+  brandConfig?: Prisma.BrandConfigCreateNestedOneWithoutWorkspaceInput
+}
+
+export type WorkspaceUncheckedCreateWithoutTemplatesInput = {
+  id?: string
+  name: string
+  slug: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
+  invitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutWorkspaceInput
+  probes?: Prisma.TenantIsolationProbeUncheckedCreateNestedManyWithoutWorkspaceInput
+  brandConfig?: Prisma.BrandConfigUncheckedCreateNestedOneWithoutWorkspaceInput
+}
+
+export type WorkspaceCreateOrConnectWithoutTemplatesInput = {
+  where: Prisma.WorkspaceWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkspaceCreateWithoutTemplatesInput, Prisma.WorkspaceUncheckedCreateWithoutTemplatesInput>
+}
+
+export type WorkspaceUpsertWithoutTemplatesInput = {
+  update: Prisma.XOR<Prisma.WorkspaceUpdateWithoutTemplatesInput, Prisma.WorkspaceUncheckedUpdateWithoutTemplatesInput>
+  create: Prisma.XOR<Prisma.WorkspaceCreateWithoutTemplatesInput, Prisma.WorkspaceUncheckedCreateWithoutTemplatesInput>
+  where?: Prisma.WorkspaceWhereInput
+}
+
+export type WorkspaceUpdateToOneWithWhereWithoutTemplatesInput = {
+  where?: Prisma.WorkspaceWhereInput
+  data: Prisma.XOR<Prisma.WorkspaceUpdateWithoutTemplatesInput, Prisma.WorkspaceUncheckedUpdateWithoutTemplatesInput>
+}
+
+export type WorkspaceUpdateWithoutTemplatesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
+  invitations?: Prisma.WorkspaceInvitationUpdateManyWithoutWorkspaceNestedInput
+  probes?: Prisma.TenantIsolationProbeUpdateManyWithoutWorkspaceNestedInput
+  brandConfig?: Prisma.BrandConfigUpdateOneWithoutWorkspaceNestedInput
+}
+
+export type WorkspaceUncheckedUpdateWithoutTemplatesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
+  invitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutWorkspaceNestedInput
+  probes?: Prisma.TenantIsolationProbeUncheckedUpdateManyWithoutWorkspaceNestedInput
+  brandConfig?: Prisma.BrandConfigUncheckedUpdateOneWithoutWorkspaceNestedInput
+}
+
+export type WorkspaceCreateWithoutBrandConfigInput = {
+  id?: string
+  name: string
+  slug: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
+  invitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutWorkspaceInput
+  probes?: Prisma.TenantIsolationProbeCreateNestedManyWithoutWorkspaceInput
+  templates?: Prisma.TemplateCreateNestedManyWithoutWorkspaceInput
+}
+
+export type WorkspaceUncheckedCreateWithoutBrandConfigInput = {
+  id?: string
+  name: string
+  slug: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
+  invitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutWorkspaceInput
+  probes?: Prisma.TenantIsolationProbeUncheckedCreateNestedManyWithoutWorkspaceInput
+  templates?: Prisma.TemplateUncheckedCreateNestedManyWithoutWorkspaceInput
+}
+
+export type WorkspaceCreateOrConnectWithoutBrandConfigInput = {
+  where: Prisma.WorkspaceWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkspaceCreateWithoutBrandConfigInput, Prisma.WorkspaceUncheckedCreateWithoutBrandConfigInput>
+}
+
+export type WorkspaceUpsertWithoutBrandConfigInput = {
+  update: Prisma.XOR<Prisma.WorkspaceUpdateWithoutBrandConfigInput, Prisma.WorkspaceUncheckedUpdateWithoutBrandConfigInput>
+  create: Prisma.XOR<Prisma.WorkspaceCreateWithoutBrandConfigInput, Prisma.WorkspaceUncheckedCreateWithoutBrandConfigInput>
+  where?: Prisma.WorkspaceWhereInput
+}
+
+export type WorkspaceUpdateToOneWithWhereWithoutBrandConfigInput = {
+  where?: Prisma.WorkspaceWhereInput
+  data: Prisma.XOR<Prisma.WorkspaceUpdateWithoutBrandConfigInput, Prisma.WorkspaceUncheckedUpdateWithoutBrandConfigInput>
+}
+
+export type WorkspaceUpdateWithoutBrandConfigInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
+  invitations?: Prisma.WorkspaceInvitationUpdateManyWithoutWorkspaceNestedInput
+  probes?: Prisma.TenantIsolationProbeUpdateManyWithoutWorkspaceNestedInput
+  templates?: Prisma.TemplateUpdateManyWithoutWorkspaceNestedInput
+}
+
+export type WorkspaceUncheckedUpdateWithoutBrandConfigInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
+  invitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutWorkspaceNestedInput
+  probes?: Prisma.TenantIsolationProbeUncheckedUpdateManyWithoutWorkspaceNestedInput
+  templates?: Prisma.TemplateUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 
@@ -551,12 +745,14 @@ export type WorkspaceCountOutputType = {
   members: number
   invitations: number
   probes: number
+  templates: number
 }
 
 export type WorkspaceCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   members?: boolean | WorkspaceCountOutputTypeCountMembersArgs
   invitations?: boolean | WorkspaceCountOutputTypeCountInvitationsArgs
   probes?: boolean | WorkspaceCountOutputTypeCountProbesArgs
+  templates?: boolean | WorkspaceCountOutputTypeCountTemplatesArgs
 }
 
 /**
@@ -590,6 +786,13 @@ export type WorkspaceCountOutputTypeCountProbesArgs<ExtArgs extends runtime.Type
   where?: Prisma.TenantIsolationProbeWhereInput
 }
 
+/**
+ * WorkspaceCountOutputType without action
+ */
+export type WorkspaceCountOutputTypeCountTemplatesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TemplateWhereInput
+}
+
 
 export type WorkspaceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -600,6 +803,8 @@ export type WorkspaceSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   members?: boolean | Prisma.Workspace$membersArgs<ExtArgs>
   invitations?: boolean | Prisma.Workspace$invitationsArgs<ExtArgs>
   probes?: boolean | Prisma.Workspace$probesArgs<ExtArgs>
+  templates?: boolean | Prisma.Workspace$templatesArgs<ExtArgs>
+  brandConfig?: boolean | Prisma.Workspace$brandConfigArgs<ExtArgs>
   _count?: boolean | Prisma.WorkspaceCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["workspace"]>
 
@@ -632,6 +837,8 @@ export type WorkspaceInclude<ExtArgs extends runtime.Types.Extensions.InternalAr
   members?: boolean | Prisma.Workspace$membersArgs<ExtArgs>
   invitations?: boolean | Prisma.Workspace$invitationsArgs<ExtArgs>
   probes?: boolean | Prisma.Workspace$probesArgs<ExtArgs>
+  templates?: boolean | Prisma.Workspace$templatesArgs<ExtArgs>
+  brandConfig?: boolean | Prisma.Workspace$brandConfigArgs<ExtArgs>
   _count?: boolean | Prisma.WorkspaceCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type WorkspaceIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -643,6 +850,8 @@ export type $WorkspacePayload<ExtArgs extends runtime.Types.Extensions.InternalA
     members: Prisma.$WorkspaceMemberPayload<ExtArgs>[]
     invitations: Prisma.$WorkspaceInvitationPayload<ExtArgs>[]
     probes: Prisma.$TenantIsolationProbePayload<ExtArgs>[]
+    templates: Prisma.$TemplatePayload<ExtArgs>[]
+    brandConfig: Prisma.$BrandConfigPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1047,6 +1256,8 @@ export interface Prisma__WorkspaceClient<T, Null = never, ExtArgs extends runtim
   members<T extends Prisma.Workspace$membersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$membersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkspaceMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   invitations<T extends Prisma.Workspace$invitationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$invitationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkspaceInvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   probes<T extends Prisma.Workspace$probesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$probesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TenantIsolationProbePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  templates<T extends Prisma.Workspace$templatesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$templatesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TemplatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  brandConfig<T extends Prisma.Workspace$brandConfigArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$brandConfigArgs<ExtArgs>>): Prisma.Prisma__BrandConfigClient<runtime.Types.Result.GetResult<Prisma.$BrandConfigPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1543,6 +1754,49 @@ export type Workspace$probesArgs<ExtArgs extends runtime.Types.Extensions.Intern
   take?: number
   skip?: number
   distinct?: Prisma.TenantIsolationProbeScalarFieldEnum | Prisma.TenantIsolationProbeScalarFieldEnum[]
+}
+
+/**
+ * Workspace.templates
+ */
+export type Workspace$templatesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Template
+   */
+  select?: Prisma.TemplateSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Template
+   */
+  omit?: Prisma.TemplateOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TemplateInclude<ExtArgs> | null
+  where?: Prisma.TemplateWhereInput
+  orderBy?: Prisma.TemplateOrderByWithRelationInput | Prisma.TemplateOrderByWithRelationInput[]
+  cursor?: Prisma.TemplateWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TemplateScalarFieldEnum | Prisma.TemplateScalarFieldEnum[]
+}
+
+/**
+ * Workspace.brandConfig
+ */
+export type Workspace$brandConfigArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BrandConfig
+   */
+  select?: Prisma.BrandConfigSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BrandConfig
+   */
+  omit?: Prisma.BrandConfigOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BrandConfigInclude<ExtArgs> | null
+  where?: Prisma.BrandConfigWhereInput
 }
 
 /**

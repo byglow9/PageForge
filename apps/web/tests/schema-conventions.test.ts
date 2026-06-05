@@ -46,8 +46,8 @@ import * as path from "path";
 const TENANT_OWNED_MODELS: string[] = [
   "TenantIsolationProbe",
   // ---- Phase 3: add these when introducing the models ----
-  // "Template",
-  // "BrandConfig",
+  "Template",
+  "BrandConfig",
   // ---- Phase 4: add these when introducing the models ----
   // "LandingPage",
   // "Asset",

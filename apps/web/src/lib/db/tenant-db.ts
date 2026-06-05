@@ -22,6 +22,8 @@
  */
 import { prisma } from "./prisma";
 import type { WorkspaceContext } from "@/lib/workspaces/guards";
+import type { TemplateModel as Template, BrandConfigModel as BrandConfig } from "@/generated/prisma/models";
+import type { Prisma } from "@/generated/prisma/client";
 
 // -----------------------------------------------------------------------
 // TenantContext — minimum context needed to establish tenant scope
@@ -57,6 +59,70 @@ export interface TenantProbeHelpers {
 }
 
 // -----------------------------------------------------------------------
+// Tenant-scoped helpers for Template
+// -----------------------------------------------------------------------
+
+/**
+ * Tenant-scoped helpers for the Template table.
+ *
+ * These methods:
+ * - Always inject ctx.workspaceId into writes (T-03-01-03: workspaceId from server context only)
+ * - Always filter reads by ctx.workspaceId (app-level isolation, D-14)
+ * - update applies schemaVersion: { increment: 1 } atomically on every save (D-10)
+ * - Work inside a transaction that has already SET LOCAL app.current_workspace_id
+ *   (RLS backstop, T-03-01-01)
+ */
+export interface TenantTemplateHelpers {
+  /** Create a template scoped to the current workspace. */
+  create: (data: {
+    name: string;
+    markup: string;
+    schema: Prisma.InputJsonValue;
+    metadataOverlay: Prisma.InputJsonValue;
+  }) => Promise<Template>;
+  /** Find a template by ID. Returns null if the row does not exist OR belongs to a different workspace. */
+  findById: (id: string) => Promise<Template | null>;
+  /** List all templates for the current workspace, ordered by updatedAt desc. */
+  list: () => Promise<Template[]>;
+  /**
+   * Update a template. schemaVersion is incremented atomically on every save (D-10).
+   * Only the fields provided are updated; workspaceId cannot be changed.
+   */
+  update: (
+    id: string,
+    data: {
+      name?: string;
+      markup?: string;
+      schema?: Prisma.InputJsonValue;
+      metadataOverlay?: Prisma.InputJsonValue;
+    }
+  ) => Promise<Template>;
+  /** Delete a template. Returns null if not found or belongs to a different workspace. */
+  delete: (id: string) => Promise<Template | null>;
+}
+
+// -----------------------------------------------------------------------
+// Tenant-scoped helpers for BrandConfig
+// -----------------------------------------------------------------------
+
+/**
+ * Tenant-scoped helpers for the BrandConfig table.
+ *
+ * One BrandConfig per workspace (workspaceId @unique).
+ * upsert is used for save: create if not exists, update if exists.
+ */
+export interface TenantBrandHelpers {
+  /** Find the brand config for the current workspace. Returns null if not set. */
+  findFirst: () => Promise<BrandConfig | null>;
+  /** Upsert the brand config for the current workspace. Creates or updates. */
+  upsert: (data: {
+    logoUrl?: string | null;
+    primaryColor?: string | null;
+    whatsapp?: string | null;
+  }) => Promise<BrandConfig>;
+}
+
+// -----------------------------------------------------------------------
 // TenantClient — what the callback receives
 // -----------------------------------------------------------------------
 
@@ -65,6 +131,10 @@ export interface TenantClient {
   readonly workspaceId: string;
   /** Tenant-scoped helpers for TenantIsolationProbe. */
   readonly tenantIsolationProbe: TenantProbeHelpers;
+  /** Tenant-scoped helpers for Template. */
+  readonly template: TenantTemplateHelpers;
+  /** Tenant-scoped helpers for BrandConfig. */
+  readonly brandConfig: TenantBrandHelpers;
 }
 
 // -----------------------------------------------------------------------
@@ -128,6 +198,77 @@ export async function withTenantDb<T>(
               id,
               workspaceId, // app-level isolation
             },
+          });
+        },
+      },
+
+      template: {
+        create: async (data) => {
+          return tx.template.create({
+            data: {
+              ...data,
+              workspaceId, // injected from server context, never from client (T-03-01-03)
+            },
+          });
+        },
+
+        findById: async (id: string) => {
+          // App-level filter: id + workspaceId ensures cross-workspace lookup returns null (T-03-01-01)
+          return tx.template.findFirst({
+            where: {
+              id,
+              workspaceId, // app-level isolation
+            },
+          });
+        },
+
+        list: async () => {
+          return tx.template.findMany({
+            where: { workspaceId }, // app-level filter (D-14)
+            orderBy: { updatedAt: "desc" },
+          });
+        },
+
+        update: async (id: string, data) => {
+          return tx.template.update({
+            where: {
+              id,
+              workspaceId, // app-level isolation: prevents cross-workspace update
+            },
+            data: {
+              ...data,
+              schemaVersion: { increment: 1 }, // D-10: atomic increment on every save
+            },
+          });
+        },
+
+        delete: async (id: string) => {
+          // App-level check before delete: confirm the template belongs to this workspace
+          const existing = await tx.template.findFirst({
+            where: { id, workspaceId },
+          });
+          if (!existing) {
+            return null;
+          }
+          return tx.template.delete({
+            where: { id, workspaceId },
+          });
+        },
+      },
+
+      brandConfig: {
+        findFirst: async () => {
+          return tx.brandConfig.findFirst({
+            where: { workspaceId }, // app-level filter (D-14)
+          });
+        },
+
+        upsert: async (data) => {
+          // workspaceId @unique enables upsert with where: { workspaceId }
+          return tx.brandConfig.upsert({
+            where: { workspaceId },
+            create: { workspaceId, ...data },
+            update: { ...data },
           });
         },
       },

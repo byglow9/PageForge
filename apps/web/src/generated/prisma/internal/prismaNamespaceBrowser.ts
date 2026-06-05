@@ -61,7 +61,9 @@ export const ModelName = {
   Workspace: 'Workspace',
   WorkspaceMember: 'WorkspaceMember',
   WorkspaceInvitation: 'WorkspaceInvitation',
-  TenantIsolationProbe: 'TenantIsolationProbe'
+  TenantIsolationProbe: 'TenantIsolationProbe',
+  Template: 'Template',
+  BrandConfig: 'BrandConfig'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -222,12 +224,47 @@ export const TenantIsolationProbeScalarFieldEnum = {
 export type TenantIsolationProbeScalarFieldEnum = (typeof TenantIsolationProbeScalarFieldEnum)[keyof typeof TenantIsolationProbeScalarFieldEnum]
 
 
+export const TemplateScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  name: 'name',
+  markup: 'markup',
+  schema: 'schema',
+  metadataOverlay: 'metadataOverlay',
+  schemaVersion: 'schemaVersion',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TemplateScalarFieldEnum = (typeof TemplateScalarFieldEnum)[keyof typeof TemplateScalarFieldEnum]
+
+
+export const BrandConfigScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  logoUrl: 'logoUrl',
+  primaryColor: 'primaryColor',
+  whatsapp: 'whatsapp',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BrandConfigScalarFieldEnum = (typeof BrandConfigScalarFieldEnum)[keyof typeof BrandConfigScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {
@@ -244,4 +281,13 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
