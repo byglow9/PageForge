@@ -4,6 +4,14 @@
   "private": true,
   "sideEffects": false,
   "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/engine/index.ts",
+      "default": "./src/engine/index.ts"
+    }
+  },
+  "main": "./src/engine/index.ts",
+  "types": "./src/engine/index.ts",
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
