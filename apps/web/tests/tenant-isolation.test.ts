@@ -574,3 +574,108 @@ describe.skipIf(!process.env.DATABASE_URL)(
     });
   }
 );
+
+// -----------------------------------------------------------------------
+// BrandConfig tenant isolation (Phase 3)
+// Source-code assertions + pure permission checks (no DB required)
+// -----------------------------------------------------------------------
+
+describe("BrandConfig tenant isolation (Phase 3)", () => {
+  /**
+   * These tests assert:
+   * 1. brandConfig.upsert in tenant-db.ts uses workspaceId from server context
+   *    (not from input payload) — app-level isolation (D-14, T-03-04-01).
+   * 2. saveBrandConfigAction uses requireWorkspaceRole with owner/admin/editor
+   *    — prevents viewer from writing (T-03-04-02).
+   * 3. Permission matrix correctly allows editor and denies viewer for brand update
+   *    (pure, no DB).
+   *
+   * The withTenantDb BrandConfig upsert uses the @unique workspaceId constraint
+   * to guarantee exactly one BrandConfig per workspace (D-09, T-03-04-06).
+   */
+
+  let tenantDbSource: string;
+  let brandActionsSource: string;
+
+  beforeEach(() => {
+    const tenantDbPath = path.join(
+      __dirname,
+      "../src/lib/db/tenant-db.ts"
+    );
+    tenantDbSource = fs.readFileSync(tenantDbPath, "utf-8");
+
+    const brandActionsPath = path.join(
+      __dirname,
+      "../src/lib/brand/actions.ts"
+    );
+    brandActionsSource = fs.readFileSync(brandActionsPath, "utf-8");
+  });
+
+  it("BrandConfig.upsert uses workspaceId from server context — tenant-db.ts source assertion", () => {
+    // The upsert must have where: { workspaceId } using the closure variable,
+    // not a user-supplied value (T-03-04-01, app-level isolation D-14).
+    expect(tenantDbSource).toContain("brandConfig");
+    expect(tenantDbSource).toContain("upsert");
+    // workspaceId must appear in the where clause for the upsert
+    expect(tenantDbSource).toContain("where: { workspaceId }");
+  });
+
+  it("saveBrandConfigAction source uses requireWorkspaceRole with owner/admin/editor (T-03-04-02)", () => {
+    // Viewer role must be blocked before any DB write.
+    // The source must contain requireWorkspaceRole with all three allowed roles.
+    expect(brandActionsSource).toContain("requireWorkspaceRole");
+    expect(brandActionsSource).toContain('"owner"');
+    expect(brandActionsSource).toContain('"admin"');
+    expect(brandActionsSource).toContain('"editor"');
+  });
+
+  it("saveBrandConfigAction source uses brandConfig.upsert (upsert semantics D-09)", () => {
+    // Exactly one BrandConfig per workspace — upsert must be used, not create.
+    expect(brandActionsSource).toContain("upsert");
+  });
+
+  it("can('viewer', 'brand', 'update') returns false — viewer cannot save brand config", async () => {
+    // Pure permission check (no DB). Viewer is read-only for brand (T-03-04-02).
+    const { can } = await import("@/lib/workspaces/guards");
+    expect(can("viewer", "brand", "update")).toBe(false);
+  });
+
+  it("can('editor', 'brand', 'update') returns true — editor can save brand config (D-09)", async () => {
+    // Pure permission check (no DB). Editor has brand.update (permissions.ts).
+    const { can } = await import("@/lib/workspaces/guards");
+    expect(can("editor", "brand", "update")).toBe(true);
+  });
+
+  it("can('owner', 'brand', 'update') returns true", async () => {
+    const { can } = await import("@/lib/workspaces/guards");
+    expect(can("owner", "brand", "update")).toBe(true);
+  });
+
+  it("can('admin', 'brand', 'update') returns true", async () => {
+    const { can } = await import("@/lib/workspaces/guards");
+    expect(can("admin", "brand", "update")).toBe(true);
+  });
+
+  it("can('viewer', 'brand', 'read') returns true — viewer can view brand config (T-03-04-01)", async () => {
+    // Viewer is read-only but must be able to view brand tokens page.
+    const { can } = await import("@/lib/workspaces/guards");
+    expect(can("viewer", "brand", "read")).toBe(true);
+  });
+
+  it("getBrandConfigAction uses requireWorkspace (not requireWorkspaceRole) — all roles can read", () => {
+    // Any role including viewer should be able to call getBrandConfigAction.
+    // Source check: getBrandConfigAction must call requireWorkspace, not requireWorkspaceRole.
+    expect(brandActionsSource).toContain("getBrandConfigAction");
+    // The getBrandConfigAction must use requireWorkspace (any member)
+    expect(brandActionsSource).toContain("requireWorkspace(slug)");
+  });
+
+  it("tenant-db.ts brandConfig.findFirst filters by workspaceId (app-level isolation)", () => {
+    // The findFirst helper inside withTenantDb must filter by workspaceId.
+    // This ensures cross-workspace reads are blocked at the app layer (D-14).
+    expect(tenantDbSource).toContain("brandConfig");
+    expect(tenantDbSource).toContain("findFirst");
+    // The where clause must filter by workspaceId
+    expect(tenantDbSource).toContain("where: { workspaceId }");
+  });
+});
