@@ -1,10 +1,11 @@
 ---
 phase: 3
 slug: template-authoring-brand-config
-status: draft
+status: approved
 shadcn_initialized: false
 preset: neutral-system-font-standard-radius
 created: 2026-06-05
+reviewed_at: 2026-06-05
 ---
 
 # Phase 3 — UI Design Contract
@@ -57,7 +58,7 @@ Exceptions:
 | Role | Size | Weight | Line Height | Tailwind class | Usage |
 |------|------|--------|-------------|----------------|-------|
 | Body | 14px | 400 (regular) | 1.5 | `text-sm` | Field labels, metadata rows, table cells, helper text, badges, version badges, section headings (schema panel), monospace code blocks |
-| Label/UI | 16px | 600 (semibold) | 1.5 | `text-base font-semibold` | Form labels, nav items, card titles, button text |
+| Label/UI | 16px | 600 (semibold) | 1.5 | `text-base font-semibold` | Form labels, nav items, card titles, button text, template name input |
 | Heading | 20px | 600 (semibold) | 1.25 | `text-xl font-semibold` | Page section headings (Templates, Brand Settings) |
 | Display | 28px | 600 (semibold) | 1.2 | `text-2xl font-semibold` | Page-level H1 (e.g. "Templates") |
 
@@ -168,7 +169,7 @@ Layout: full-width within workspace shell. Two panels side by side.
 - Editor panel: `flex-1`, `min-h-[500px]`, `font-mono text-sm`, no syntax highlighting in v1 (plain `<Textarea>` with resize-y disabled, `h-full`).
 - Schema panel: `w-80` (320px), `gray-50` background, `border-l border-gray-200`, scrollable independently.
 - Divider between panels: 1px `gray-200` border, no drag in v1.
-- Template name input: above the two panels, full-width, `text-lg font-semibold`, placeholder "Template name".
+- Template name input: above the two panels, full-width, `text-base font-semibold` (16px, Label/UI role), placeholder "Template name".
 - Toolbar row (above name input): breadcrumb (`Templates / New Template`) + save button aligned right.
 
 Schema panel internals:
