@@ -57,11 +57,11 @@ Exceptions:
 | Role | Size | Weight | Line Height | Tailwind class | Usage |
 |------|------|--------|-------------|----------------|-------|
 | Body | 14px | 400 (regular) | 1.5 | `text-sm` | Field labels, metadata rows, table cells, helper text |
-| Label/UI | 16px | 500 (medium) | 1.5 | `text-base font-medium` | Form labels, nav items, card titles, button text |
+| Label/UI | 16px | 600 (semibold) | 1.5 | `text-base font-semibold` | Form labels, nav items, card titles, button text |
 | Heading | 20px | 600 (semibold) | 1.25 | `text-xl font-semibold` | Page section headings (Templates, Brand Settings) |
-| Display | 28px | 700 (bold) | 1.2 | `text-2xl font-bold` | Page-level H1 (e.g. "Templates") |
+| Display | 28px | 600 (semibold) | 1.2 | `text-2xl font-semibold` | Page-level H1 (e.g. "Templates") |
 
-Font weight palette: **400 (regular) and 600 (semibold)** as the two primary weights. 500 (medium) used only for UI-element labels (buttons, nav) — not a content weight.
+Font weight palette: **400 (regular)** for body/content and **600 (semibold)** for all emphasis (headings, display, labels, nav items, button text, card titles). No other weights used.
 
 Code/monospace: `font-mono text-sm` — applied exclusively to the markup editor textarea and token examples (e.g. `{{ field:text }}`).
 
@@ -130,9 +130,9 @@ Layout: 2-column workspace shell.
 Template grid: CSS Grid, `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3`, `gap-6`.
 
 Each template card (shadcn `<Card>`):
-- Header: template name (`text-base font-medium`) + schema version badge (`text-xs gray-400`)
+- Header: template name (`text-base font-semibold`) + schema version badge (`text-xs gray-400`)
 - Body: field count summary ("5 fields · 1 repeater") as `text-sm text-gray-500`
-- Footer: "Edit" button (secondary/outline) + "..." overflow menu (kebab icon, lucide `MoreHorizontal`)
+- Footer: "Edit Template" button (secondary/outline) + "..." overflow menu (kebab icon, lucide `MoreHorizontal`)
 - Card width: fills grid column. Min height: 120px.
 
 Empty state (no templates yet):
@@ -164,12 +164,12 @@ Layout: full-width within workspace shell. Two panels side by side.
 - Editor panel: `flex-1`, `min-h-[500px]`, `font-mono text-sm`, no syntax highlighting in v1 (plain `<Textarea>` with resize-y disabled, `h-full`).
 - Schema panel: `w-80` (320px), `gray-50` background, `border-l border-gray-200`, scrollable independently.
 - Divider between panels: 1px `gray-200` border, no drag in v1.
-- Template name input: above the two panels, full-width, `text-lg font-medium`, placeholder "Template name".
+- Template name input: above the two panels, full-width, `text-lg font-semibold`, placeholder "Template name".
 - Toolbar row (above name input): breadcrumb (`Templates / New Template`) + save button aligned right.
 
 Schema panel internals:
 - Section heading "Detected Fields" (`text-xs font-semibold text-gray-500 uppercase tracking-wide`).
-- Per-field row: field name (`text-sm font-medium`) + type badge (color-coded per field type) + optional "brand" or "global" badge.
+- Per-field row: field name (`text-sm font-semibold`) + type badge (color-coded per field type) + optional "brand" or "global" badge.
 - Parse warning rows below detected fields (amber badge + message text `text-sm`).
 - Live update: debounced 400ms after the user stops typing. Show spinner (`lucide Loader2`, animate-spin) in panel header while debounce is pending.
 - "Re-parse" icon button at panel top right (`lucide RefreshCw`) forces immediate re-parse.
@@ -244,7 +244,7 @@ Submit: "Save Brand Settings" button (primary, full-width of card).
 | Primary CTA — create template | "Create Template" |
 | Primary CTA — save template | "Save Template" |
 | Primary CTA — brand settings | "Save Brand Settings" |
-| Secondary CTA — edit template | "Edit" |
+| Secondary CTA — edit template | "Edit Template" |
 | Secondary CTA — cancel editor | "Cancel" |
 | Empty state heading — templates | "No templates yet" |
 | Empty state body — templates | "Create your first template to start building landing pages." |
