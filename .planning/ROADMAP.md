@@ -99,7 +99,7 @@ Plans:
 - [x] 03-02-PLAN.md — Prisma migrate dev --create-only, append RLS policies, prisma migrate deploy
 
 **Wave 3** *(blocked on Wave 2 completion)*
-- [ ] 03-03-PLAN.md — Template authoring slice: Server Actions + workspace layout + template list/new/edit pages + TemplateEditor + SchemaPanel + TemplateCard + DeleteTemplateDialog
+- [x] 03-03-PLAN.md — Template authoring slice: Server Actions + workspace layout + template list/new/edit pages + TemplateEditor + SchemaPanel + TemplateCard + DeleteTemplateDialog
 
 **Wave 4** *(blocked on Wave 3 completion)*
 - [ ] 03-04-PLAN.md — Brand config slice: Server Actions + brand page + BrandConfigForm + tenant isolation test extension
