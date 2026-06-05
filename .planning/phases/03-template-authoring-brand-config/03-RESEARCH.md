@@ -638,22 +638,25 @@ const ctx = await requireWorkspaceRole(slug, ["owner", "admin", "editor"]);
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **`pageforge-engine` exports field for tree-shaking**
    - What we know: engine's package.json has no `exports` field and no `dist/` directory. Next.js will transpile source directly via `transpilePackages`. Tree-shaking of `renderer.ts` depends on named imports.
    - What's unclear: whether `"sideEffects": false` needs to be added to the engine's package.json to help Next.js/webpack tree-shake `renderer.ts` when client components import only `parse`.
    - Recommendation: Add `"sideEffects": false` to root package.json at the start of Phase 3 as a safety measure. The planner should include this as a Wave 0 task.
+   - **RESOLVED:** `"sideEffects": false` added to root package.json in plan 03-01 Task 1 as a Wave 0 safety measure.
 
 2. **shadcn monorepo flag**
    - What we know: shadcn docs mention a `--monorepo` flag that separates UI components into a `@workspace/ui` package. UI-SPEC says "shadcn not yet installed — first UI-component phase."
    - What's unclear: whether to use `--monorepo` mode (components go to a separate package) or the simpler default (components go to `apps/web/src/components/ui/`).
    - Recommendation: Use default mode (no `--monorepo` flag). Only one app consumes these components; the added workspace complexity is not worth it in v1.
+   - **RESOLVED:** `--monorepo` flag not used; standard `pnpm dlx shadcn@latest init` runs in `apps/web/` per plan 03-01, components land in `apps/web/src/components/ui/`.
 
 3. **BrandConfig — Phase 2 isolation tests**
    - What we know: `apps/web/tests/tenant-isolation.test.ts` tests cross-tenant access. BrandConfig rows need to be covered by equivalent cross-tenant tests.
    - What's unclear: whether the existing isolation test scaffold automatically covers new models or needs explicit BrandConfig test cases.
    - Recommendation: The planner should include a task to add BrandConfig cross-tenant tests mirroring the existing Template ones.
+   - **RESOLVED:** Explicit BrandConfig cross-tenant test cases added in plan 03-04 Task 2 as an extension to `tenant-isolation.test.ts` (new describe block "BrandConfig tenant isolation (Phase 3)").
 
 ---
 
