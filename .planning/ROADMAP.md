@@ -93,7 +93,7 @@ Plans:
 
 Plans:
 **Wave 1**
-- [ ] 03-01-PLAN.md — Engine wiring + shadcn bootstrap + Prisma schema (Template + BrandConfig) + TenantClient extension + Zod schemas + metadata.ts + test scaffolds (RED)
+- [x] 03-01-PLAN.md — Engine wiring + shadcn bootstrap + Prisma schema (Template + BrandConfig) + TenantClient extension + Zod schemas + metadata.ts + test scaffolds (RED)
 
 **Wave 2** *(blocked on Wave 1 — [BLOCKING] schema push)*
 - [ ] 03-02-PLAN.md — Prisma migrate dev --create-only, append RLS policies, prisma migrate deploy
