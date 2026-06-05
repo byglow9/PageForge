@@ -16,7 +16,7 @@ import type * as Prisma from "../internal/prismaNamespace"
  * Model TenantIsolationProbe
  * TenantIsolationProbe is an exemplar tenant-owned table used in
  * cross-tenant access tests (Phase 2 isolation verification).
- * RLS policy: workspace_id = current_setting('app.current_workspace_id', true)::uuid
+ * RLS policy: workspace_id = current_setting('app.current_workspace_id', true)::text
  */
 export type TenantIsolationProbeModel = runtime.Types.Result.DefaultSelection<Prisma.$TenantIsolationProbePayload>
 

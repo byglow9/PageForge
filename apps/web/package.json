@@ -19,6 +19,7 @@
     "better-auth": "^1.6.13",
     "next": "^16.2.7",
     "nodemailer": "^6.9.0",
+    "pageforge-engine": "workspace:*",
     "pg": "^8.21.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
