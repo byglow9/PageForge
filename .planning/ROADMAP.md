@@ -102,7 +102,7 @@ Plans:
 - [x] 03-03-PLAN.md — Template authoring slice: Server Actions + workspace layout + template list/new/edit pages + TemplateEditor + SchemaPanel + TemplateCard + DeleteTemplateDialog
 
 **Wave 4** *(blocked on Wave 3 completion)*
-- [ ] 03-04-PLAN.md — Brand config slice: Server Actions + brand page + BrandConfigForm + tenant isolation test extension
+- [x] 03-04-PLAN.md — Brand config slice: Server Actions + brand page + BrandConfigForm + tenant isolation test extension
 
 ### Phase 4: LP Generation, Assets, Preview & Export
 **Goal**: Deliver the core promise — selecting a template generates a dynamic form whose filled values merge into a previewable, editable, duplicable, and exportable static-HTML landing page, with image upload and globals resolved automatically.
