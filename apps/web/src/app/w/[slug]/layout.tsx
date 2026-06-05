@@ -10,6 +10,7 @@
  * - The user is a member of the workspace identified by `slug`.
  * - The workspace context (id, slug, userId, role) is valid.
  */
+import Link from "next/link";
 import { requireWorkspace } from "@/lib/workspaces/guards";
 
 interface WorkspaceLayoutProps {
@@ -28,41 +29,58 @@ export default async function WorkspaceLayout({
   const ctx = await requireWorkspace(slug);
 
   return (
-    <div>
-      {/* Minimal workspace shell — UI components added in later phases */}
-      <nav
-        style={{
-          padding: "0.75rem 1.5rem",
-          borderBottom: "1px solid #e5e7eb",
-          display: "flex",
-          alignItems: "center",
-          gap: "1rem",
-          background: "#fff",
-        }}
-      >
-        <span style={{ fontWeight: "600", fontSize: "0.95rem" }}>
-          PageForge
-        </span>
-        <span style={{ color: "#9ca3af" }}>/</span>
-        <span style={{ fontWeight: "500", fontSize: "0.95rem" }}>
-          {ctx.workspaceSlug}
-        </span>
-        <span
-          style={{
-            marginLeft: "auto",
-            fontSize: "0.75rem",
-            background: "#f3f4f6",
-            padding: "0.2rem 0.5rem",
-            borderRadius: "4px",
-            color: "#4b5563",
-            textTransform: "uppercase",
-            letterSpacing: "0.05em",
-          }}
-        >
-          {ctx.role}
-        </span>
-      </nav>
-      <main style={{ padding: "1.5rem" }}>{children}</main>
+    <div className="flex h-screen bg-gray-50">
+      {/* Sidebar navigation (240px) */}
+      <aside className="w-60 shrink-0 bg-gray-100 border-r border-gray-200 flex flex-col">
+        {/* Workspace header */}
+        <div className="py-3 px-6 border-b border-gray-200 flex items-center gap-2">
+          <span className="font-semibold text-sm text-gray-900">PageForge</span>
+          <span className="text-gray-400">/</span>
+          <span className="text-sm text-gray-700 truncate">{ctx.workspaceSlug}</span>
+        </div>
+
+        {/* Role badge */}
+        <div className="px-6 pt-3 pb-1">
+          <span className="inline-block bg-gray-100 border border-gray-200 text-gray-500 text-xs uppercase tracking-wide px-2 py-0.5 rounded">
+            {ctx.role}
+          </span>
+        </div>
+
+        {/* Nav links */}
+        <nav className="flex-1 py-4">
+          <ul className="space-y-1 px-2">
+            <li>
+              <Link
+                href={`/w/${slug}/templates`}
+                className="flex items-center gap-2 px-4 py-2 rounded-md text-sm text-gray-700 hover:bg-white hover:text-gray-900 transition-colors"
+              >
+                Templates
+              </Link>
+            </li>
+            <li>
+              <Link
+                href={`/w/${slug}/brand`}
+                className="flex items-center gap-2 px-4 py-2 rounded-md text-sm text-gray-700 hover:bg-white hover:text-gray-900 transition-colors"
+              >
+                Brand Settings
+              </Link>
+            </li>
+            <li>
+              <Link
+                href={`/w/${slug}/members`}
+                className="flex items-center gap-2 px-4 py-2 rounded-md text-sm text-gray-700 hover:bg-white hover:text-gray-900 transition-colors"
+              >
+                Members
+              </Link>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+
+      {/* Main content area */}
+      <main className="flex-1 overflow-auto">
+        {children}
+      </main>
     </div>
   );
 }

@@ -28,7 +28,7 @@
 "use server";
 
 import { parse } from "pageforge-engine";
-import { ParsedSchemaSchema } from "pageforge-engine";
+import { ParsedSchemaValidator } from "./parsed-schema-validator";
 import { requireWorkspaceRole, requireWorkspace } from "@/lib/workspaces/guards";
 import { withTenantDb } from "@/lib/db/tenant-db";
 import { CreateTemplateSchema, UpdateTemplateSchema } from "./schema";
@@ -97,7 +97,8 @@ export async function createTemplateAction(
         data: {
           id: template.id,
           schemaVersion: template.schemaVersion,
-          warnings: schema.warnings,
+          // Map ParseWarning objects to message strings for client consumption
+          warnings: schema.warnings.map((w) => w.message),
         },
       };
     });
@@ -165,8 +166,8 @@ export async function updateTemplateAction(
         // Step 3b: No markup change — fetch existing schema to reconcile overlay
         const existing = await db.template.findById(id);
         if (existing) {
-          // Validate DB JSON with ParsedSchemaSchema before use (RESEARCH anti-pattern: never cast directly)
-          const schemaParsed = ParsedSchemaSchema.safeParse(existing.schema);
+          // Validate DB JSON with ParsedSchemaValidator before use (RESEARCH anti-pattern: never cast directly)
+          const schemaParsed = ParsedSchemaValidator.safeParse(existing.schema);
           const existingFields = schemaParsed.success ? schemaParsed.data.fields : [];
           overlay = reconcileMetadataOverlay(existingFields, inputOverlay ?? {});
         } else {
@@ -188,7 +189,8 @@ export async function updateTemplateAction(
         data: {
           id: updated.id,
           schemaVersion: updated.schemaVersion,
-          warnings: schema?.warnings ?? [],
+          // Map ParseWarning objects to message strings for client consumption
+          warnings: schema?.warnings.map((w) => w.message) ?? [],
         },
       };
     });
