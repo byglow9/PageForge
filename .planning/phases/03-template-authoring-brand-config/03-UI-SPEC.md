@@ -56,7 +56,7 @@ Exceptions:
 
 | Role | Size | Weight | Line Height | Tailwind class | Usage |
 |------|------|--------|-------------|----------------|-------|
-| Body | 14px | 400 (regular) | 1.5 | `text-sm` | Field labels, metadata rows, table cells, helper text |
+| Body | 14px | 400 (regular) | 1.5 | `text-sm` | Field labels, metadata rows, table cells, helper text, badges, version badges, section headings (schema panel), monospace code blocks |
 | Label/UI | 16px | 600 (semibold) | 1.5 | `text-base font-semibold` | Form labels, nav items, card titles, button text |
 | Heading | 20px | 600 (semibold) | 1.25 | `text-xl font-semibold` | Page section headings (Templates, Brand Settings) |
 | Display | 28px | 600 (semibold) | 1.2 | `text-2xl font-semibold` | Page-level H1 (e.g. "Templates") |
@@ -123,6 +123,8 @@ Components to install via `npx shadcn@latest add <component>`. Install only what
 
 ### TPL-06 — Template List (`/w/[slug]/templates`)
 
+**Focal point:** "Create Template" accent CTA in the empty state; the template card grid in the populated state.
+
 Layout: 2-column workspace shell.
 - Left: persistent workspace sidebar (nav links: Templates, Brand Settings, Members; 240px wide, `gray-100` background).
 - Right: main content area (`gray-50` background, `px-8 py-6`).
@@ -130,7 +132,7 @@ Layout: 2-column workspace shell.
 Template grid: CSS Grid, `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3`, `gap-6`.
 
 Each template card (shadcn `<Card>`):
-- Header: template name (`text-base font-semibold`) + schema version badge (`text-xs gray-400`)
+- Header: template name (`text-base font-semibold`) + schema version badge (`text-sm text-gray-400`)
 - Body: field count summary ("5 fields · 1 repeater") as `text-sm text-gray-500`
 - Footer: "Edit Template" button (secondary/outline) + "..." overflow menu (kebab icon, lucide `MoreHorizontal`)
 - Card width: fills grid column. Min height: 120px.
@@ -143,6 +145,8 @@ Empty state (no templates yet):
 - CTA: "Create Template" button (primary/accent).
 
 ### TPL-01 / TPL-05 — Template Editor (`/w/[slug]/templates/new` and `/w/[slug]/templates/[id]/edit`)
+
+**Focal point:** the markup editor pane (`flex-1`, dominant area).
 
 Layout: full-width within workspace shell. Two panels side by side.
 
@@ -168,7 +172,7 @@ Layout: full-width within workspace shell. Two panels side by side.
 - Toolbar row (above name input): breadcrumb (`Templates / New Template`) + save button aligned right.
 
 Schema panel internals:
-- Section heading "Detected Fields" (`text-xs font-semibold text-gray-500 uppercase tracking-wide`).
+- Section heading "Detected Fields" (`text-sm font-semibold text-gray-500 uppercase tracking-wide`).
 - Per-field row: field name (`text-sm font-semibold`) + type badge (color-coded per field type) + optional "brand" or "global" badge.
 - Parse warning rows below detected fields (amber badge + message text `text-sm`).
 - Live update: debounced 400ms after the user stops typing. Show spinner (`lucide Loader2`, animate-spin) in panel header while debounce is pending.
@@ -176,11 +180,13 @@ Schema panel internals:
 - If no fields detected: "No tokens found yet. Use `{{ field:type }}` syntax." in `text-sm text-gray-400 italic`.
 
 Metadata overlay (below detected fields in schema panel):
-- Collapsed by default. "Edit field metadata" toggle link (`text-xs text-gray-500 underline`).
+- Collapsed by default. "Edit field metadata" toggle link (`text-sm text-gray-500 underline`).
 - When expanded: per-field sub-row with a label input (`text-sm`, placeholder = field name) and a `<Switch>` labeled "Required".
 - Metadata rows are reconciled on every save (D-05).
 
 ### BRD-01 — Brand Settings (`/w/[slug]/brand`)
+
+**Focal point:** the single centered settings card with its full-width "Save Brand Settings" primary button.
 
 Layout: workspace shell sidebar + main content.
 
@@ -193,7 +199,7 @@ Fields (in order):
 
 Color preview: 24px × 24px swatch inline with the Primary Color input, updated live on valid hex input. Shows `gray-200` background when empty/invalid.
 
-Brand token reference block (below form fields, above submit): gray code block listing the three `brand.*` tokens with their resolved values. `font-mono text-xs text-gray-600 bg-gray-50 rounded p-3 border border-gray-200`.
+Brand token reference block (below form fields, above submit): gray code block listing the three `brand.*` tokens with their resolved values. `font-mono text-sm text-gray-600 bg-gray-50 rounded p-3 border border-gray-200`.
 
 Submit: "Save Brand Settings" button (primary, full-width of card).
 
@@ -218,12 +224,12 @@ Submit: "Save Brand Settings" button (primary, full-width of card).
 
 ### Create Template flow
 - Route: `/w/[slug]/templates/new`
-- Template name field is required. Blur validation: "Template name is required." in `text-xs text-red-600 mt-1`.
+- Template name field is required. Blur validation: "Template name is required." in `text-sm text-red-600 mt-1`.
 - Save is disabled until name field has at least 1 non-whitespace character.
 
 ### Delete Template
 - Trigger: kebab menu item "Delete template" on template card.
-- Opens `<Dialog>`: title "Delete template?", body "This will permanently delete "[template name]" and cannot be undone.", destructive button "Delete template" (`variant="destructive"`), cancel button "Cancel".
+- Opens `<Dialog>`: title "Delete template?", body "This will permanently delete "[template name]" and cannot be undone.", destructive button "Delete template" (`variant="destructive"`), cancel button "Keep template".
 - On confirm: server action fires, card removed optimistically from grid, toast "Template deleted."
 - On error: toast "Failed to delete. Try again." Dialog stays open.
 
@@ -265,7 +271,7 @@ Submit: "Save Brand Settings" button (primary, full-width of card).
 | Delete dialog title | "Delete template?" |
 | Delete dialog body | "This will permanently delete \"{name}\" and cannot be undone." |
 | Delete dialog confirm | "Delete template" |
-| Delete dialog cancel | "Cancel" |
+| Delete dialog cancel | "Keep template" |
 | Template name field — label | "Template name" |
 | Template name field — placeholder | "My landing page template" |
 | Template name validation error | "Template name is required." |
