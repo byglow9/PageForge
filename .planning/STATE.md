@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-06-01)
 Phase: 03 (template-authoring-brand-config) — EXECUTING
 Plan: 1 of 4
 Status: Executing Phase 03
-Last activity: 2026-06-05 -- Phase 03 execution started
+Last activity: 2026-06-08 - Completed quick task 260608-d6s: front básico da homepage pública
 
 Progress: [████░░░░░░] 40%
 
@@ -83,6 +83,7 @@ None yet.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 260603-ju4 | Fix Phase-2 workspace-creation RLS bug + email-verification token (sendOnSignUp) + commit kysely/trustedOrigins fixes | 2026-06-03 | 9cd3826 | [260603-ju4](./quick/260603-ju4-fix-phase-2-workspace-creation-rls-bug-a/) |
+| 260608-d6s | Front básico estilizado para a homepage pública (hero centralizado + CTAs Login/Sign up usando design system) | 2026-06-08 | 7723f8c | [260608-d6s](./quick/260608-d6s-homepage-basic-front/) |
 
 ## Deferred Items
 
