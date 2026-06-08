@@ -3,6 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { signUp } from "@/lib/auth/auth-client";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 type FormState =
   | { status: "idle" }
@@ -43,77 +48,100 @@ export default function SignupPage() {
 
   if (formState.status === "verification_sent") {
     return (
-      <main>
-        <h1>Check your email</h1>
-        <p>
-          We sent a verification link to <strong>{formState.email}</strong>.
-          Click the link in the email to verify your address and activate your
-          account.
-        </p>
-        <p>
-          You cannot create or join a workspace until your email is verified.
-        </p>
-        <p>
-          <Link href="/login">Back to login</Link>
-        </p>
+      <main className="flex min-h-screen items-center justify-center bg-background px-4">
+        <Card className="w-full max-w-sm">
+          <CardHeader>
+            <CardTitle>Check your email</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Alert>
+              <AlertDescription>
+                We sent a verification link to <strong>{formState.email}</strong>.
+                Click the link in the email to verify your address and activate your
+                account.
+              </AlertDescription>
+              <AlertDescription>
+                You cannot create or join a workspace until your email is verified.
+              </AlertDescription>
+            </Alert>
+          </CardContent>
+          <CardFooter>
+            <Link
+              href="/login"
+              className="text-sm text-muted-foreground hover:text-foreground underline underline-offset-4"
+            >
+              Back to login
+            </Link>
+          </CardFooter>
+        </Card>
       </main>
     );
   }
 
   return (
-    <main>
-      <h1>Create your account</h1>
+    <main className="flex min-h-screen items-center justify-center bg-background px-4">
+      <Card className="w-full max-w-sm">
+        <CardHeader>
+          <CardTitle>Create your account</CardTitle>
+          <CardDescription>Fill in the details below to get started</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {formState.status === "error" && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertDescription>{formState.message}</AlertDescription>
+            </Alert>
+          )}
 
-      {formState.status === "error" && (
-        <p role="alert" style={{ color: "red" }}>
-          {formState.message}
-        </p>
-      )}
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                name="name"
+                type="text"
+                required
+                autoComplete="name"
+              />
+            </div>
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="name">Name</label>
-          <input
-            id="name"
-            name="name"
-            type="text"
-            required
-            autoComplete="name"
-          />
-        </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="email">Email address</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                required
+                autoComplete="email"
+              />
+            </div>
 
-        <div>
-          <label htmlFor="email">Email address</label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            required
-            autoComplete="email"
-          />
-        </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                required
+                minLength={8}
+                autoComplete="new-password"
+              />
+              <p className="text-xs text-muted-foreground">Minimum 8 characters</p>
+            </div>
 
-        <div>
-          <label htmlFor="password">Password</label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            required
-            minLength={8}
-            autoComplete="new-password"
-          />
-          <small>Minimum 8 characters</small>
-        </div>
-
-        <button type="submit" disabled={formState.status === "loading"}>
-          {formState.status === "loading" ? "Creating account…" : "Create account"}
-        </button>
-      </form>
-
-      <p>
-        Already have an account? <Link href="/login">Log in</Link>
-      </p>
+            <Button type="submit" size="lg" className="w-full" disabled={formState.status === "loading"}>
+              {formState.status === "loading" ? "Creating account…" : "Create account"}
+            </Button>
+          </form>
+        </CardContent>
+        <CardFooter>
+          <p className="text-sm text-muted-foreground">
+            Already have an account?{" "}
+            <Link href="/login" className="text-foreground underline underline-offset-4 hover:text-foreground/80">
+              Log in
+            </Link>
+          </p>
+        </CardFooter>
+      </Card>
     </main>
   );
 }
