@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-06-01)
 Phase: 03 (template-authoring-brand-config) — EXECUTING
 Plan: 1 of 4
 Status: Executing Phase 03
-Last activity: 2026-06-08 - Completed quick task 260608-dbk: estilização das páginas de login e signup
+Last activity: 2026-06-08 - Completed quick task 260608-ly0: estilização da página de Members; Fase 03 UAT 6/6 passou
 
 Progress: [████░░░░░░] 40%
 
@@ -85,6 +85,8 @@ None yet.
 | 260603-ju4 | Fix Phase-2 workspace-creation RLS bug + email-verification token (sendOnSignUp) + commit kysely/trustedOrigins fixes | 2026-06-03 | 9cd3826 | [260603-ju4](./quick/260603-ju4-fix-phase-2-workspace-creation-rls-bug-a/) |
 | 260608-d6s | Front básico estilizado para a homepage pública (hero centralizado + CTAs Login/Sign up usando design system) | 2026-06-08 | 7723f8c | [260608-d6s](./quick/260608-d6s-homepage-basic-front/) |
 | 260608-dbk | Estilizar páginas de login e signup (Card/Input/Label/Button/Alert) preservando toda a lógica de auth | 2026-06-08 | c651e39 | [260608-dbk](./quick/260608-dbk-style-auth-pages/) |
+| 260608-d6s-2 | Fix: dev script usa webpack (next dev --webpack) p/ resolver imports .js→.ts do engine | 2026-06-08 | abd6862 | (gsd-fast) |
+| 260608-ly0 | Estilizar página de Members (Card/tabelas/Badge/Button) preservando server actions e Server Component | 2026-06-08 | 7dae599 | [260608-ly0](./quick/260608-ly0-style-members-page/) |
 
 ## Deferred Items
 
