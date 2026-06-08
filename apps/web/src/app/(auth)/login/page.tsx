@@ -3,6 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { signIn } from "@/lib/auth/auth-client";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 type FormState =
   | { status: "idle" }
@@ -52,64 +57,87 @@ export default function LoginPage() {
 
   if (formState.status === "verification_required") {
     return (
-      <main>
-        <h1>Verify your email first</h1>
-        <p>
-          You need to verify your email address before you can log in. We sent a
-          verification link to <strong>{formState.email}</strong>.
-        </p>
-        <p>
-          Check your inbox and click the verification link, then try logging in
-          again.
-        </p>
-        <p>
-          <Link href="/login">Back to login</Link>
-        </p>
+      <main className="flex min-h-screen items-center justify-center bg-background px-4">
+        <Card className="w-full max-w-sm">
+          <CardHeader>
+            <CardTitle>Verify your email first</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Alert>
+              <AlertDescription>
+                You need to verify your email address before you can log in. We sent a
+                verification link to <strong>{formState.email}</strong>.
+              </AlertDescription>
+              <AlertDescription>
+                Check your inbox and click the verification link, then try logging in
+                again.
+              </AlertDescription>
+            </Alert>
+          </CardContent>
+          <CardFooter>
+            <Link
+              href="/login"
+              className="text-sm text-muted-foreground hover:text-foreground underline underline-offset-4"
+            >
+              Back to login
+            </Link>
+          </CardFooter>
+        </Card>
       </main>
     );
   }
 
   return (
-    <main>
-      <h1>Log in to PageForge</h1>
+    <main className="flex min-h-screen items-center justify-center bg-background px-4">
+      <Card className="w-full max-w-sm">
+        <CardHeader>
+          <CardTitle>Log in to PageForge</CardTitle>
+          <CardDescription>Enter your email and password to access your workspace</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {formState.status === "error" && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertDescription>{formState.message}</AlertDescription>
+            </Alert>
+          )}
 
-      {formState.status === "error" && (
-        <p role="alert" style={{ color: "red" }}>
-          {formState.message}
-        </p>
-      )}
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="email">Email address</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                required
+                autoComplete="email"
+              />
+            </div>
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="email">Email address</label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            required
-            autoComplete="email"
-          />
-        </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                required
+                autoComplete="current-password"
+              />
+            </div>
 
-        <div>
-          <label htmlFor="password">Password</label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            required
-            autoComplete="current-password"
-          />
-        </div>
-
-        <button type="submit" disabled={formState.status === "loading"}>
-          {formState.status === "loading" ? "Logging in…" : "Log in"}
-        </button>
-      </form>
-
-      <p>
-        Don&apos;t have an account? <Link href="/signup">Sign up</Link>
-      </p>
+            <Button type="submit" size="lg" className="w-full" disabled={formState.status === "loading"}>
+              {formState.status === "loading" ? "Logging in…" : "Log in"}
+            </Button>
+          </form>
+        </CardContent>
+        <CardFooter>
+          <p className="text-sm text-muted-foreground">
+            Don&apos;t have an account?{" "}
+            <Link href="/signup" className="text-foreground underline underline-offset-4 hover:text-foreground/80">
+              Sign up
+            </Link>
+          </p>
+        </CardFooter>
+      </Card>
     </main>
   );
 }
