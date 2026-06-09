@@ -15,7 +15,7 @@
 
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export interface LpPreviewProps {
   /** Server-rendered HTML string from renderLp() */
@@ -45,10 +45,13 @@ export function LpPreview({ html, lp, slug }: LpPreviewProps) {
         >
           Edit
         </Link>
-        {/* Export ZIP — anchor with download attribute, route handler in Plan 04 */}
+        {/* Export ZIP — anchor with download attribute triggers browser download.
+            onClick shows immediate toast feedback (per UI-SPEC LP-04): streaming
+            downloads don't emit completion events to the page, so we toast on click. */}
         <a
           href={`/api/lps/${lp.id}/export`}
           download
+          onClick={() => toast.success("Export ready — downloading.")}
           className="inline-flex items-center justify-center rounded-md bg-gray-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
           aria-label={`Export ${lp.name} as ZIP`}
         >
