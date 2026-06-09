@@ -143,11 +143,13 @@ model Workspace {
   updatedAt DateTime @updatedAt
 
   // Tenant-owned tables link back here
-  members     WorkspaceMember[]
-  invitations WorkspaceInvitation[]
-  probes      TenantIsolationProbe[]
-  templates   Template[]
-  brandConfig BrandConfig?
+  members      WorkspaceMember[]
+  invitations  WorkspaceInvitation[]
+  probes       TenantIsolationProbe[]
+  templates    Template[]
+  brandConfig  BrandConfig?
+  landingPages LandingPage[]
+  lpAssets     LpAsset[]
 
   @@map("workspace")
 }
@@ -233,4 +235,48 @@ model BrandConfig {
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@map("brand_config")
+}
+
+/// LandingPage stores filled LP values and a snapshot of the template markup at generation time.
+/// D-06: markup is snapshotted — editing the source template does NOT alter existing LPs.
+/// D-11: name is user-provided at generation time.
+/// templateId is a soft reference (nullable) — LP survives template deletion (D-06).
+/// RLS policy: workspace_id = current_setting('app.current_workspace_id', true)::text
+model LandingPage {
+  id             String   @id @default(cuid())
+  workspaceId    String
+  templateId     String?                   // soft ref — LP survives template deletion (D-06)
+  name           String                    // D-11: user-provided at generation time
+  markupSnapshot String   @db.Text         // snapshot at generation time (D-06)
+  schemaVersion  Int                       // template schemaVersion at generation time (D-06)
+  values         Json                      // LP field values (jsonb)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  assets    LpAsset[]
+
+  @@index([workspaceId])
+  @@map("landing_page")
+}
+
+/// LpAsset tracks S3 keys for images uploaded per LP (enables cleanup on LP delete).
+/// RLS policy: workspace_id = current_setting('app.current_workspace_id', true)::text
+model LpAsset {
+  id            String   @id @default(cuid())
+  workspaceId   String
+  landingPageId String
+  s3Key         String                     // e.g. workspaces/{wId}/lps/assets/{uuid}.jpg
+  publicUrl     String
+  filename      String
+  mimeType      String
+  fileSize      Int                        // bytes
+  createdAt     DateTime @default(now())
+
+  workspace   Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  landingPage LandingPage @relation(fields: [landingPageId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@index([landingPageId])
+  @@map("lp_asset")
 }

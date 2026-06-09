@@ -63,7 +63,9 @@ export const ModelName = {
   WorkspaceInvitation: 'WorkspaceInvitation',
   TenantIsolationProbe: 'TenantIsolationProbe',
   Template: 'Template',
-  BrandConfig: 'BrandConfig'
+  BrandConfig: 'BrandConfig',
+  LandingPage: 'LandingPage',
+  LpAsset: 'LpAsset'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -250,6 +252,36 @@ export const BrandConfigScalarFieldEnum = {
 } as const
 
 export type BrandConfigScalarFieldEnum = (typeof BrandConfigScalarFieldEnum)[keyof typeof BrandConfigScalarFieldEnum]
+
+
+export const LandingPageScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  templateId: 'templateId',
+  name: 'name',
+  markupSnapshot: 'markupSnapshot',
+  schemaVersion: 'schemaVersion',
+  values: 'values',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LandingPageScalarFieldEnum = (typeof LandingPageScalarFieldEnum)[keyof typeof LandingPageScalarFieldEnum]
+
+
+export const LpAssetScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  landingPageId: 'landingPageId',
+  s3Key: 's3Key',
+  publicUrl: 'publicUrl',
+  filename: 'filename',
+  mimeType: 'mimeType',
+  fileSize: 'fileSize',
+  createdAt: 'createdAt'
+} as const
+
+export type LpAssetScalarFieldEnum = (typeof LpAssetScalarFieldEnum)[keyof typeof LpAssetScalarFieldEnum]
 
 
 export const SortOrder = {

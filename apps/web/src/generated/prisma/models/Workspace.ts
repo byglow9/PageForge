@@ -188,6 +188,8 @@ export type WorkspaceWhereInput = {
   probes?: Prisma.TenantIsolationProbeListRelationFilter
   templates?: Prisma.TemplateListRelationFilter
   brandConfig?: Prisma.XOR<Prisma.BrandConfigNullableScalarRelationFilter, Prisma.BrandConfigWhereInput> | null
+  landingPages?: Prisma.LandingPageListRelationFilter
+  lpAssets?: Prisma.LpAssetListRelationFilter
 }
 
 export type WorkspaceOrderByWithRelationInput = {
@@ -201,6 +203,8 @@ export type WorkspaceOrderByWithRelationInput = {
   probes?: Prisma.TenantIsolationProbeOrderByRelationAggregateInput
   templates?: Prisma.TemplateOrderByRelationAggregateInput
   brandConfig?: Prisma.BrandConfigOrderByWithRelationInput
+  landingPages?: Prisma.LandingPageOrderByRelationAggregateInput
+  lpAssets?: Prisma.LpAssetOrderByRelationAggregateInput
 }
 
 export type WorkspaceWhereUniqueInput = Prisma.AtLeast<{
@@ -217,6 +221,8 @@ export type WorkspaceWhereUniqueInput = Prisma.AtLeast<{
   probes?: Prisma.TenantIsolationProbeListRelationFilter
   templates?: Prisma.TemplateListRelationFilter
   brandConfig?: Prisma.XOR<Prisma.BrandConfigNullableScalarRelationFilter, Prisma.BrandConfigWhereInput> | null
+  landingPages?: Prisma.LandingPageListRelationFilter
+  lpAssets?: Prisma.LpAssetListRelationFilter
 }, "id" | "slug">
 
 export type WorkspaceOrderByWithAggregationInput = {
@@ -252,6 +258,8 @@ export type WorkspaceCreateInput = {
   probes?: Prisma.TenantIsolationProbeCreateNestedManyWithoutWorkspaceInput
   templates?: Prisma.TemplateCreateNestedManyWithoutWorkspaceInput
   brandConfig?: Prisma.BrandConfigCreateNestedOneWithoutWorkspaceInput
+  landingPages?: Prisma.LandingPageCreateNestedManyWithoutWorkspaceInput
+  lpAssets?: Prisma.LpAssetCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceUncheckedCreateInput = {
@@ -265,6 +273,8 @@ export type WorkspaceUncheckedCreateInput = {
   probes?: Prisma.TenantIsolationProbeUncheckedCreateNestedManyWithoutWorkspaceInput
   templates?: Prisma.TemplateUncheckedCreateNestedManyWithoutWorkspaceInput
   brandConfig?: Prisma.BrandConfigUncheckedCreateNestedOneWithoutWorkspaceInput
+  landingPages?: Prisma.LandingPageUncheckedCreateNestedManyWithoutWorkspaceInput
+  lpAssets?: Prisma.LpAssetUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceUpdateInput = {
@@ -278,6 +288,8 @@ export type WorkspaceUpdateInput = {
   probes?: Prisma.TenantIsolationProbeUpdateManyWithoutWorkspaceNestedInput
   templates?: Prisma.TemplateUpdateManyWithoutWorkspaceNestedInput
   brandConfig?: Prisma.BrandConfigUpdateOneWithoutWorkspaceNestedInput
+  landingPages?: Prisma.LandingPageUpdateManyWithoutWorkspaceNestedInput
+  lpAssets?: Prisma.LpAssetUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUncheckedUpdateInput = {
@@ -291,6 +303,8 @@ export type WorkspaceUncheckedUpdateInput = {
   probes?: Prisma.TenantIsolationProbeUncheckedUpdateManyWithoutWorkspaceNestedInput
   templates?: Prisma.TemplateUncheckedUpdateManyWithoutWorkspaceNestedInput
   brandConfig?: Prisma.BrandConfigUncheckedUpdateOneWithoutWorkspaceNestedInput
+  landingPages?: Prisma.LandingPageUncheckedUpdateManyWithoutWorkspaceNestedInput
+  lpAssets?: Prisma.LpAssetUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateManyInput = {
@@ -416,6 +430,34 @@ export type WorkspaceUpdateOneRequiredWithoutBrandConfigNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.WorkspaceUpdateToOneWithWhereWithoutBrandConfigInput, Prisma.WorkspaceUpdateWithoutBrandConfigInput>, Prisma.WorkspaceUncheckedUpdateWithoutBrandConfigInput>
 }
 
+export type WorkspaceCreateNestedOneWithoutLandingPagesInput = {
+  create?: Prisma.XOR<Prisma.WorkspaceCreateWithoutLandingPagesInput, Prisma.WorkspaceUncheckedCreateWithoutLandingPagesInput>
+  connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutLandingPagesInput
+  connect?: Prisma.WorkspaceWhereUniqueInput
+}
+
+export type WorkspaceUpdateOneRequiredWithoutLandingPagesNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkspaceCreateWithoutLandingPagesInput, Prisma.WorkspaceUncheckedCreateWithoutLandingPagesInput>
+  connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutLandingPagesInput
+  upsert?: Prisma.WorkspaceUpsertWithoutLandingPagesInput
+  connect?: Prisma.WorkspaceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkspaceUpdateToOneWithWhereWithoutLandingPagesInput, Prisma.WorkspaceUpdateWithoutLandingPagesInput>, Prisma.WorkspaceUncheckedUpdateWithoutLandingPagesInput>
+}
+
+export type WorkspaceCreateNestedOneWithoutLpAssetsInput = {
+  create?: Prisma.XOR<Prisma.WorkspaceCreateWithoutLpAssetsInput, Prisma.WorkspaceUncheckedCreateWithoutLpAssetsInput>
+  connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutLpAssetsInput
+  connect?: Prisma.WorkspaceWhereUniqueInput
+}
+
+export type WorkspaceUpdateOneRequiredWithoutLpAssetsNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkspaceCreateWithoutLpAssetsInput, Prisma.WorkspaceUncheckedCreateWithoutLpAssetsInput>
+  connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutLpAssetsInput
+  upsert?: Prisma.WorkspaceUpsertWithoutLpAssetsInput
+  connect?: Prisma.WorkspaceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkspaceUpdateToOneWithWhereWithoutLpAssetsInput, Prisma.WorkspaceUpdateWithoutLpAssetsInput>, Prisma.WorkspaceUncheckedUpdateWithoutLpAssetsInput>
+}
+
 export type WorkspaceCreateWithoutMembersInput = {
   id?: string
   name: string
@@ -426,6 +468,8 @@ export type WorkspaceCreateWithoutMembersInput = {
   probes?: Prisma.TenantIsolationProbeCreateNestedManyWithoutWorkspaceInput
   templates?: Prisma.TemplateCreateNestedManyWithoutWorkspaceInput
   brandConfig?: Prisma.BrandConfigCreateNestedOneWithoutWorkspaceInput
+  landingPages?: Prisma.LandingPageCreateNestedManyWithoutWorkspaceInput
+  lpAssets?: Prisma.LpAssetCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceUncheckedCreateWithoutMembersInput = {
@@ -438,6 +482,8 @@ export type WorkspaceUncheckedCreateWithoutMembersInput = {
   probes?: Prisma.TenantIsolationProbeUncheckedCreateNestedManyWithoutWorkspaceInput
   templates?: Prisma.TemplateUncheckedCreateNestedManyWithoutWorkspaceInput
   brandConfig?: Prisma.BrandConfigUncheckedCreateNestedOneWithoutWorkspaceInput
+  landingPages?: Prisma.LandingPageUncheckedCreateNestedManyWithoutWorkspaceInput
+  lpAssets?: Prisma.LpAssetUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutMembersInput = {
@@ -466,6 +512,8 @@ export type WorkspaceUpdateWithoutMembersInput = {
   probes?: Prisma.TenantIsolationProbeUpdateManyWithoutWorkspaceNestedInput
   templates?: Prisma.TemplateUpdateManyWithoutWorkspaceNestedInput
   brandConfig?: Prisma.BrandConfigUpdateOneWithoutWorkspaceNestedInput
+  landingPages?: Prisma.LandingPageUpdateManyWithoutWorkspaceNestedInput
+  lpAssets?: Prisma.LpAssetUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUncheckedUpdateWithoutMembersInput = {
@@ -478,6 +526,8 @@ export type WorkspaceUncheckedUpdateWithoutMembersInput = {
   probes?: Prisma.TenantIsolationProbeUncheckedUpdateManyWithoutWorkspaceNestedInput
   templates?: Prisma.TemplateUncheckedUpdateManyWithoutWorkspaceNestedInput
   brandConfig?: Prisma.BrandConfigUncheckedUpdateOneWithoutWorkspaceNestedInput
+  landingPages?: Prisma.LandingPageUncheckedUpdateManyWithoutWorkspaceNestedInput
+  lpAssets?: Prisma.LpAssetUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateWithoutInvitationsInput = {
@@ -490,6 +540,8 @@ export type WorkspaceCreateWithoutInvitationsInput = {
   probes?: Prisma.TenantIsolationProbeCreateNestedManyWithoutWorkspaceInput
   templates?: Prisma.TemplateCreateNestedManyWithoutWorkspaceInput
   brandConfig?: Prisma.BrandConfigCreateNestedOneWithoutWorkspaceInput
+  landingPages?: Prisma.LandingPageCreateNestedManyWithoutWorkspaceInput
+  lpAssets?: Prisma.LpAssetCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceUncheckedCreateWithoutInvitationsInput = {
@@ -502,6 +554,8 @@ export type WorkspaceUncheckedCreateWithoutInvitationsInput = {
   probes?: Prisma.TenantIsolationProbeUncheckedCreateNestedManyWithoutWorkspaceInput
   templates?: Prisma.TemplateUncheckedCreateNestedManyWithoutWorkspaceInput
   brandConfig?: Prisma.BrandConfigUncheckedCreateNestedOneWithoutWorkspaceInput
+  landingPages?: Prisma.LandingPageUncheckedCreateNestedManyWithoutWorkspaceInput
+  lpAssets?: Prisma.LpAssetUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutInvitationsInput = {
@@ -530,6 +584,8 @@ export type WorkspaceUpdateWithoutInvitationsInput = {
   probes?: Prisma.TenantIsolationProbeUpdateManyWithoutWorkspaceNestedInput
   templates?: Prisma.TemplateUpdateManyWithoutWorkspaceNestedInput
   brandConfig?: Prisma.BrandConfigUpdateOneWithoutWorkspaceNestedInput
+  landingPages?: Prisma.LandingPageUpdateManyWithoutWorkspaceNestedInput
+  lpAssets?: Prisma.LpAssetUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUncheckedUpdateWithoutInvitationsInput = {
@@ -542,6 +598,8 @@ export type WorkspaceUncheckedUpdateWithoutInvitationsInput = {
   probes?: Prisma.TenantIsolationProbeUncheckedUpdateManyWithoutWorkspaceNestedInput
   templates?: Prisma.TemplateUncheckedUpdateManyWithoutWorkspaceNestedInput
   brandConfig?: Prisma.BrandConfigUncheckedUpdateOneWithoutWorkspaceNestedInput
+  landingPages?: Prisma.LandingPageUncheckedUpdateManyWithoutWorkspaceNestedInput
+  lpAssets?: Prisma.LpAssetUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateWithoutProbesInput = {
@@ -554,6 +612,8 @@ export type WorkspaceCreateWithoutProbesInput = {
   invitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutWorkspaceInput
   templates?: Prisma.TemplateCreateNestedManyWithoutWorkspaceInput
   brandConfig?: Prisma.BrandConfigCreateNestedOneWithoutWorkspaceInput
+  landingPages?: Prisma.LandingPageCreateNestedManyWithoutWorkspaceInput
+  lpAssets?: Prisma.LpAssetCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceUncheckedCreateWithoutProbesInput = {
@@ -566,6 +626,8 @@ export type WorkspaceUncheckedCreateWithoutProbesInput = {
   invitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutWorkspaceInput
   templates?: Prisma.TemplateUncheckedCreateNestedManyWithoutWorkspaceInput
   brandConfig?: Prisma.BrandConfigUncheckedCreateNestedOneWithoutWorkspaceInput
+  landingPages?: Prisma.LandingPageUncheckedCreateNestedManyWithoutWorkspaceInput
+  lpAssets?: Prisma.LpAssetUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutProbesInput = {
@@ -594,6 +656,8 @@ export type WorkspaceUpdateWithoutProbesInput = {
   invitations?: Prisma.WorkspaceInvitationUpdateManyWithoutWorkspaceNestedInput
   templates?: Prisma.TemplateUpdateManyWithoutWorkspaceNestedInput
   brandConfig?: Prisma.BrandConfigUpdateOneWithoutWorkspaceNestedInput
+  landingPages?: Prisma.LandingPageUpdateManyWithoutWorkspaceNestedInput
+  lpAssets?: Prisma.LpAssetUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUncheckedUpdateWithoutProbesInput = {
@@ -606,6 +670,8 @@ export type WorkspaceUncheckedUpdateWithoutProbesInput = {
   invitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutWorkspaceNestedInput
   templates?: Prisma.TemplateUncheckedUpdateManyWithoutWorkspaceNestedInput
   brandConfig?: Prisma.BrandConfigUncheckedUpdateOneWithoutWorkspaceNestedInput
+  landingPages?: Prisma.LandingPageUncheckedUpdateManyWithoutWorkspaceNestedInput
+  lpAssets?: Prisma.LpAssetUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateWithoutTemplatesInput = {
@@ -618,6 +684,8 @@ export type WorkspaceCreateWithoutTemplatesInput = {
   invitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutWorkspaceInput
   probes?: Prisma.TenantIsolationProbeCreateNestedManyWithoutWorkspaceInput
   brandConfig?: Prisma.BrandConfigCreateNestedOneWithoutWorkspaceInput
+  landingPages?: Prisma.LandingPageCreateNestedManyWithoutWorkspaceInput
+  lpAssets?: Prisma.LpAssetCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceUncheckedCreateWithoutTemplatesInput = {
@@ -630,6 +698,8 @@ export type WorkspaceUncheckedCreateWithoutTemplatesInput = {
   invitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutWorkspaceInput
   probes?: Prisma.TenantIsolationProbeUncheckedCreateNestedManyWithoutWorkspaceInput
   brandConfig?: Prisma.BrandConfigUncheckedCreateNestedOneWithoutWorkspaceInput
+  landingPages?: Prisma.LandingPageUncheckedCreateNestedManyWithoutWorkspaceInput
+  lpAssets?: Prisma.LpAssetUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutTemplatesInput = {
@@ -658,6 +728,8 @@ export type WorkspaceUpdateWithoutTemplatesInput = {
   invitations?: Prisma.WorkspaceInvitationUpdateManyWithoutWorkspaceNestedInput
   probes?: Prisma.TenantIsolationProbeUpdateManyWithoutWorkspaceNestedInput
   brandConfig?: Prisma.BrandConfigUpdateOneWithoutWorkspaceNestedInput
+  landingPages?: Prisma.LandingPageUpdateManyWithoutWorkspaceNestedInput
+  lpAssets?: Prisma.LpAssetUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUncheckedUpdateWithoutTemplatesInput = {
@@ -670,6 +742,8 @@ export type WorkspaceUncheckedUpdateWithoutTemplatesInput = {
   invitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutWorkspaceNestedInput
   probes?: Prisma.TenantIsolationProbeUncheckedUpdateManyWithoutWorkspaceNestedInput
   brandConfig?: Prisma.BrandConfigUncheckedUpdateOneWithoutWorkspaceNestedInput
+  landingPages?: Prisma.LandingPageUncheckedUpdateManyWithoutWorkspaceNestedInput
+  lpAssets?: Prisma.LpAssetUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateWithoutBrandConfigInput = {
@@ -682,6 +756,8 @@ export type WorkspaceCreateWithoutBrandConfigInput = {
   invitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutWorkspaceInput
   probes?: Prisma.TenantIsolationProbeCreateNestedManyWithoutWorkspaceInput
   templates?: Prisma.TemplateCreateNestedManyWithoutWorkspaceInput
+  landingPages?: Prisma.LandingPageCreateNestedManyWithoutWorkspaceInput
+  lpAssets?: Prisma.LpAssetCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceUncheckedCreateWithoutBrandConfigInput = {
@@ -694,6 +770,8 @@ export type WorkspaceUncheckedCreateWithoutBrandConfigInput = {
   invitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutWorkspaceInput
   probes?: Prisma.TenantIsolationProbeUncheckedCreateNestedManyWithoutWorkspaceInput
   templates?: Prisma.TemplateUncheckedCreateNestedManyWithoutWorkspaceInput
+  landingPages?: Prisma.LandingPageUncheckedCreateNestedManyWithoutWorkspaceInput
+  lpAssets?: Prisma.LpAssetUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutBrandConfigInput = {
@@ -722,6 +800,8 @@ export type WorkspaceUpdateWithoutBrandConfigInput = {
   invitations?: Prisma.WorkspaceInvitationUpdateManyWithoutWorkspaceNestedInput
   probes?: Prisma.TenantIsolationProbeUpdateManyWithoutWorkspaceNestedInput
   templates?: Prisma.TemplateUpdateManyWithoutWorkspaceNestedInput
+  landingPages?: Prisma.LandingPageUpdateManyWithoutWorkspaceNestedInput
+  lpAssets?: Prisma.LpAssetUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUncheckedUpdateWithoutBrandConfigInput = {
@@ -734,6 +814,152 @@ export type WorkspaceUncheckedUpdateWithoutBrandConfigInput = {
   invitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutWorkspaceNestedInput
   probes?: Prisma.TenantIsolationProbeUncheckedUpdateManyWithoutWorkspaceNestedInput
   templates?: Prisma.TemplateUncheckedUpdateManyWithoutWorkspaceNestedInput
+  landingPages?: Prisma.LandingPageUncheckedUpdateManyWithoutWorkspaceNestedInput
+  lpAssets?: Prisma.LpAssetUncheckedUpdateManyWithoutWorkspaceNestedInput
+}
+
+export type WorkspaceCreateWithoutLandingPagesInput = {
+  id?: string
+  name: string
+  slug: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
+  invitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutWorkspaceInput
+  probes?: Prisma.TenantIsolationProbeCreateNestedManyWithoutWorkspaceInput
+  templates?: Prisma.TemplateCreateNestedManyWithoutWorkspaceInput
+  brandConfig?: Prisma.BrandConfigCreateNestedOneWithoutWorkspaceInput
+  lpAssets?: Prisma.LpAssetCreateNestedManyWithoutWorkspaceInput
+}
+
+export type WorkspaceUncheckedCreateWithoutLandingPagesInput = {
+  id?: string
+  name: string
+  slug: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
+  invitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutWorkspaceInput
+  probes?: Prisma.TenantIsolationProbeUncheckedCreateNestedManyWithoutWorkspaceInput
+  templates?: Prisma.TemplateUncheckedCreateNestedManyWithoutWorkspaceInput
+  brandConfig?: Prisma.BrandConfigUncheckedCreateNestedOneWithoutWorkspaceInput
+  lpAssets?: Prisma.LpAssetUncheckedCreateNestedManyWithoutWorkspaceInput
+}
+
+export type WorkspaceCreateOrConnectWithoutLandingPagesInput = {
+  where: Prisma.WorkspaceWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkspaceCreateWithoutLandingPagesInput, Prisma.WorkspaceUncheckedCreateWithoutLandingPagesInput>
+}
+
+export type WorkspaceUpsertWithoutLandingPagesInput = {
+  update: Prisma.XOR<Prisma.WorkspaceUpdateWithoutLandingPagesInput, Prisma.WorkspaceUncheckedUpdateWithoutLandingPagesInput>
+  create: Prisma.XOR<Prisma.WorkspaceCreateWithoutLandingPagesInput, Prisma.WorkspaceUncheckedCreateWithoutLandingPagesInput>
+  where?: Prisma.WorkspaceWhereInput
+}
+
+export type WorkspaceUpdateToOneWithWhereWithoutLandingPagesInput = {
+  where?: Prisma.WorkspaceWhereInput
+  data: Prisma.XOR<Prisma.WorkspaceUpdateWithoutLandingPagesInput, Prisma.WorkspaceUncheckedUpdateWithoutLandingPagesInput>
+}
+
+export type WorkspaceUpdateWithoutLandingPagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
+  invitations?: Prisma.WorkspaceInvitationUpdateManyWithoutWorkspaceNestedInput
+  probes?: Prisma.TenantIsolationProbeUpdateManyWithoutWorkspaceNestedInput
+  templates?: Prisma.TemplateUpdateManyWithoutWorkspaceNestedInput
+  brandConfig?: Prisma.BrandConfigUpdateOneWithoutWorkspaceNestedInput
+  lpAssets?: Prisma.LpAssetUpdateManyWithoutWorkspaceNestedInput
+}
+
+export type WorkspaceUncheckedUpdateWithoutLandingPagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
+  invitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutWorkspaceNestedInput
+  probes?: Prisma.TenantIsolationProbeUncheckedUpdateManyWithoutWorkspaceNestedInput
+  templates?: Prisma.TemplateUncheckedUpdateManyWithoutWorkspaceNestedInput
+  brandConfig?: Prisma.BrandConfigUncheckedUpdateOneWithoutWorkspaceNestedInput
+  lpAssets?: Prisma.LpAssetUncheckedUpdateManyWithoutWorkspaceNestedInput
+}
+
+export type WorkspaceCreateWithoutLpAssetsInput = {
+  id?: string
+  name: string
+  slug: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
+  invitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutWorkspaceInput
+  probes?: Prisma.TenantIsolationProbeCreateNestedManyWithoutWorkspaceInput
+  templates?: Prisma.TemplateCreateNestedManyWithoutWorkspaceInput
+  brandConfig?: Prisma.BrandConfigCreateNestedOneWithoutWorkspaceInput
+  landingPages?: Prisma.LandingPageCreateNestedManyWithoutWorkspaceInput
+}
+
+export type WorkspaceUncheckedCreateWithoutLpAssetsInput = {
+  id?: string
+  name: string
+  slug: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
+  invitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutWorkspaceInput
+  probes?: Prisma.TenantIsolationProbeUncheckedCreateNestedManyWithoutWorkspaceInput
+  templates?: Prisma.TemplateUncheckedCreateNestedManyWithoutWorkspaceInput
+  brandConfig?: Prisma.BrandConfigUncheckedCreateNestedOneWithoutWorkspaceInput
+  landingPages?: Prisma.LandingPageUncheckedCreateNestedManyWithoutWorkspaceInput
+}
+
+export type WorkspaceCreateOrConnectWithoutLpAssetsInput = {
+  where: Prisma.WorkspaceWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkspaceCreateWithoutLpAssetsInput, Prisma.WorkspaceUncheckedCreateWithoutLpAssetsInput>
+}
+
+export type WorkspaceUpsertWithoutLpAssetsInput = {
+  update: Prisma.XOR<Prisma.WorkspaceUpdateWithoutLpAssetsInput, Prisma.WorkspaceUncheckedUpdateWithoutLpAssetsInput>
+  create: Prisma.XOR<Prisma.WorkspaceCreateWithoutLpAssetsInput, Prisma.WorkspaceUncheckedCreateWithoutLpAssetsInput>
+  where?: Prisma.WorkspaceWhereInput
+}
+
+export type WorkspaceUpdateToOneWithWhereWithoutLpAssetsInput = {
+  where?: Prisma.WorkspaceWhereInput
+  data: Prisma.XOR<Prisma.WorkspaceUpdateWithoutLpAssetsInput, Prisma.WorkspaceUncheckedUpdateWithoutLpAssetsInput>
+}
+
+export type WorkspaceUpdateWithoutLpAssetsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
+  invitations?: Prisma.WorkspaceInvitationUpdateManyWithoutWorkspaceNestedInput
+  probes?: Prisma.TenantIsolationProbeUpdateManyWithoutWorkspaceNestedInput
+  templates?: Prisma.TemplateUpdateManyWithoutWorkspaceNestedInput
+  brandConfig?: Prisma.BrandConfigUpdateOneWithoutWorkspaceNestedInput
+  landingPages?: Prisma.LandingPageUpdateManyWithoutWorkspaceNestedInput
+}
+
+export type WorkspaceUncheckedUpdateWithoutLpAssetsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
+  invitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutWorkspaceNestedInput
+  probes?: Prisma.TenantIsolationProbeUncheckedUpdateManyWithoutWorkspaceNestedInput
+  templates?: Prisma.TemplateUncheckedUpdateManyWithoutWorkspaceNestedInput
+  brandConfig?: Prisma.BrandConfigUncheckedUpdateOneWithoutWorkspaceNestedInput
+  landingPages?: Prisma.LandingPageUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 
@@ -746,6 +972,8 @@ export type WorkspaceCountOutputType = {
   invitations: number
   probes: number
   templates: number
+  landingPages: number
+  lpAssets: number
 }
 
 export type WorkspaceCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -753,6 +981,8 @@ export type WorkspaceCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensi
   invitations?: boolean | WorkspaceCountOutputTypeCountInvitationsArgs
   probes?: boolean | WorkspaceCountOutputTypeCountProbesArgs
   templates?: boolean | WorkspaceCountOutputTypeCountTemplatesArgs
+  landingPages?: boolean | WorkspaceCountOutputTypeCountLandingPagesArgs
+  lpAssets?: boolean | WorkspaceCountOutputTypeCountLpAssetsArgs
 }
 
 /**
@@ -793,6 +1023,20 @@ export type WorkspaceCountOutputTypeCountTemplatesArgs<ExtArgs extends runtime.T
   where?: Prisma.TemplateWhereInput
 }
 
+/**
+ * WorkspaceCountOutputType without action
+ */
+export type WorkspaceCountOutputTypeCountLandingPagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.LandingPageWhereInput
+}
+
+/**
+ * WorkspaceCountOutputType without action
+ */
+export type WorkspaceCountOutputTypeCountLpAssetsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.LpAssetWhereInput
+}
+
 
 export type WorkspaceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -805,6 +1049,8 @@ export type WorkspaceSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   probes?: boolean | Prisma.Workspace$probesArgs<ExtArgs>
   templates?: boolean | Prisma.Workspace$templatesArgs<ExtArgs>
   brandConfig?: boolean | Prisma.Workspace$brandConfigArgs<ExtArgs>
+  landingPages?: boolean | Prisma.Workspace$landingPagesArgs<ExtArgs>
+  lpAssets?: boolean | Prisma.Workspace$lpAssetsArgs<ExtArgs>
   _count?: boolean | Prisma.WorkspaceCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["workspace"]>
 
@@ -839,6 +1085,8 @@ export type WorkspaceInclude<ExtArgs extends runtime.Types.Extensions.InternalAr
   probes?: boolean | Prisma.Workspace$probesArgs<ExtArgs>
   templates?: boolean | Prisma.Workspace$templatesArgs<ExtArgs>
   brandConfig?: boolean | Prisma.Workspace$brandConfigArgs<ExtArgs>
+  landingPages?: boolean | Prisma.Workspace$landingPagesArgs<ExtArgs>
+  lpAssets?: boolean | Prisma.Workspace$lpAssetsArgs<ExtArgs>
   _count?: boolean | Prisma.WorkspaceCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type WorkspaceIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -852,6 +1100,8 @@ export type $WorkspacePayload<ExtArgs extends runtime.Types.Extensions.InternalA
     probes: Prisma.$TenantIsolationProbePayload<ExtArgs>[]
     templates: Prisma.$TemplatePayload<ExtArgs>[]
     brandConfig: Prisma.$BrandConfigPayload<ExtArgs> | null
+    landingPages: Prisma.$LandingPagePayload<ExtArgs>[]
+    lpAssets: Prisma.$LpAssetPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1258,6 +1508,8 @@ export interface Prisma__WorkspaceClient<T, Null = never, ExtArgs extends runtim
   probes<T extends Prisma.Workspace$probesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$probesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TenantIsolationProbePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   templates<T extends Prisma.Workspace$templatesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$templatesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TemplatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   brandConfig<T extends Prisma.Workspace$brandConfigArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$brandConfigArgs<ExtArgs>>): Prisma.Prisma__BrandConfigClient<runtime.Types.Result.GetResult<Prisma.$BrandConfigPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  landingPages<T extends Prisma.Workspace$landingPagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$landingPagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LandingPagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  lpAssets<T extends Prisma.Workspace$lpAssetsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$lpAssetsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LpAssetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1797,6 +2049,54 @@ export type Workspace$brandConfigArgs<ExtArgs extends runtime.Types.Extensions.I
    */
   include?: Prisma.BrandConfigInclude<ExtArgs> | null
   where?: Prisma.BrandConfigWhereInput
+}
+
+/**
+ * Workspace.landingPages
+ */
+export type Workspace$landingPagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LandingPage
+   */
+  select?: Prisma.LandingPageSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the LandingPage
+   */
+  omit?: Prisma.LandingPageOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LandingPageInclude<ExtArgs> | null
+  where?: Prisma.LandingPageWhereInput
+  orderBy?: Prisma.LandingPageOrderByWithRelationInput | Prisma.LandingPageOrderByWithRelationInput[]
+  cursor?: Prisma.LandingPageWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.LandingPageScalarFieldEnum | Prisma.LandingPageScalarFieldEnum[]
+}
+
+/**
+ * Workspace.lpAssets
+ */
+export type Workspace$lpAssetsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LpAsset
+   */
+  select?: Prisma.LpAssetSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the LpAsset
+   */
+  omit?: Prisma.LpAssetOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LpAssetInclude<ExtArgs> | null
+  where?: Prisma.LpAssetWhereInput
+  orderBy?: Prisma.LpAssetOrderByWithRelationInput | Prisma.LpAssetOrderByWithRelationInput[]
+  cursor?: Prisma.LpAssetWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.LpAssetScalarFieldEnum | Prisma.LpAssetScalarFieldEnum[]
 }
 
 /**
