@@ -124,6 +124,7 @@ export function LpCard({ lp, slug }: LpCardProps) {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleted, setDeleted] = useState(false);
   const [isDuplicating, startDuplicateTransition] = useTransition();
+  const [isExporting, setIsExporting] = useState(false);
 
   if (deleted) return null;
 
@@ -147,8 +148,24 @@ export function LpCard({ lp, slug }: LpCardProps) {
 
   function handleExportZip() {
     setMenuOpen(false);
-    // Navigate to export route handler (implemented in Plan 04)
-    window.location.href = `/api/lps/${lp.id}/export`;
+    setIsExporting(true);
+    try {
+      // Trigger browser download by clicking a temporary anchor element.
+      // HTTP streaming downloads don't emit completion events to the page,
+      // so we show the success toast immediately after initiating the download
+      // (per UI-SPEC LP-04 interaction).
+      const a = document.createElement("a");
+      a.href = `/api/lps/${lp.id}/export`;
+      a.download = "";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      toast.success("Export ready — downloading.");
+    } catch {
+      toast.error("Export failed. Try again.");
+    } finally {
+      setIsExporting(false);
+    }
   }
 
   return (
@@ -188,10 +205,10 @@ export function LpCard({ lp, slug }: LpCardProps) {
               type="button"
               onClick={() => setMenuOpen((v) => !v)}
               aria-label="Landing page options"
-              disabled={isDuplicating}
+              disabled={isDuplicating || isExporting}
               className="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors disabled:opacity-50"
             >
-              {isDuplicating ? (
+              {isDuplicating || isExporting ? (
                 <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
               ) : (
                 <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
@@ -216,9 +233,17 @@ export function LpCard({ lp, slug }: LpCardProps) {
                   <button
                     type="button"
                     onClick={handleExportZip}
-                    className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                    disabled={isExporting}
+                    className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
                   >
-                    Export ZIP
+                    {isExporting ? (
+                      <span className="flex items-center gap-1.5">
+                        <Loader2 className="h-3 w-3 animate-spin" aria-hidden="true" />
+                        Exporting…
+                      </span>
+                    ) : (
+                      "Export ZIP"
+                    )}
                   </button>
                   {/* Separator */}
                   <div className="my-1 border-t border-gray-100" aria-hidden="true" />
