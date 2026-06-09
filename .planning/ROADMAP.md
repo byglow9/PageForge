@@ -119,7 +119,7 @@ Plans:
 
 Plans:
 **Wave 1**
-- [ ] 04-01-PLAN.md — Environment setup (MinIO docker-compose, S3 env vars, file-type transpilePackages) + Prisma schema (LandingPage + LpAsset models) + [BLOCKING] db push + TenantClient extension (lp/lpAsset helpers) + lib/lps contracts (render.ts, schema.ts, schema-derive.ts)
+- [x] 04-01-PLAN.md — Environment setup (MinIO docker-compose, S3 env vars, file-type transpilePackages) + Prisma schema (LandingPage + LpAsset models) + [BLOCKING] db push + TenantClient extension (lp/lpAsset helpers) + lib/lps contracts (render.ts, schema.ts, schema-derive.ts)
 
 **Wave 2** *(blocked on Wave 1 — [BLOCKING] schema push)*
 - [ ] 04-02-PLAN.md — Form→merge→preview vertical slice: packages (RHF, Tiptap, @hello-pangea/dnd, slugify) + lib/lps/actions.ts (generate/update/duplicate/delete/list/get) + LpForm + LpCard + LpPreview + RepeaterBlock + RichTextField + BrandGlobalsPanel + LP pages (list/picker/new/preview/edit) + sidebar nav link
