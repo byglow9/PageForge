@@ -22,7 +22,7 @@
  */
 import { prisma } from "./prisma";
 import type { WorkspaceContext } from "@/lib/workspaces/guards";
-import type { TemplateModel as Template, BrandConfigModel as BrandConfig } from "@/generated/prisma/models";
+import type { TemplateModel as Template, BrandConfigModel as BrandConfig, LandingPageModel as LandingPage, LpAssetModel as LpAsset } from "@/generated/prisma/models";
 import type { Prisma } from "@/generated/prisma/client";
 
 // -----------------------------------------------------------------------
@@ -123,6 +123,74 @@ export interface TenantBrandHelpers {
 }
 
 // -----------------------------------------------------------------------
+// Tenant-scoped helpers for LandingPage
+// -----------------------------------------------------------------------
+
+/**
+ * Tenant-scoped helpers for the LandingPage table.
+ *
+ * These methods:
+ * - Always inject ctx.workspaceId into writes (T-04-01-05: workspaceId from server context only)
+ * - Always filter reads by ctx.workspaceId (app-level isolation, D-14)
+ * - delete performs a pre-check findFirst before deleting (T-04-01-01)
+ * - Work inside a transaction that has already SET LOCAL app.current_workspace_id
+ *   (RLS backstop, T-04-01-01)
+ */
+export interface TenantLpHelpers {
+  /** Create a landing page scoped to the current workspace. */
+  create: (data: {
+    templateId?: string;
+    name: string;
+    markupSnapshot: string;
+    schemaVersion: number;
+    values: Prisma.InputJsonValue;
+  }) => Promise<LandingPage>;
+  /** Find a landing page by ID. Returns null if the row does not exist OR belongs to a different workspace. */
+  findById: (id: string) => Promise<LandingPage | null>;
+  /** List all landing pages for the current workspace, ordered by updatedAt desc. */
+  list: () => Promise<LandingPage[]>;
+  /**
+   * Update a landing page. Only the fields provided are updated; workspaceId cannot be changed.
+   */
+  update: (
+    id: string,
+    data: {
+      name?: string;
+      values?: Prisma.InputJsonValue;
+      markupSnapshot?: string;
+      schemaVersion?: number;
+    }
+  ) => Promise<LandingPage>;
+  /** Delete a landing page. Returns null if not found or belongs to a different workspace. */
+  delete: (id: string) => Promise<LandingPage | null>;
+}
+
+// -----------------------------------------------------------------------
+// Tenant-scoped helpers for LpAsset
+// -----------------------------------------------------------------------
+
+/**
+ * Tenant-scoped helpers for the LpAsset table.
+ *
+ * These methods track S3 keys for LP images (enables cleanup on LP delete).
+ */
+export interface TenantAssetHelpers {
+  /** Create an LP asset record scoped to the current workspace. */
+  create: (data: {
+    landingPageId: string;
+    s3Key: string;
+    publicUrl: string;
+    filename: string;
+    mimeType: string;
+    fileSize: number;
+  }) => Promise<LpAsset>;
+  /** List all LP asset records for a given landing page. */
+  listByLp: (landingPageId: string) => Promise<LpAsset[]>;
+  /** Delete all LP asset records for a given landing page (before or after LP delete). */
+  deleteByLp: (landingPageId: string) => Promise<void>;
+}
+
+// -----------------------------------------------------------------------
 // TenantClient — what the callback receives
 // -----------------------------------------------------------------------
 
@@ -135,6 +203,10 @@ export interface TenantClient {
   readonly template: TenantTemplateHelpers;
   /** Tenant-scoped helpers for BrandConfig. */
   readonly brandConfig: TenantBrandHelpers;
+  /** Tenant-scoped helpers for LandingPage. */
+  readonly lp: TenantLpHelpers;
+  /** Tenant-scoped helpers for LpAsset. */
+  readonly lpAsset: TenantAssetHelpers;
 }
 
 // -----------------------------------------------------------------------
@@ -269,6 +341,80 @@ export async function withTenantDb<T>(
             where: { workspaceId },
             create: { workspaceId, ...data },
             update: { ...data },
+          });
+        },
+      },
+
+      lp: {
+        create: async (data) => {
+          return tx.landingPage.create({
+            data: {
+              ...data,
+              workspaceId, // injected from server context, never from client (T-04-01-05)
+            },
+          });
+        },
+
+        findById: async (id: string) => {
+          // App-level filter: id + workspaceId ensures cross-workspace lookup returns null (T-04-01-01)
+          return tx.landingPage.findFirst({
+            where: {
+              id,
+              workspaceId, // app-level isolation
+            },
+          });
+        },
+
+        list: async () => {
+          return tx.landingPage.findMany({
+            where: { workspaceId }, // app-level filter (D-14)
+            orderBy: { updatedAt: "desc" },
+          });
+        },
+
+        update: async (id: string, data) => {
+          return tx.landingPage.update({
+            where: {
+              id,
+              workspaceId, // app-level isolation: prevents cross-workspace update
+            },
+            data,
+          });
+        },
+
+        delete: async (id: string) => {
+          // App-level check before delete: confirm the LP belongs to this workspace (T-04-01-01)
+          const existing = await tx.landingPage.findFirst({
+            where: { id, workspaceId },
+          });
+          if (!existing) {
+            return null;
+          }
+          return tx.landingPage.delete({
+            where: { id, workspaceId },
+          });
+        },
+      },
+
+      lpAsset: {
+        create: async (data) => {
+          return tx.lpAsset.create({
+            data: {
+              ...data,
+              workspaceId, // injected from server context, never from client
+            },
+          });
+        },
+
+        listByLp: async (landingPageId: string) => {
+          return tx.lpAsset.findMany({
+            where: { landingPageId, workspaceId }, // always scope by workspaceId for defence-in-depth
+          });
+        },
+
+        deleteByLp: async (landingPageId: string) => {
+          await tx.lpAsset.deleteMany({
+            where: { landingPageId, workspaceId },
           });
         },
       },
