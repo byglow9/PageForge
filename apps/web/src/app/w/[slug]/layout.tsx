@@ -11,6 +11,7 @@
  * - The workspace context (id, slug, userId, role) is valid.
  */
 import Link from "next/link";
+import { FileText } from "lucide-react";
 import { requireWorkspace } from "@/lib/workspaces/guards";
 
 interface WorkspaceLayoutProps {
@@ -55,6 +56,15 @@ export default async function WorkspaceLayout({
                 className="flex items-center gap-2 px-4 py-2 rounded-md text-sm text-gray-700 hover:bg-white hover:text-gray-900 transition-colors"
               >
                 Templates
+              </Link>
+            </li>
+            <li>
+              <Link
+                href={`/w/${slug}/lps`}
+                className="flex items-center gap-2 px-4 py-2 rounded-md text-sm text-gray-700 hover:bg-white hover:text-gray-900 transition-colors"
+              >
+                <FileText className="h-4 w-4" aria-hidden="true" />
+                Landing Pages
               </Link>
             </li>
             <li>
