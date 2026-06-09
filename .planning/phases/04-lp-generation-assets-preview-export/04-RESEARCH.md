@@ -964,22 +964,19 @@ function defaultForType(type: FieldType): unknown {
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Brand token name mapping in Phase 1 grammar**
+1. **Brand token name mapping in Phase 1 grammar** (RESOLVED)
    - What we know: `BrandConfig.logoUrl` / `primaryColor` / `whatsapp` in DB. Engine receives `brand` scope object.
-   - What's unclear: Are the scope keys `logo`, `primary_color`, `whatsapp` or `logoUrl`, `primaryColor`, `whatsapp`?
-   - Recommendation: Planner must read `src/engine/compiler.ts` to confirm the exact token names emitted for `brand.*` fields. Then verify that `renderLp()` maps DB column names to the correct scope keys.
+   - **Resolution:** Confirmed from `src/engine/renderer.ts` line 127: the renderer strips the `brand.` prefix via `field.name.replace(/^brand\./, '')`, then reads `(brand)[localName]`. Therefore the scope keys are `logo`, `primary_color`, and `whatsapp` — mapping `BrandConfig.logoUrl → logo`, `BrandConfig.primaryColor → primary_color`, `BrandConfig.whatsapp → whatsapp`. See Pattern 6 and Pitfall 5 — `renderLp()` must pass `{ logo: brand?.logoUrl ?? "", primary_color: brand?.primaryColor ?? "", whatsapp: brand?.whatsapp ?? "" }`.
 
-2. **LpAsset record policy — track assets separately or store URLs in values jsonb?**
+2. **LpAsset record policy — track assets separately or store URLs in values jsonb?** (RESOLVED)
    - What we know: CONTEXT.md D-09 says image URLs are stored in LP values; assets are downloaded at export time from those URLs.
-   - What's unclear: Do we need an `LpAsset` table to track which S3 keys belong to which LP (for cleanup on LP delete), or are URLs in `values` sufficient?
-   - Recommendation: Implement `LpAsset` table for S3 key tracking (enables cleanup on LP delete without scanning all values jsonb). Planner's call on whether Phase 4 includes the S3 delete-on-LP-delete logic (v1 may defer cleanup).
+   - **Resolution:** `LpAsset` IS tracked as a separate table (per D-06 + RESEARCH.md Pattern 8). Cleanup on LP delete is handled via the `onDelete: Cascade` FK from `LpAsset` to `LandingPage` in Prisma schema — no manual delete action needed. Phase 4 includes bulk-creating `LpAsset` records server-side inside `generateLpAction` (and `duplicateLpAction`) AFTER `db.lp.create()` using the `s3Key` values extracted from submitted image field values.
 
-3. **Generate HTML immediately and store, or always regenerate on demand?**
+3. **Generate HTML immediately and store, or always regenerate on demand?** (RESOLVED)
    - What we know: CONTEXT.md says "re-edit = regenerate" (PROJECT constraint). Regeneration is cheap.
-   - What's unclear: Does the LP record store a `htmlCache` column to avoid regenerating on every preview, or regenerate every time?
-   - Recommendation: Do NOT store generated HTML in Phase 4. Always regenerate from `markupSnapshot + values + liveBrand`. This is simpler, keeps brand globals live (D-04), and avoids cache invalidation complexity. Storage cost is negligible; render is fast.
+   - **Resolution:** Do NOT store generated HTML. Always regenerate from `markupSnapshot + values + liveBrand` (CONTEXT.md D-06 + CLAUDE.md). This keeps brand globals live (D-04), avoids cache invalidation, and is consistent with the project constraint. No `htmlCache` column is added to the `LandingPage` model.
 
 ---
 
