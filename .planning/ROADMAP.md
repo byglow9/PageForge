@@ -125,8 +125,8 @@ Plans:
 - [x] 04-02-PLAN.md — Form→merge→preview vertical slice: packages (RHF, Tiptap, @hello-pangea/dnd, slugify) + lib/lps/actions.ts (generate/update/duplicate/delete/list/get) + LpForm + LpCard + LpPreview + RepeaterBlock + RichTextField + BrandGlobalsPanel + LP pages (list/picker/new/preview/edit) + sidebar nav link
 
 **Wave 3** *(parallel — both blocked on Wave 2 completion)*
-- [ ] 04-03-PLAN.md — Image upload slice: @aws-sdk packages + requestPresignedUploadAction (magic-bytes + tenant-scoped path) + ImageUploadField component (drag/drop, presigned PUT, progress) + wire into LpForm
-- [ ] 04-04-PLAN.md — ZIP export slice: archiver + /api/lps/[lpId]/export route handler (render + S3 image download + src rewrite + CSP inject + archiver stream) + wire export triggers in LpCard and LpPreview
+- [x] 04-03-PLAN.md — Image upload slice: @aws-sdk packages + requestPresignedUploadAction (magic-bytes + tenant-scoped path) + ImageUploadField component (drag/drop, presigned PUT, progress) + wire into LpForm
+- [x] 04-04-PLAN.md — ZIP export slice: archiver + /api/lps/[lpId]/export route handler (render + S3 image download + src rewrite + CSP inject + archiver stream) + wire export triggers in LpCard and LpPreview
 
 ### Phase 5: Catalog & Grécia Acceptance
 **Goal**: Organize generated LPs into a browsable, searchable catalog and prove the full pipeline by authoring, generating, previewing, editing, duplicating, and exporting the real Grécia LP end to end.
