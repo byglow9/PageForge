@@ -11,7 +11,7 @@
  * - Each item: bordered sub-card, "{Label} {N}", GripVertical drag handle, × remove button.
  * - Empty state: informational message when no items.
  *
- * Image fields render a placeholder text input — ImageUploadField is Plan 03.
+ * Image fields use ImageUploadField (Plan 03) — drag/drop upload with presigned PUT.
  */
 
 import { useState } from "react";
@@ -29,6 +29,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { RichTextField } from "./RichTextField";
+import { ImageUploadField } from "./ImageUploadField";
 
 // -----------------------------------------------------------------------
 // Props
@@ -37,6 +38,7 @@ import { RichTextField } from "./RichTextField";
 export interface RepeaterBlockProps {
   repeaterName: string;
   repeaterLabel: string;
+  slug: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   control: Control<any>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -54,6 +56,7 @@ export interface RepeaterBlockProps {
 export function RepeaterBlock({
   repeaterName,
   repeaterLabel,
+  slug,
   control,
   register,
   errors,
@@ -231,13 +234,18 @@ export function RepeaterBlock({
                               <span className="text-red-500 ml-1" aria-label="required">*</span>
                             )}
                           </Label>
-                          <Input
-                            id={fieldId}
-                            {...register(fieldId)}
-                            placeholder="Image upload coming in next step"
-                            aria-required={meta.required ? "true" : undefined}
+                          <ImageUploadField
+                            name={fieldId}
+                            slug={slug}
+                            control={control}
+                            label={meta.label}
+                            required={meta.required}
                           />
-                          <p className="text-xs text-gray-400 mt-1">Image upload available in the next step.</p>
+                          {fieldError && (
+                            <p className="text-sm text-red-600 mt-1" role="alert">
+                              {String(fieldError.message ?? "This field is required.")}
+                            </p>
+                          )}
                         </div>
                       );
                     }

@@ -18,12 +18,20 @@ import type { MetadataOverlay } from "@/lib/templates/metadata";
  * Field types → Zod shapes:
  *  - text       → z.string()
  *  - richtext   → z.string() (HTML from Tiptap)
- *  - image      → z.string().url() (S3 URL after upload) — optional unless required
+ *  - image      → z.union([z.object({publicUrl: z.string().url(), s3Key: z.string()}), z.literal("")])
+ *                 Plan 03: ImageUploadField stores {publicUrl, s3Key} object.
+ *                 generateLpAction.extractImageFieldValues() unwraps publicUrl for rendering.
  *  - color      → z.string().regex(/^#[0-9a-fA-F]{6}$/)
  *  - button     → z.object({ label: z.string(), url: z.string().url() })
  *  - repeater   → z.array(z.object({ ...itemFields }))
  *  - global     → excluded (pre-bound to brand config, not user-editable)
  */
+
+/** Zod schema for an uploaded image field value (Plan 03 contract). */
+const imageFieldValueSchema = z.object({
+  publicUrl: z.string().url("Enter a valid image URL."),
+  s3Key: z.string().min(1),
+});
 export function deriveZodSchema(
   fields: TokenField[],
   overlay: MetadataOverlay
@@ -51,10 +59,11 @@ export function deriveZodSchema(
         ? z.string().min(1, "This field is required.")
         : z.string();
     } else if (field.type === "image") {
-      // After upload, field value = the S3 public URL
+      // After upload, field value = {publicUrl, s3Key} object (Plan 03 contract).
+      // generateLpAction.extractImageFieldValues() unwraps publicUrl for rendering.
       fieldSchema = meta.required
-        ? z.string().url("Enter a valid image URL.")
-        : z.string().url("Enter a valid image URL.").or(z.literal(""));
+        ? imageFieldValueSchema
+        : z.union([imageFieldValueSchema, z.literal("")]);
     } else if (field.type === "color") {
       fieldSchema = meta.required
         ? z.string().regex(HEX_REGEX, "Enter a valid hex color (e.g. #0f172a).")
@@ -97,9 +106,10 @@ export function deriveZodSchema(
       const meta = overlay[f.name] ?? { label: f.name, required: false };
       // Apply same type logic for repeater item fields
       if (f.type === "image") {
+        // Same {publicUrl, s3Key} object schema as top-level image fields (Plan 03)
         itemShape[f.name] = meta.required
-          ? z.string().url("Enter a valid image URL.")
-          : z.string().url("Enter a valid image URL.").or(z.literal(""));
+          ? imageFieldValueSchema
+          : z.union([imageFieldValueSchema, z.literal("")]);
       } else if (f.type === "color") {
         const HEX = /^#[0-9a-fA-F]{6}$/;
         itemShape[f.name] = meta.required

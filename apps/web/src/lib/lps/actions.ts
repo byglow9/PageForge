@@ -37,6 +37,24 @@ import { withTenantDb } from "@/lib/db/tenant-db";
 import { GenerateLpSchema, UpdateLpSchema } from "./schema";
 import { renderLp } from "./render";
 import type { ActionResult } from "@/lib/workspaces/actions";
+import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { imageSize } from "image-size";
+
+// -----------------------------------------------------------------------
+// S3 client singleton (module-level, initialized once per cold start)
+// Security: credentials come from server-side env vars only (T-04-03-06)
+// -----------------------------------------------------------------------
+
+const s3Client = new S3Client({
+  region: process.env.S3_REGION ?? "us-east-1",
+  endpoint: process.env.S3_ENDPOINT,
+  forcePathStyle: process.env.S3_FORCE_PATH_STYLE === "true",
+  credentials: {
+    accessKeyId: process.env.S3_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,
+  },
+});
 
 // -----------------------------------------------------------------------
 // Types
@@ -444,5 +462,148 @@ export async function getLpAction(
     });
   } catch {
     return { ok: false, error: "Failed to load landing page. Please try again." };
+  }
+}
+
+// -----------------------------------------------------------------------
+// requestPresignedUploadAction (Plan 03 — AST-01, D-01, D-02, D-03)
+// -----------------------------------------------------------------------
+
+/**
+ * Generate a presigned PUT URL for direct-to-S3 image upload.
+ *
+ * Security (T-04-03-01 through T-04-03-06):
+ * - Server-side magic-bytes validation via file-type (D-03).
+ *   Client MIME type string is untrusted; only the actual byte signature matters.
+ * - Server-side file size cap (D-03): files > 5 MB are rejected before presigning.
+ * - Tenant-scoped S3 key (D-01): path uses workspaceId from session — never from client.
+ * - S3 PUT URL restricted to one specific key; expires in 1 hour (T-04-03-02).
+ * - App server only receives firstBytes (4100 bytes) + metadata — full image bytes
+ *   go directly to S3 via the presigned URL (D-02, T-04-03-05).
+ */
+export async function requestPresignedUploadAction(
+  slug: string,
+  input: {
+    filename: string;
+    contentType: string;
+    fileSize: number;
+    firstBytes: number[];
+  }
+): Promise<ActionResult<{ presignedUrl: string; publicUrl: string; key: string }>> {
+  const ctx = await requireWorkspaceRole(slug, ["owner", "admin", "editor"]);
+
+  // Server-side file size cap (D-03) — guards against bloated uploads
+  const MAX_BYTES = 5 * 1024 * 1024; // 5 MB
+  if (input.fileSize > MAX_BYTES) {
+    return {
+      ok: false,
+      error: "File exceeds the 5 MB limit. Compress or resize the image and try again.",
+    };
+  }
+
+  // Magic-bytes validation (D-03) — ESM dynamic import required for file-type
+  try {
+    const { fileTypeFromBuffer } = await import("file-type");
+    const ALLOWED_MIME_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
+    const detected = await fileTypeFromBuffer(new Uint8Array(input.firstBytes));
+    if (!detected || !ALLOWED_MIME_TYPES.has(detected.mime)) {
+      return {
+        ok: false,
+        error: "File does not appear to be a valid image. Try a different file.",
+      };
+    }
+
+    // Tenant-scoped S3 key (D-01): workspaceId from session, UUID filename — no client input
+    const ext = detected.ext;
+    const key = `workspaces/${ctx.workspaceId}/lps/assets/${crypto.randomUUID()}.${ext}`;
+
+    // Build presigned PUT URL (expires 1 hour; Content-Type is signable header to prevent MIME swap)
+    const command = new PutObjectCommand({
+      Bucket: process.env.S3_BUCKET!,
+      Key: key,
+      ContentType: input.contentType,
+      ContentLength: input.fileSize,
+    });
+
+    const presignedUrl = await getSignedUrl(s3Client, command, {
+      expiresIn: 3600,
+      signableHeaders: new Set(["content-type"]),
+    });
+
+    const publicUrl = `${process.env.S3_PUBLIC_BASE_URL}/${key}`;
+
+    return { ok: true, data: { presignedUrl, publicUrl, key } };
+  } catch {
+    return { ok: false, error: "Failed to prepare upload. Try again." };
+  }
+}
+
+// -----------------------------------------------------------------------
+// validateUploadedImageAction (Plan 03 — D-03 pixel cap, T-04-03-01)
+// -----------------------------------------------------------------------
+
+/**
+ * Validate an already-uploaded S3 object's pixel dimensions.
+ *
+ * After the browser PUTs to S3 via the presigned URL, the client calls this
+ * action to enforce the server-side pixel cap (5000×5000 px). If the image
+ * exceeds the cap, the S3 object is deleted before returning the error.
+ *
+ * Implementation:
+ * - Ranged GET of bytes 0-65535 (enough for JPEG/PNG/WEBP header to read dimensions).
+ * - image-size is synchronous; no full-download required.
+ * - DeleteObjectCommand issued immediately if cap exceeded (T-04-03-01).
+ */
+export async function validateUploadedImageAction(
+  slug: string,
+  input: { key: string }
+): Promise<ActionResult<{ width: number; height: number }>> {
+  await requireWorkspaceRole(slug, ["owner", "admin", "editor"]);
+
+  try {
+    // Ranged GET — only fetch the image header bytes (first 64 KB)
+    const s3Cmd = new GetObjectCommand({
+      Bucket: process.env.S3_BUCKET!,
+      Key: input.key,
+      Range: "bytes=0-65535",
+    });
+
+    const response = await s3Client.send(s3Cmd);
+    const chunks: Uint8Array[] = [];
+    for await (const chunk of response.Body as AsyncIterable<Uint8Array>) {
+      chunks.push(chunk);
+    }
+    const buffer = Buffer.concat(chunks);
+
+    // image-size is synchronous — reads dimensions from the header bytes
+    const dims = imageSize(buffer);
+
+    const MAX_PX = 5000;
+    if (
+      !dims ||
+      dims.width == null ||
+      dims.height == null ||
+      dims.width > MAX_PX ||
+      dims.height > MAX_PX
+    ) {
+      // Delete the S3 object to enforce the pixel cap (T-04-03-01)
+      await s3Client.send(
+        new DeleteObjectCommand({
+          Bucket: process.env.S3_BUCKET!,
+          Key: input.key,
+        })
+      );
+      return {
+        ok: false,
+        error: `Image dimensions exceed the ${MAX_PX}×${MAX_PX} px limit. Resize the image and try again.`,
+      };
+    }
+
+    return { ok: true, data: { width: dims.width!, height: dims.height! } };
+  } catch {
+    return {
+      ok: false,
+      error: "Could not validate image dimensions. Try again.",
+    };
   }
 }
