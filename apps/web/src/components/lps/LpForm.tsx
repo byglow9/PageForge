@@ -37,6 +37,7 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { BrandGlobalsPanel } from "./BrandGlobalsPanel";
 import { RepeaterBlock } from "./RepeaterBlock";
 import { RichTextField } from "./RichTextField";
+import { ImageUploadField } from "./ImageUploadField";
 
 // -----------------------------------------------------------------------
 // Props
@@ -89,6 +90,7 @@ function buildDefaultItem(
 
 interface RepeaterFieldControllerProps {
   repeaterName: string;
+  slug: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   control: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -101,6 +103,7 @@ interface RepeaterFieldControllerProps {
 
 function RepeaterFieldController({
   repeaterName,
+  slug,
   control,
   register,
   errors,
@@ -120,6 +123,7 @@ function RepeaterFieldController({
     <RepeaterBlock
       repeaterName={repeaterName}
       repeaterLabel={displayLabel}
+      slug={slug}
       control={control}
       register={register}
       errors={errors}
@@ -414,15 +418,13 @@ export function LpForm({
                       <span className="text-red-500 ml-1" aria-label="required">*</span>
                     )}
                   </Label>
-                  <Input
-                    id={fieldId}
-                    type="text"
-                    {...register(field.name)}
-                    placeholder="Image URL (upload coming soon)"
-                    aria-required={meta.required ? "true" : undefined}
-                    aria-describedby={fieldError ? `${fieldId}-error` : undefined}
+                  <ImageUploadField
+                    name={field.name}
+                    slug={slug}
+                    control={control}
+                    label={meta.label}
+                    required={meta.required}
                   />
-                  <p className="text-xs text-gray-400 mt-1">Image upload available in the next step.</p>
                   {fieldError && (
                     <p
                       id={`${fieldId}-error`}
@@ -586,6 +588,7 @@ export function LpForm({
                 key={repeaterName}
                 repeaterName={repeaterName}
                 repeaterLabel={displayLabel}
+                slug={slug}
                 control={control}
                 register={register}
                 errors={errors}
