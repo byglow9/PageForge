@@ -92,3 +92,18 @@ export type Template = Prisma.TemplateModel
  * RLS policy: workspace_id = current_setting('app.current_workspace_id', true)::text
  */
 export type BrandConfig = Prisma.BrandConfigModel
+/**
+ * Model LandingPage
+ * LandingPage stores filled LP values and a snapshot of the template markup at generation time.
+ * D-06: markup is snapshotted — editing the source template does NOT alter existing LPs.
+ * D-11: name is user-provided at generation time.
+ * templateId is a soft reference (nullable) — LP survives template deletion (D-06).
+ * RLS policy: workspace_id = current_setting('app.current_workspace_id', true)::text
+ */
+export type LandingPage = Prisma.LandingPageModel
+/**
+ * Model LpAsset
+ * LpAsset tracks S3 keys for images uploaded per LP (enables cleanup on LP delete).
+ * RLS policy: workspace_id = current_setting('app.current_workspace_id', true)::text
+ */
+export type LpAsset = Prisma.LpAssetModel
