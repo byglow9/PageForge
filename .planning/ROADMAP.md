@@ -115,8 +115,18 @@ Plans:
   3. A user can preview a rendered LP at any time, using the exact same merge pipeline as export (preview == export).
   4. A user can reopen and edit an LP's data and regenerate its HTML, and can duplicate an existing LP to create a variation (values stored as data, HTML derived).
   5. A user can export/download the LP as a self-contained HTML bundle with working asset paths and a strict CSP baked in.
-**Plans**: TBD (1-3 plans)
-**UI hint**: yes
+**Plans**: 4 plans
+
+Plans:
+**Wave 1**
+- [ ] 04-01-PLAN.md — Environment setup (MinIO docker-compose, S3 env vars, file-type transpilePackages) + Prisma schema (LandingPage + LpAsset models) + [BLOCKING] db push + TenantClient extension (lp/lpAsset helpers) + lib/lps contracts (render.ts, schema.ts, schema-derive.ts)
+
+**Wave 2** *(blocked on Wave 1 — [BLOCKING] schema push)*
+- [ ] 04-02-PLAN.md — Form→merge→preview vertical slice: packages (RHF, Tiptap, @hello-pangea/dnd, slugify) + lib/lps/actions.ts (generate/update/duplicate/delete/list/get) + LpForm + LpCard + LpPreview + RepeaterBlock + RichTextField + BrandGlobalsPanel + LP pages (list/picker/new/preview/edit) + sidebar nav link
+
+**Wave 3** *(parallel — both blocked on Wave 2 completion)*
+- [ ] 04-03-PLAN.md — Image upload slice: @aws-sdk packages + requestPresignedUploadAction (magic-bytes + tenant-scoped path) + ImageUploadField component (drag/drop, presigned PUT, progress) + wire into LpForm
+- [ ] 04-04-PLAN.md — ZIP export slice: archiver + /api/lps/[lpId]/export route handler (render + S3 image download + src rewrite + CSP inject + archiver stream) + wire export triggers in LpCard and LpPreview
 
 ### Phase 5: Catalog & Grécia Acceptance
 **Goal**: Organize generated LPs into a browsable, searchable catalog and prove the full pipeline by authoring, generating, previewing, editing, duplicating, and exporting the real Grécia LP end to end.
@@ -140,5 +150,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Core Engine (Parser + Merge) | 3/3 | Complete   | 2026-06-02 |
 | 2. Multi-Tenancy Foundation | 6/8 | Gap Closure | - |
 | 3. Template Authoring + Brand Config | 0/4 | Planning complete | - |
-| 4. LP Generation, Assets, Preview & Export | 0/TBD | Not started | - |
+| 4. LP Generation, Assets, Preview & Export | 0/4 | Planning complete | - |
 | 5. Catalog & Grécia Acceptance | 0/TBD | Not started | - |
