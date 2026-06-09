@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
   // Uses webpack (--webpack flag in build script) to support the NodeNext .js import extensions
   // used in the engine source files (Turbopack cannot resolve .js -> .ts without extensionAlias
   // support that is not yet stable in Next.js 16).
-  transpilePackages: ["pageforge-engine"],
+  transpilePackages: ["pageforge-engine", "file-type"],
   experimental: {
     // Map .js extension imports to their TypeScript source files.
     // The engine uses NodeNext ESM imports with explicit .js extensions (e.g. './parser.js'),
