@@ -129,7 +129,7 @@ Plans:
 - [x] 04-04-PLAN.md — ZIP export slice: archiver + /api/lps/[lpId]/export route handler (render + S3 image download + src rewrite + CSP inject + archiver stream) + wire export triggers in LpCard and LpPreview
 
 ### Phase 5: Catalog & Grécia Acceptance
-**Goal**: Organize generated LPs into a browsable, searchable catalog and prove the full pipeline by authoring, generating, previewing, editing, duplicating, and exporting the real Grécia LP end to end.
+**Goal**: As a membro do workspace, I want to organizar e buscar LPs no catálogo, so that encontro e reutilizo LPs rapidamente.
 **Mode:** mvp
 **Depends on**: Phase 4 (LP instances exist to organize)
 **Requirements**: CAT-01, CAT-02, CAT-03, CAT-04
@@ -137,8 +137,17 @@ Plans:
   1. Generated LPs are saved to a catalog and can be organized into (nestable) folders within the workspace.
   2. A user can categorize/tag LPs and browse and search them in the catalog.
   3. The real Grécia template is authorable end to end and used to generate, preview, edit, duplicate, and export a complete LP — the v1 acceptance anchor passes.
-**Plans**: TBD (1-3 plans)
-**UI hint**: yes
+**Plans**: 3 plans
+
+Plans:
+**Wave 1**
+- [ ] 05-01-PLAN.md — Folders slice: Prisma schema (Folder + Tag + LpTag + folderId on LandingPage) + [BLOCKING] db push + TenantClient folder/tag helpers + lib/catalog Server Actions (folder CRUD + LP move) + FolderTree + folder dialogs + MoveLpDialog
+
+**Wave 2** *(blocked on Wave 1 — [BLOCKING] schema push)*
+- [ ] 05-02-PLAN.md — Tags + search + catalog layout slice: LpCatalogCard (folder badge + tag chips) + TagInput + CatalogSearchBar + CatalogFilterBar + two-panel lps/page.tsx restructure with client-side filtering
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 05-03-PLAN.md — Grécia acceptance: shadcn dropdown-menu install + FolderContextMenu upgrade + real Grécia template authored via Phase 3 UI + full pipeline (generate→preview→edit→duplicate→export) + gap fixes + Playwright E2E + UAT checkpoint
 
 ## Progress
 
@@ -151,4 +160,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Multi-Tenancy Foundation | 6/8 | Gap Closure | - |
 | 3. Template Authoring + Brand Config | 0/4 | Planning complete | - |
 | 4. LP Generation, Assets, Preview & Export | 0/4 | Planning complete | - |
-| 5. Catalog & Grécia Acceptance | 0/TBD | Not started | - |
+| 5. Catalog & Grécia Acceptance | 0/3 | Planning complete | - |
