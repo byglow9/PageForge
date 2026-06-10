@@ -56,10 +56,12 @@ Exceptions: none.
 
 Inherited directly from Phase 1-4 established patterns (globals.css + existing pages).
 
+Two weights only: 400 (normal) and 600 (semibold). No other weights are used anywhere in this phase.
+
 | Role | Size | Weight | Line Height | Usage |
 |------|------|--------|-------------|-------|
 | Body | 14px (text-sm) | 400 (normal) | 1.5 | Metadata, card body text, form labels, search input |
-| Label / UI | 14px (text-sm) | 500 (medium) | 1.4 | Nav links, badge text, menu items |
+| Label / UI | 14px (text-sm) | 600 (semibold) | 1.4 | Nav links, badge text, menu items |
 | Heading | 24px (text-2xl) | 600 (semibold) | 1.2 | Page-level headings (e.g. "Catalog") |
 | Card Title | 16px (text-base) | 600 (semibold) | 1.3 | LP card name, folder card name |
 
@@ -80,7 +82,7 @@ All values sourced from `apps/web/src/app/globals.css` `@theme` block.
 | Border | `--color-border` | #ebebeb (oklch 0.922) | Card borders, sidebar border, input borders, folder tree separators |
 | Tag/badge background | `--color-muted` | #f7f7f7 | Category tag chips (filled, no accent — purely informational) |
 
-Accent reserved for: primary CTA buttons only ("Generate LP", "Create Folder", "Save"). Never used for tags, folder icons, or search.
+Accent reserved for: primary CTA buttons ("Generate LP", "Create Folder", "Save"), active nav item, and selected folder highlight. Never used for tags, folder icons, or search.
 
 ---
 
@@ -92,10 +94,10 @@ All new components follow the existing shadcn/Tailwind conventions established i
 
 | Component | Type | Description |
 |-----------|------|-------------|
-| `FolderTree` | Client component | Left-panel nested folder list with expand/collapse. Active folder highlighted with `bg-white` + `text-gray-900 font-medium`. Each folder row: `h-8`, indent 16px per depth level, chevron icon (ChevronRight / ChevronDown 14px). Root = "All LPs" always present. |
+| `FolderTree` | Client component | Left-panel nested folder list with expand/collapse. Active folder highlighted with `bg-white` + `text-gray-900 font-semibold`. Each folder row: `h-8`, indent 16px per depth level, chevron icon (ChevronRight / ChevronDown 14px). Root = "All LPs" always present. |
 | `FolderContextMenu` | Client component | Right-click or kebab (MoreHorizontal) menu on folder rows: "New subfolder", "Rename", separator, "Delete folder". Uses same custom-positioned `div` menu pattern as existing TemplateCard/LpCard kebab. |
 | `CreateFolderDialog` | Client component | shadcn `Dialog`. Single text input for folder name. CTAs: "Cancel" (outline) + "Create folder" (default). |
-| `RenameFolderDialog` | Client component | shadcn `Dialog`. Single text input pre-filled with current name. CTAs: "Cancel" (outline) + "Rename" (default). |
+| `RenameFolderDialog` | Client component | shadcn `Dialog`. Single text input pre-filled with current name. CTAs: "Cancel" (outline) + "Rename folder" (default). |
 | `DeleteFolderDialog` | Client component | shadcn `Dialog`. Warns about LP re-placement to root. CTAs: "Keep folder" (outline) + "Delete folder" (destructive). |
 | `TagInput` | Client component | Inline tag chip input on LP detail/edit surface. Uses shadcn `Badge` (variant: secondary) for rendered tags. Add tag: press Enter or comma. Remove tag: × on chip. Max tag length: 32 chars. |
 | `CatalogSearchBar` | Client component | `Input` (full-width, search icon left). Filters visible LPs by name and tags client-side (no API call on keystroke). Debounce: none needed for client-side filter; instant. Placeholder: "Search landing pages…". |
@@ -207,7 +209,7 @@ FolderTree + LP area sit inside a `flex flex-row` container that fills the main 
 | Create folder name label | "Folder name" | |
 | Create folder confirm CTA | "Create folder" | |
 | Rename folder dialog title | "Rename folder" | |
-| Rename folder confirm CTA | "Rename" | |
+| Rename folder confirm CTA | "Rename folder" | Matches "Create folder" / "Delete folder" / "Keep folder" pattern |
 | Delete folder dialog title | "Delete folder?" | Trailing "?" — question form matches LP delete pattern |
 | Delete folder dialog body | "This will delete the folder. Landing pages inside will be moved to the root catalog." | |
 | Delete folder keep CTA | "Keep folder" | Matches "Keep landing page" pattern |
