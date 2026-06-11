@@ -122,6 +122,7 @@ export type BrandConfig = Prisma.BrandConfigModel
  * D-06: markup is snapshotted — editing the source template does NOT alter existing LPs.
  * D-11: name is user-provided at generation time.
  * templateId is a soft reference (nullable) — LP survives template deletion (D-06).
+ * D-01: folderId is nullable — null means root ("All LPs").
  * RLS policy: workspace_id = current_setting('app.current_workspace_id', true)::text
  */
 export type LandingPage = Prisma.LandingPageModel
@@ -131,3 +132,27 @@ export type LandingPage = Prisma.LandingPageModel
  * RLS policy: workspace_id = current_setting('app.current_workspace_id', true)::text
  */
 export type LpAsset = Prisma.LpAssetModel
+/**
+ * Model Folder
+ * Folder organizes LPs in a nestable workspace-scoped tree.
+ * D-02: unlimited depth via self-referential parentId (null = top-level).
+ * D-03: non-destructive delete — LPs and subfolders re-parent to root (folderId/parentId → null).
+ * RLS policy: workspace_id = current_setting('app.current_workspace_id', true)::text
+ */
+export type Folder = Prisma.FolderModel
+/**
+ * Model Tag
+ * Tag represents a normalized workspace-scoped label for categorizing LPs.
+ * D-05: free-form tags forming a shared deduplicated workspace vocabulary.
+ * D-06: persisted relationally; @@unique([workspaceId, name]) enforces dedup.
+ * D-07: normalized (trim, lowercase) before upsert.
+ * RLS policy: workspace_id = current_setting('app.current_workspace_id', true)::text
+ */
+export type Tag = Prisma.TagModel
+/**
+ * Model LpTag
+ * LpTag is the join table between LandingPage and Tag.
+ * workspaceId is denormalized for RLS policy enforcement.
+ * RLS policy: workspace_id = current_setting('app.current_workspace_id', true)::text
+ */
+export type LpTag = Prisma.LpTagModel

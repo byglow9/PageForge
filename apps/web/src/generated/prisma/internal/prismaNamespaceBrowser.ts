@@ -65,7 +65,10 @@ export const ModelName = {
   Template: 'Template',
   BrandConfig: 'BrandConfig',
   LandingPage: 'LandingPage',
-  LpAsset: 'LpAsset'
+  LpAsset: 'LpAsset',
+  Folder: 'Folder',
+  Tag: 'Tag',
+  LpTag: 'LpTag'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -262,6 +265,7 @@ export const LandingPageScalarFieldEnum = {
   markupSnapshot: 'markupSnapshot',
   schemaVersion: 'schemaVersion',
   values: 'values',
+  folderId: 'folderId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -282,6 +286,38 @@ export const LpAssetScalarFieldEnum = {
 } as const
 
 export type LpAssetScalarFieldEnum = (typeof LpAssetScalarFieldEnum)[keyof typeof LpAssetScalarFieldEnum]
+
+
+export const FolderScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  name: 'name',
+  parentId: 'parentId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FolderScalarFieldEnum = (typeof FolderScalarFieldEnum)[keyof typeof FolderScalarFieldEnum]
+
+
+export const TagScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  name: 'name',
+  createdAt: 'createdAt'
+} as const
+
+export type TagScalarFieldEnum = (typeof TagScalarFieldEnum)[keyof typeof TagScalarFieldEnum]
+
+
+export const LpTagScalarFieldEnum = {
+  id: 'id',
+  landingPageId: 'landingPageId',
+  tagId: 'tagId',
+  workspaceId: 'workspaceId'
+} as const
+
+export type LpTagScalarFieldEnum = (typeof LpTagScalarFieldEnum)[keyof typeof LpTagScalarFieldEnum]
 
 
 export const SortOrder = {
