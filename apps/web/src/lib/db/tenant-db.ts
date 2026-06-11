@@ -22,7 +22,7 @@
  */
 import { prisma } from "./prisma";
 import type { WorkspaceContext } from "@/lib/workspaces/guards";
-import type { TemplateModel as Template, BrandConfigModel as BrandConfig, LandingPageModel as LandingPage, LpAssetModel as LpAsset } from "@/generated/prisma/models";
+import type { TemplateModel as Template, BrandConfigModel as BrandConfig, LandingPageModel as LandingPage, LpAssetModel as LpAsset, FolderModel as Folder, TagModel as Tag } from "@/generated/prisma/models";
 import type { Prisma } from "@/generated/prisma/client";
 
 // -----------------------------------------------------------------------
@@ -159,6 +159,7 @@ export interface TenantLpHelpers {
       values?: Prisma.InputJsonValue;
       markupSnapshot?: string;
       schemaVersion?: number;
+      folderId?: string | null;
     }
   ) => Promise<LandingPage>;
   /** Delete a landing page. Returns null if not found or belongs to a different workspace. */
@@ -191,6 +192,72 @@ export interface TenantAssetHelpers {
 }
 
 // -----------------------------------------------------------------------
+// Tenant-scoped helpers for Folder (CAT-02)
+// -----------------------------------------------------------------------
+
+/**
+ * Tenant-scoped helpers for the Folder table.
+ *
+ * These methods:
+ * - Always inject ctx.workspaceId into writes (T-05-01-01: workspaceId from server context only)
+ * - Always filter reads by ctx.workspaceId (app-level isolation, D-14)
+ * - Work inside a transaction that has already SET LOCAL app.current_workspace_id
+ *
+ * Note: folder-to-folder move is deferred to a later phase.
+ * No isDescendantOf helper is provided — no folder move = no cycle risk in v1 (T-05-01-04).
+ */
+export interface TenantFolderHelpers {
+  /** Create a folder scoped to the current workspace. */
+  create: (data: { name: string; parentId?: string | null }) => Promise<Folder>;
+  /** Find a folder by ID. Returns null if the row does not exist OR belongs to a different workspace. */
+  findById: (id: string) => Promise<Folder | null>;
+  /** List all workspace folders, ordered by name asc. Tree assembled client-side from the flat adjacency list. */
+  list: () => Promise<Folder[]>;
+  /** Update a folder's name and/or parentId. Only the fields provided are updated. */
+  update: (id: string, data: { name?: string; parentId?: string | null }) => Promise<Folder>;
+  /**
+   * Delete a folder row. The caller MUST re-parent child LPs and subfolders first
+   * (deleteFolderAction handles this within the same withTenantDb tx). D-03.
+   */
+  delete: (id: string) => Promise<Folder | null>;
+}
+
+// -----------------------------------------------------------------------
+// Tenant-scoped helpers for Tag (CAT-03)
+// -----------------------------------------------------------------------
+
+/**
+ * Tenant-scoped helpers for the Tag table and LpTag join table.
+ *
+ * These methods:
+ * - Always inject ctx.workspaceId into writes
+ * - Always filter reads by ctx.workspaceId
+ * - tag.upsertByName normalizes name (trim + toLowerCase) before upsert (D-07)
+ * - tag.setTagsForLp replaces all tags for an LP atomically (delete+insert in same tx)
+ */
+export interface TenantTagHelpers {
+  /**
+   * Create-if-not-exists a tag by normalized name.
+   * Normalizes: trim + toLowerCase (D-07).
+   * Uses @@unique([workspaceId, name]) as the upsert key.
+   */
+  upsertByName: (name: string) => Promise<Tag>;
+  /** List all workspace tags ordered by name asc. Used by FilterBar vocabulary (D-05/D-06). */
+  listWorkspaceTags: () => Promise<Tag[]>;
+  /** Upsert a tag assignment on an LP (@@unique guard prevents duplicates). */
+  assignToLp: (lpId: string, tagId: string) => Promise<void>;
+  /** Remove a tag assignment from an LP. */
+  removeFromLp: (lpId: string, tagId: string) => Promise<void>;
+  /** List all tags assigned to a single LP. */
+  listForLp: (lpId: string) => Promise<Tag[]>;
+  /**
+   * Replace all tags for an LP atomically: delete existing lp_tag rows then insert new ones.
+   * Runs within the same withTenantDb transaction for atomicity.
+   */
+  setTagsForLp: (lpId: string, tagIds: string[]) => Promise<void>;
+}
+
+// -----------------------------------------------------------------------
 // TenantClient — what the callback receives
 // -----------------------------------------------------------------------
 
@@ -207,6 +274,10 @@ export interface TenantClient {
   readonly lp: TenantLpHelpers;
   /** Tenant-scoped helpers for LpAsset. */
   readonly lpAsset: TenantAssetHelpers;
+  /** Tenant-scoped helpers for Folder (CAT-02). */
+  readonly folder: TenantFolderHelpers;
+  /** Tenant-scoped helpers for Tag and LpTag (CAT-03). */
+  readonly tag: TenantTagHelpers;
 }
 
 // -----------------------------------------------------------------------
@@ -416,6 +487,156 @@ export async function withTenantDb<T>(
           await tx.lpAsset.deleteMany({
             where: { landingPageId, workspaceId },
           });
+        },
+      },
+
+      // -----------------------------------------------------------------------
+      // folder helpers (CAT-02)
+      // -----------------------------------------------------------------------
+
+      folder: {
+        create: async (data) => {
+          return tx.folder.create({
+            data: {
+              workspaceId, // injected from server context, never from client (T-05-01-01)
+              name: data.name,
+              parentId: data.parentId ?? null,
+            },
+          });
+        },
+
+        findById: async (id: string) => {
+          // App-level filter: id + workspaceId ensures cross-workspace lookup returns null (T-05-01-01)
+          return tx.folder.findFirst({
+            where: {
+              id,
+              workspaceId, // app-level isolation
+            },
+          });
+        },
+
+        list: async () => {
+          return tx.folder.findMany({
+            where: { workspaceId }, // app-level filter (D-14)
+            orderBy: { name: "asc" },
+          });
+        },
+
+        update: async (id: string, data) => {
+          return tx.folder.update({
+            where: {
+              id,
+              workspaceId, // app-level isolation: prevents cross-workspace update
+            },
+            data: {
+              ...(data.name !== undefined ? { name: data.name } : {}),
+              ...(data.parentId !== undefined ? { parentId: data.parentId } : {}),
+            },
+          });
+        },
+
+        delete: async (id: string) => {
+          // App-level check before delete: confirm the folder belongs to this workspace
+          // NOTE: caller MUST re-parent child LPs and subfolders first within the same tx (D-03)
+          const existing = await tx.folder.findFirst({
+            where: { id, workspaceId },
+          });
+          if (!existing) {
+            return null;
+          }
+          return tx.folder.delete({
+            where: { id, workspaceId },
+          });
+        },
+      },
+
+      // -----------------------------------------------------------------------
+      // tag helpers (CAT-03)
+      // -----------------------------------------------------------------------
+
+      tag: {
+        upsertByName: async (name: string) => {
+          // D-07: normalize — trim + toLowerCase before upsert
+          const normalized = name.trim().toLowerCase();
+          return tx.tag.upsert({
+            where: {
+              workspaceId_name: {
+                workspaceId,
+                name: normalized,
+              },
+            },
+            create: {
+              workspaceId, // injected from server context
+              name: normalized,
+            },
+            update: {}, // no-op on conflict — row already exists with correct name
+          });
+        },
+
+        listWorkspaceTags: async () => {
+          return tx.tag.findMany({
+            where: { workspaceId }, // app-level filter (D-14)
+            orderBy: { name: "asc" },
+          });
+        },
+
+        assignToLp: async (lpId: string, tagId: string) => {
+          // @@unique([landingPageId, tagId]) guards against duplicate assignment
+          await tx.lpTag.upsert({
+            where: {
+              landingPageId_tagId: {
+                landingPageId: lpId,
+                tagId,
+              },
+            },
+            create: {
+              landingPageId: lpId,
+              tagId,
+              workspaceId, // denormalized for RLS
+            },
+            update: {}, // no-op on conflict
+          });
+        },
+
+        removeFromLp: async (lpId: string, tagId: string) => {
+          await tx.lpTag.deleteMany({
+            where: {
+              landingPageId: lpId,
+              tagId,
+              workspaceId, // app-level isolation
+            },
+          });
+        },
+
+        listForLp: async (lpId: string) => {
+          const lpTags = await tx.lpTag.findMany({
+            where: {
+              landingPageId: lpId,
+              workspaceId, // app-level isolation
+            },
+            include: { tag: true },
+          });
+          return lpTags.map((lt) => lt.tag);
+        },
+
+        setTagsForLp: async (lpId: string, tagIds: string[]) => {
+          // Delete all existing lp_tag rows for this LP (workspace-scoped) then insert new ones.
+          // Runs within the same withTenantDb transaction for atomicity.
+          await tx.lpTag.deleteMany({
+            where: {
+              landingPageId: lpId,
+              workspaceId, // app-level isolation
+            },
+          });
+          if (tagIds.length > 0) {
+            await tx.lpTag.createMany({
+              data: tagIds.map((tagId) => ({
+                landingPageId: lpId,
+                tagId,
+                workspaceId,
+              })),
+            });
+          }
         },
       },
     };
