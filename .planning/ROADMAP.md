@@ -144,7 +144,7 @@ Plans:
 - [x] 05-01-PLAN.md — Folders slice: Prisma schema (Folder + Tag + LpTag + folderId on LandingPage) + [BLOCKING] db push + TenantClient folder/tag helpers + lib/catalog Server Actions (folder CRUD + LP move) + FolderTree + folder dialogs + MoveLpDialog
 
 **Wave 2** *(blocked on Wave 1 — [BLOCKING] schema push)*
-- [ ] 05-02-PLAN.md — Tags + search + catalog layout slice: LpCatalogCard (folder badge + tag chips) + TagInput + CatalogSearchBar + CatalogFilterBar + two-panel lps/page.tsx restructure with client-side filtering
+- [x] 05-02-PLAN.md — Tags + search + catalog layout slice: LpCatalogCard (folder badge + tag chips) + TagInput + CatalogSearchBar + CatalogFilterBar + two-panel lps/page.tsx restructure with client-side filtering
 
 **Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 05-03-PLAN.md — Grécia acceptance: shadcn dropdown-menu install + FolderContextMenu upgrade + real Grécia template authored via Phase 3 UI + full pipeline (generate→preview→edit→duplicate→export) + gap fixes + Playwright E2E + UAT checkpoint
