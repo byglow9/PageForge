@@ -190,6 +190,9 @@ export type WorkspaceWhereInput = {
   brandConfig?: Prisma.XOR<Prisma.BrandConfigNullableScalarRelationFilter, Prisma.BrandConfigWhereInput> | null
   landingPages?: Prisma.LandingPageListRelationFilter
   lpAssets?: Prisma.LpAssetListRelationFilter
+  folders?: Prisma.FolderListRelationFilter
+  tags?: Prisma.TagListRelationFilter
+  lpTags?: Prisma.LpTagListRelationFilter
 }
 
 export type WorkspaceOrderByWithRelationInput = {
@@ -205,6 +208,9 @@ export type WorkspaceOrderByWithRelationInput = {
   brandConfig?: Prisma.BrandConfigOrderByWithRelationInput
   landingPages?: Prisma.LandingPageOrderByRelationAggregateInput
   lpAssets?: Prisma.LpAssetOrderByRelationAggregateInput
+  folders?: Prisma.FolderOrderByRelationAggregateInput
+  tags?: Prisma.TagOrderByRelationAggregateInput
+  lpTags?: Prisma.LpTagOrderByRelationAggregateInput
 }
 
 export type WorkspaceWhereUniqueInput = Prisma.AtLeast<{
@@ -223,6 +229,9 @@ export type WorkspaceWhereUniqueInput = Prisma.AtLeast<{
   brandConfig?: Prisma.XOR<Prisma.BrandConfigNullableScalarRelationFilter, Prisma.BrandConfigWhereInput> | null
   landingPages?: Prisma.LandingPageListRelationFilter
   lpAssets?: Prisma.LpAssetListRelationFilter
+  folders?: Prisma.FolderListRelationFilter
+  tags?: Prisma.TagListRelationFilter
+  lpTags?: Prisma.LpTagListRelationFilter
 }, "id" | "slug">
 
 export type WorkspaceOrderByWithAggregationInput = {
@@ -260,6 +269,9 @@ export type WorkspaceCreateInput = {
   brandConfig?: Prisma.BrandConfigCreateNestedOneWithoutWorkspaceInput
   landingPages?: Prisma.LandingPageCreateNestedManyWithoutWorkspaceInput
   lpAssets?: Prisma.LpAssetCreateNestedManyWithoutWorkspaceInput
+  folders?: Prisma.FolderCreateNestedManyWithoutWorkspaceInput
+  tags?: Prisma.TagCreateNestedManyWithoutWorkspaceInput
+  lpTags?: Prisma.LpTagCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceUncheckedCreateInput = {
@@ -275,6 +287,9 @@ export type WorkspaceUncheckedCreateInput = {
   brandConfig?: Prisma.BrandConfigUncheckedCreateNestedOneWithoutWorkspaceInput
   landingPages?: Prisma.LandingPageUncheckedCreateNestedManyWithoutWorkspaceInput
   lpAssets?: Prisma.LpAssetUncheckedCreateNestedManyWithoutWorkspaceInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutWorkspaceInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutWorkspaceInput
+  lpTags?: Prisma.LpTagUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceUpdateInput = {
@@ -290,6 +305,9 @@ export type WorkspaceUpdateInput = {
   brandConfig?: Prisma.BrandConfigUpdateOneWithoutWorkspaceNestedInput
   landingPages?: Prisma.LandingPageUpdateManyWithoutWorkspaceNestedInput
   lpAssets?: Prisma.LpAssetUpdateManyWithoutWorkspaceNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutWorkspaceNestedInput
+  tags?: Prisma.TagUpdateManyWithoutWorkspaceNestedInput
+  lpTags?: Prisma.LpTagUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUncheckedUpdateInput = {
@@ -305,6 +323,9 @@ export type WorkspaceUncheckedUpdateInput = {
   brandConfig?: Prisma.BrandConfigUncheckedUpdateOneWithoutWorkspaceNestedInput
   landingPages?: Prisma.LandingPageUncheckedUpdateManyWithoutWorkspaceNestedInput
   lpAssets?: Prisma.LpAssetUncheckedUpdateManyWithoutWorkspaceNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutWorkspaceNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutWorkspaceNestedInput
+  lpTags?: Prisma.LpTagUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateManyInput = {
@@ -458,6 +479,48 @@ export type WorkspaceUpdateOneRequiredWithoutLpAssetsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.WorkspaceUpdateToOneWithWhereWithoutLpAssetsInput, Prisma.WorkspaceUpdateWithoutLpAssetsInput>, Prisma.WorkspaceUncheckedUpdateWithoutLpAssetsInput>
 }
 
+export type WorkspaceCreateNestedOneWithoutFoldersInput = {
+  create?: Prisma.XOR<Prisma.WorkspaceCreateWithoutFoldersInput, Prisma.WorkspaceUncheckedCreateWithoutFoldersInput>
+  connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutFoldersInput
+  connect?: Prisma.WorkspaceWhereUniqueInput
+}
+
+export type WorkspaceUpdateOneRequiredWithoutFoldersNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkspaceCreateWithoutFoldersInput, Prisma.WorkspaceUncheckedCreateWithoutFoldersInput>
+  connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutFoldersInput
+  upsert?: Prisma.WorkspaceUpsertWithoutFoldersInput
+  connect?: Prisma.WorkspaceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkspaceUpdateToOneWithWhereWithoutFoldersInput, Prisma.WorkspaceUpdateWithoutFoldersInput>, Prisma.WorkspaceUncheckedUpdateWithoutFoldersInput>
+}
+
+export type WorkspaceCreateNestedOneWithoutTagsInput = {
+  create?: Prisma.XOR<Prisma.WorkspaceCreateWithoutTagsInput, Prisma.WorkspaceUncheckedCreateWithoutTagsInput>
+  connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutTagsInput
+  connect?: Prisma.WorkspaceWhereUniqueInput
+}
+
+export type WorkspaceUpdateOneRequiredWithoutTagsNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkspaceCreateWithoutTagsInput, Prisma.WorkspaceUncheckedCreateWithoutTagsInput>
+  connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutTagsInput
+  upsert?: Prisma.WorkspaceUpsertWithoutTagsInput
+  connect?: Prisma.WorkspaceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkspaceUpdateToOneWithWhereWithoutTagsInput, Prisma.WorkspaceUpdateWithoutTagsInput>, Prisma.WorkspaceUncheckedUpdateWithoutTagsInput>
+}
+
+export type WorkspaceCreateNestedOneWithoutLpTagsInput = {
+  create?: Prisma.XOR<Prisma.WorkspaceCreateWithoutLpTagsInput, Prisma.WorkspaceUncheckedCreateWithoutLpTagsInput>
+  connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutLpTagsInput
+  connect?: Prisma.WorkspaceWhereUniqueInput
+}
+
+export type WorkspaceUpdateOneRequiredWithoutLpTagsNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkspaceCreateWithoutLpTagsInput, Prisma.WorkspaceUncheckedCreateWithoutLpTagsInput>
+  connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutLpTagsInput
+  upsert?: Prisma.WorkspaceUpsertWithoutLpTagsInput
+  connect?: Prisma.WorkspaceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkspaceUpdateToOneWithWhereWithoutLpTagsInput, Prisma.WorkspaceUpdateWithoutLpTagsInput>, Prisma.WorkspaceUncheckedUpdateWithoutLpTagsInput>
+}
+
 export type WorkspaceCreateWithoutMembersInput = {
   id?: string
   name: string
@@ -470,6 +533,9 @@ export type WorkspaceCreateWithoutMembersInput = {
   brandConfig?: Prisma.BrandConfigCreateNestedOneWithoutWorkspaceInput
   landingPages?: Prisma.LandingPageCreateNestedManyWithoutWorkspaceInput
   lpAssets?: Prisma.LpAssetCreateNestedManyWithoutWorkspaceInput
+  folders?: Prisma.FolderCreateNestedManyWithoutWorkspaceInput
+  tags?: Prisma.TagCreateNestedManyWithoutWorkspaceInput
+  lpTags?: Prisma.LpTagCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceUncheckedCreateWithoutMembersInput = {
@@ -484,6 +550,9 @@ export type WorkspaceUncheckedCreateWithoutMembersInput = {
   brandConfig?: Prisma.BrandConfigUncheckedCreateNestedOneWithoutWorkspaceInput
   landingPages?: Prisma.LandingPageUncheckedCreateNestedManyWithoutWorkspaceInput
   lpAssets?: Prisma.LpAssetUncheckedCreateNestedManyWithoutWorkspaceInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutWorkspaceInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutWorkspaceInput
+  lpTags?: Prisma.LpTagUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutMembersInput = {
@@ -514,6 +583,9 @@ export type WorkspaceUpdateWithoutMembersInput = {
   brandConfig?: Prisma.BrandConfigUpdateOneWithoutWorkspaceNestedInput
   landingPages?: Prisma.LandingPageUpdateManyWithoutWorkspaceNestedInput
   lpAssets?: Prisma.LpAssetUpdateManyWithoutWorkspaceNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutWorkspaceNestedInput
+  tags?: Prisma.TagUpdateManyWithoutWorkspaceNestedInput
+  lpTags?: Prisma.LpTagUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUncheckedUpdateWithoutMembersInput = {
@@ -528,6 +600,9 @@ export type WorkspaceUncheckedUpdateWithoutMembersInput = {
   brandConfig?: Prisma.BrandConfigUncheckedUpdateOneWithoutWorkspaceNestedInput
   landingPages?: Prisma.LandingPageUncheckedUpdateManyWithoutWorkspaceNestedInput
   lpAssets?: Prisma.LpAssetUncheckedUpdateManyWithoutWorkspaceNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutWorkspaceNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutWorkspaceNestedInput
+  lpTags?: Prisma.LpTagUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateWithoutInvitationsInput = {
@@ -542,6 +617,9 @@ export type WorkspaceCreateWithoutInvitationsInput = {
   brandConfig?: Prisma.BrandConfigCreateNestedOneWithoutWorkspaceInput
   landingPages?: Prisma.LandingPageCreateNestedManyWithoutWorkspaceInput
   lpAssets?: Prisma.LpAssetCreateNestedManyWithoutWorkspaceInput
+  folders?: Prisma.FolderCreateNestedManyWithoutWorkspaceInput
+  tags?: Prisma.TagCreateNestedManyWithoutWorkspaceInput
+  lpTags?: Prisma.LpTagCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceUncheckedCreateWithoutInvitationsInput = {
@@ -556,6 +634,9 @@ export type WorkspaceUncheckedCreateWithoutInvitationsInput = {
   brandConfig?: Prisma.BrandConfigUncheckedCreateNestedOneWithoutWorkspaceInput
   landingPages?: Prisma.LandingPageUncheckedCreateNestedManyWithoutWorkspaceInput
   lpAssets?: Prisma.LpAssetUncheckedCreateNestedManyWithoutWorkspaceInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutWorkspaceInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutWorkspaceInput
+  lpTags?: Prisma.LpTagUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutInvitationsInput = {
@@ -586,6 +667,9 @@ export type WorkspaceUpdateWithoutInvitationsInput = {
   brandConfig?: Prisma.BrandConfigUpdateOneWithoutWorkspaceNestedInput
   landingPages?: Prisma.LandingPageUpdateManyWithoutWorkspaceNestedInput
   lpAssets?: Prisma.LpAssetUpdateManyWithoutWorkspaceNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutWorkspaceNestedInput
+  tags?: Prisma.TagUpdateManyWithoutWorkspaceNestedInput
+  lpTags?: Prisma.LpTagUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUncheckedUpdateWithoutInvitationsInput = {
@@ -600,6 +684,9 @@ export type WorkspaceUncheckedUpdateWithoutInvitationsInput = {
   brandConfig?: Prisma.BrandConfigUncheckedUpdateOneWithoutWorkspaceNestedInput
   landingPages?: Prisma.LandingPageUncheckedUpdateManyWithoutWorkspaceNestedInput
   lpAssets?: Prisma.LpAssetUncheckedUpdateManyWithoutWorkspaceNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutWorkspaceNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutWorkspaceNestedInput
+  lpTags?: Prisma.LpTagUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateWithoutProbesInput = {
@@ -614,6 +701,9 @@ export type WorkspaceCreateWithoutProbesInput = {
   brandConfig?: Prisma.BrandConfigCreateNestedOneWithoutWorkspaceInput
   landingPages?: Prisma.LandingPageCreateNestedManyWithoutWorkspaceInput
   lpAssets?: Prisma.LpAssetCreateNestedManyWithoutWorkspaceInput
+  folders?: Prisma.FolderCreateNestedManyWithoutWorkspaceInput
+  tags?: Prisma.TagCreateNestedManyWithoutWorkspaceInput
+  lpTags?: Prisma.LpTagCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceUncheckedCreateWithoutProbesInput = {
@@ -628,6 +718,9 @@ export type WorkspaceUncheckedCreateWithoutProbesInput = {
   brandConfig?: Prisma.BrandConfigUncheckedCreateNestedOneWithoutWorkspaceInput
   landingPages?: Prisma.LandingPageUncheckedCreateNestedManyWithoutWorkspaceInput
   lpAssets?: Prisma.LpAssetUncheckedCreateNestedManyWithoutWorkspaceInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutWorkspaceInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutWorkspaceInput
+  lpTags?: Prisma.LpTagUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutProbesInput = {
@@ -658,6 +751,9 @@ export type WorkspaceUpdateWithoutProbesInput = {
   brandConfig?: Prisma.BrandConfigUpdateOneWithoutWorkspaceNestedInput
   landingPages?: Prisma.LandingPageUpdateManyWithoutWorkspaceNestedInput
   lpAssets?: Prisma.LpAssetUpdateManyWithoutWorkspaceNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutWorkspaceNestedInput
+  tags?: Prisma.TagUpdateManyWithoutWorkspaceNestedInput
+  lpTags?: Prisma.LpTagUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUncheckedUpdateWithoutProbesInput = {
@@ -672,6 +768,9 @@ export type WorkspaceUncheckedUpdateWithoutProbesInput = {
   brandConfig?: Prisma.BrandConfigUncheckedUpdateOneWithoutWorkspaceNestedInput
   landingPages?: Prisma.LandingPageUncheckedUpdateManyWithoutWorkspaceNestedInput
   lpAssets?: Prisma.LpAssetUncheckedUpdateManyWithoutWorkspaceNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutWorkspaceNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutWorkspaceNestedInput
+  lpTags?: Prisma.LpTagUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateWithoutTemplatesInput = {
@@ -686,6 +785,9 @@ export type WorkspaceCreateWithoutTemplatesInput = {
   brandConfig?: Prisma.BrandConfigCreateNestedOneWithoutWorkspaceInput
   landingPages?: Prisma.LandingPageCreateNestedManyWithoutWorkspaceInput
   lpAssets?: Prisma.LpAssetCreateNestedManyWithoutWorkspaceInput
+  folders?: Prisma.FolderCreateNestedManyWithoutWorkspaceInput
+  tags?: Prisma.TagCreateNestedManyWithoutWorkspaceInput
+  lpTags?: Prisma.LpTagCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceUncheckedCreateWithoutTemplatesInput = {
@@ -700,6 +802,9 @@ export type WorkspaceUncheckedCreateWithoutTemplatesInput = {
   brandConfig?: Prisma.BrandConfigUncheckedCreateNestedOneWithoutWorkspaceInput
   landingPages?: Prisma.LandingPageUncheckedCreateNestedManyWithoutWorkspaceInput
   lpAssets?: Prisma.LpAssetUncheckedCreateNestedManyWithoutWorkspaceInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutWorkspaceInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutWorkspaceInput
+  lpTags?: Prisma.LpTagUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutTemplatesInput = {
@@ -730,6 +835,9 @@ export type WorkspaceUpdateWithoutTemplatesInput = {
   brandConfig?: Prisma.BrandConfigUpdateOneWithoutWorkspaceNestedInput
   landingPages?: Prisma.LandingPageUpdateManyWithoutWorkspaceNestedInput
   lpAssets?: Prisma.LpAssetUpdateManyWithoutWorkspaceNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutWorkspaceNestedInput
+  tags?: Prisma.TagUpdateManyWithoutWorkspaceNestedInput
+  lpTags?: Prisma.LpTagUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUncheckedUpdateWithoutTemplatesInput = {
@@ -744,6 +852,9 @@ export type WorkspaceUncheckedUpdateWithoutTemplatesInput = {
   brandConfig?: Prisma.BrandConfigUncheckedUpdateOneWithoutWorkspaceNestedInput
   landingPages?: Prisma.LandingPageUncheckedUpdateManyWithoutWorkspaceNestedInput
   lpAssets?: Prisma.LpAssetUncheckedUpdateManyWithoutWorkspaceNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutWorkspaceNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutWorkspaceNestedInput
+  lpTags?: Prisma.LpTagUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateWithoutBrandConfigInput = {
@@ -758,6 +869,9 @@ export type WorkspaceCreateWithoutBrandConfigInput = {
   templates?: Prisma.TemplateCreateNestedManyWithoutWorkspaceInput
   landingPages?: Prisma.LandingPageCreateNestedManyWithoutWorkspaceInput
   lpAssets?: Prisma.LpAssetCreateNestedManyWithoutWorkspaceInput
+  folders?: Prisma.FolderCreateNestedManyWithoutWorkspaceInput
+  tags?: Prisma.TagCreateNestedManyWithoutWorkspaceInput
+  lpTags?: Prisma.LpTagCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceUncheckedCreateWithoutBrandConfigInput = {
@@ -772,6 +886,9 @@ export type WorkspaceUncheckedCreateWithoutBrandConfigInput = {
   templates?: Prisma.TemplateUncheckedCreateNestedManyWithoutWorkspaceInput
   landingPages?: Prisma.LandingPageUncheckedCreateNestedManyWithoutWorkspaceInput
   lpAssets?: Prisma.LpAssetUncheckedCreateNestedManyWithoutWorkspaceInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutWorkspaceInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutWorkspaceInput
+  lpTags?: Prisma.LpTagUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutBrandConfigInput = {
@@ -802,6 +919,9 @@ export type WorkspaceUpdateWithoutBrandConfigInput = {
   templates?: Prisma.TemplateUpdateManyWithoutWorkspaceNestedInput
   landingPages?: Prisma.LandingPageUpdateManyWithoutWorkspaceNestedInput
   lpAssets?: Prisma.LpAssetUpdateManyWithoutWorkspaceNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutWorkspaceNestedInput
+  tags?: Prisma.TagUpdateManyWithoutWorkspaceNestedInput
+  lpTags?: Prisma.LpTagUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUncheckedUpdateWithoutBrandConfigInput = {
@@ -816,6 +936,9 @@ export type WorkspaceUncheckedUpdateWithoutBrandConfigInput = {
   templates?: Prisma.TemplateUncheckedUpdateManyWithoutWorkspaceNestedInput
   landingPages?: Prisma.LandingPageUncheckedUpdateManyWithoutWorkspaceNestedInput
   lpAssets?: Prisma.LpAssetUncheckedUpdateManyWithoutWorkspaceNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutWorkspaceNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutWorkspaceNestedInput
+  lpTags?: Prisma.LpTagUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateWithoutLandingPagesInput = {
@@ -830,6 +953,9 @@ export type WorkspaceCreateWithoutLandingPagesInput = {
   templates?: Prisma.TemplateCreateNestedManyWithoutWorkspaceInput
   brandConfig?: Prisma.BrandConfigCreateNestedOneWithoutWorkspaceInput
   lpAssets?: Prisma.LpAssetCreateNestedManyWithoutWorkspaceInput
+  folders?: Prisma.FolderCreateNestedManyWithoutWorkspaceInput
+  tags?: Prisma.TagCreateNestedManyWithoutWorkspaceInput
+  lpTags?: Prisma.LpTagCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceUncheckedCreateWithoutLandingPagesInput = {
@@ -844,6 +970,9 @@ export type WorkspaceUncheckedCreateWithoutLandingPagesInput = {
   templates?: Prisma.TemplateUncheckedCreateNestedManyWithoutWorkspaceInput
   brandConfig?: Prisma.BrandConfigUncheckedCreateNestedOneWithoutWorkspaceInput
   lpAssets?: Prisma.LpAssetUncheckedCreateNestedManyWithoutWorkspaceInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutWorkspaceInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutWorkspaceInput
+  lpTags?: Prisma.LpTagUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutLandingPagesInput = {
@@ -874,6 +1003,9 @@ export type WorkspaceUpdateWithoutLandingPagesInput = {
   templates?: Prisma.TemplateUpdateManyWithoutWorkspaceNestedInput
   brandConfig?: Prisma.BrandConfigUpdateOneWithoutWorkspaceNestedInput
   lpAssets?: Prisma.LpAssetUpdateManyWithoutWorkspaceNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutWorkspaceNestedInput
+  tags?: Prisma.TagUpdateManyWithoutWorkspaceNestedInput
+  lpTags?: Prisma.LpTagUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUncheckedUpdateWithoutLandingPagesInput = {
@@ -888,6 +1020,9 @@ export type WorkspaceUncheckedUpdateWithoutLandingPagesInput = {
   templates?: Prisma.TemplateUncheckedUpdateManyWithoutWorkspaceNestedInput
   brandConfig?: Prisma.BrandConfigUncheckedUpdateOneWithoutWorkspaceNestedInput
   lpAssets?: Prisma.LpAssetUncheckedUpdateManyWithoutWorkspaceNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutWorkspaceNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutWorkspaceNestedInput
+  lpTags?: Prisma.LpTagUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateWithoutLpAssetsInput = {
@@ -902,6 +1037,9 @@ export type WorkspaceCreateWithoutLpAssetsInput = {
   templates?: Prisma.TemplateCreateNestedManyWithoutWorkspaceInput
   brandConfig?: Prisma.BrandConfigCreateNestedOneWithoutWorkspaceInput
   landingPages?: Prisma.LandingPageCreateNestedManyWithoutWorkspaceInput
+  folders?: Prisma.FolderCreateNestedManyWithoutWorkspaceInput
+  tags?: Prisma.TagCreateNestedManyWithoutWorkspaceInput
+  lpTags?: Prisma.LpTagCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceUncheckedCreateWithoutLpAssetsInput = {
@@ -916,6 +1054,9 @@ export type WorkspaceUncheckedCreateWithoutLpAssetsInput = {
   templates?: Prisma.TemplateUncheckedCreateNestedManyWithoutWorkspaceInput
   brandConfig?: Prisma.BrandConfigUncheckedCreateNestedOneWithoutWorkspaceInput
   landingPages?: Prisma.LandingPageUncheckedCreateNestedManyWithoutWorkspaceInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutWorkspaceInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutWorkspaceInput
+  lpTags?: Prisma.LpTagUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutLpAssetsInput = {
@@ -946,6 +1087,9 @@ export type WorkspaceUpdateWithoutLpAssetsInput = {
   templates?: Prisma.TemplateUpdateManyWithoutWorkspaceNestedInput
   brandConfig?: Prisma.BrandConfigUpdateOneWithoutWorkspaceNestedInput
   landingPages?: Prisma.LandingPageUpdateManyWithoutWorkspaceNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutWorkspaceNestedInput
+  tags?: Prisma.TagUpdateManyWithoutWorkspaceNestedInput
+  lpTags?: Prisma.LpTagUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUncheckedUpdateWithoutLpAssetsInput = {
@@ -960,6 +1104,261 @@ export type WorkspaceUncheckedUpdateWithoutLpAssetsInput = {
   templates?: Prisma.TemplateUncheckedUpdateManyWithoutWorkspaceNestedInput
   brandConfig?: Prisma.BrandConfigUncheckedUpdateOneWithoutWorkspaceNestedInput
   landingPages?: Prisma.LandingPageUncheckedUpdateManyWithoutWorkspaceNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutWorkspaceNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutWorkspaceNestedInput
+  lpTags?: Prisma.LpTagUncheckedUpdateManyWithoutWorkspaceNestedInput
+}
+
+export type WorkspaceCreateWithoutFoldersInput = {
+  id?: string
+  name: string
+  slug: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
+  invitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutWorkspaceInput
+  probes?: Prisma.TenantIsolationProbeCreateNestedManyWithoutWorkspaceInput
+  templates?: Prisma.TemplateCreateNestedManyWithoutWorkspaceInput
+  brandConfig?: Prisma.BrandConfigCreateNestedOneWithoutWorkspaceInput
+  landingPages?: Prisma.LandingPageCreateNestedManyWithoutWorkspaceInput
+  lpAssets?: Prisma.LpAssetCreateNestedManyWithoutWorkspaceInput
+  tags?: Prisma.TagCreateNestedManyWithoutWorkspaceInput
+  lpTags?: Prisma.LpTagCreateNestedManyWithoutWorkspaceInput
+}
+
+export type WorkspaceUncheckedCreateWithoutFoldersInput = {
+  id?: string
+  name: string
+  slug: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
+  invitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutWorkspaceInput
+  probes?: Prisma.TenantIsolationProbeUncheckedCreateNestedManyWithoutWorkspaceInput
+  templates?: Prisma.TemplateUncheckedCreateNestedManyWithoutWorkspaceInput
+  brandConfig?: Prisma.BrandConfigUncheckedCreateNestedOneWithoutWorkspaceInput
+  landingPages?: Prisma.LandingPageUncheckedCreateNestedManyWithoutWorkspaceInput
+  lpAssets?: Prisma.LpAssetUncheckedCreateNestedManyWithoutWorkspaceInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutWorkspaceInput
+  lpTags?: Prisma.LpTagUncheckedCreateNestedManyWithoutWorkspaceInput
+}
+
+export type WorkspaceCreateOrConnectWithoutFoldersInput = {
+  where: Prisma.WorkspaceWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkspaceCreateWithoutFoldersInput, Prisma.WorkspaceUncheckedCreateWithoutFoldersInput>
+}
+
+export type WorkspaceUpsertWithoutFoldersInput = {
+  update: Prisma.XOR<Prisma.WorkspaceUpdateWithoutFoldersInput, Prisma.WorkspaceUncheckedUpdateWithoutFoldersInput>
+  create: Prisma.XOR<Prisma.WorkspaceCreateWithoutFoldersInput, Prisma.WorkspaceUncheckedCreateWithoutFoldersInput>
+  where?: Prisma.WorkspaceWhereInput
+}
+
+export type WorkspaceUpdateToOneWithWhereWithoutFoldersInput = {
+  where?: Prisma.WorkspaceWhereInput
+  data: Prisma.XOR<Prisma.WorkspaceUpdateWithoutFoldersInput, Prisma.WorkspaceUncheckedUpdateWithoutFoldersInput>
+}
+
+export type WorkspaceUpdateWithoutFoldersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
+  invitations?: Prisma.WorkspaceInvitationUpdateManyWithoutWorkspaceNestedInput
+  probes?: Prisma.TenantIsolationProbeUpdateManyWithoutWorkspaceNestedInput
+  templates?: Prisma.TemplateUpdateManyWithoutWorkspaceNestedInput
+  brandConfig?: Prisma.BrandConfigUpdateOneWithoutWorkspaceNestedInput
+  landingPages?: Prisma.LandingPageUpdateManyWithoutWorkspaceNestedInput
+  lpAssets?: Prisma.LpAssetUpdateManyWithoutWorkspaceNestedInput
+  tags?: Prisma.TagUpdateManyWithoutWorkspaceNestedInput
+  lpTags?: Prisma.LpTagUpdateManyWithoutWorkspaceNestedInput
+}
+
+export type WorkspaceUncheckedUpdateWithoutFoldersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
+  invitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutWorkspaceNestedInput
+  probes?: Prisma.TenantIsolationProbeUncheckedUpdateManyWithoutWorkspaceNestedInput
+  templates?: Prisma.TemplateUncheckedUpdateManyWithoutWorkspaceNestedInput
+  brandConfig?: Prisma.BrandConfigUncheckedUpdateOneWithoutWorkspaceNestedInput
+  landingPages?: Prisma.LandingPageUncheckedUpdateManyWithoutWorkspaceNestedInput
+  lpAssets?: Prisma.LpAssetUncheckedUpdateManyWithoutWorkspaceNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutWorkspaceNestedInput
+  lpTags?: Prisma.LpTagUncheckedUpdateManyWithoutWorkspaceNestedInput
+}
+
+export type WorkspaceCreateWithoutTagsInput = {
+  id?: string
+  name: string
+  slug: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
+  invitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutWorkspaceInput
+  probes?: Prisma.TenantIsolationProbeCreateNestedManyWithoutWorkspaceInput
+  templates?: Prisma.TemplateCreateNestedManyWithoutWorkspaceInput
+  brandConfig?: Prisma.BrandConfigCreateNestedOneWithoutWorkspaceInput
+  landingPages?: Prisma.LandingPageCreateNestedManyWithoutWorkspaceInput
+  lpAssets?: Prisma.LpAssetCreateNestedManyWithoutWorkspaceInput
+  folders?: Prisma.FolderCreateNestedManyWithoutWorkspaceInput
+  lpTags?: Prisma.LpTagCreateNestedManyWithoutWorkspaceInput
+}
+
+export type WorkspaceUncheckedCreateWithoutTagsInput = {
+  id?: string
+  name: string
+  slug: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
+  invitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutWorkspaceInput
+  probes?: Prisma.TenantIsolationProbeUncheckedCreateNestedManyWithoutWorkspaceInput
+  templates?: Prisma.TemplateUncheckedCreateNestedManyWithoutWorkspaceInput
+  brandConfig?: Prisma.BrandConfigUncheckedCreateNestedOneWithoutWorkspaceInput
+  landingPages?: Prisma.LandingPageUncheckedCreateNestedManyWithoutWorkspaceInput
+  lpAssets?: Prisma.LpAssetUncheckedCreateNestedManyWithoutWorkspaceInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutWorkspaceInput
+  lpTags?: Prisma.LpTagUncheckedCreateNestedManyWithoutWorkspaceInput
+}
+
+export type WorkspaceCreateOrConnectWithoutTagsInput = {
+  where: Prisma.WorkspaceWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkspaceCreateWithoutTagsInput, Prisma.WorkspaceUncheckedCreateWithoutTagsInput>
+}
+
+export type WorkspaceUpsertWithoutTagsInput = {
+  update: Prisma.XOR<Prisma.WorkspaceUpdateWithoutTagsInput, Prisma.WorkspaceUncheckedUpdateWithoutTagsInput>
+  create: Prisma.XOR<Prisma.WorkspaceCreateWithoutTagsInput, Prisma.WorkspaceUncheckedCreateWithoutTagsInput>
+  where?: Prisma.WorkspaceWhereInput
+}
+
+export type WorkspaceUpdateToOneWithWhereWithoutTagsInput = {
+  where?: Prisma.WorkspaceWhereInput
+  data: Prisma.XOR<Prisma.WorkspaceUpdateWithoutTagsInput, Prisma.WorkspaceUncheckedUpdateWithoutTagsInput>
+}
+
+export type WorkspaceUpdateWithoutTagsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
+  invitations?: Prisma.WorkspaceInvitationUpdateManyWithoutWorkspaceNestedInput
+  probes?: Prisma.TenantIsolationProbeUpdateManyWithoutWorkspaceNestedInput
+  templates?: Prisma.TemplateUpdateManyWithoutWorkspaceNestedInput
+  brandConfig?: Prisma.BrandConfigUpdateOneWithoutWorkspaceNestedInput
+  landingPages?: Prisma.LandingPageUpdateManyWithoutWorkspaceNestedInput
+  lpAssets?: Prisma.LpAssetUpdateManyWithoutWorkspaceNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutWorkspaceNestedInput
+  lpTags?: Prisma.LpTagUpdateManyWithoutWorkspaceNestedInput
+}
+
+export type WorkspaceUncheckedUpdateWithoutTagsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
+  invitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutWorkspaceNestedInput
+  probes?: Prisma.TenantIsolationProbeUncheckedUpdateManyWithoutWorkspaceNestedInput
+  templates?: Prisma.TemplateUncheckedUpdateManyWithoutWorkspaceNestedInput
+  brandConfig?: Prisma.BrandConfigUncheckedUpdateOneWithoutWorkspaceNestedInput
+  landingPages?: Prisma.LandingPageUncheckedUpdateManyWithoutWorkspaceNestedInput
+  lpAssets?: Prisma.LpAssetUncheckedUpdateManyWithoutWorkspaceNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutWorkspaceNestedInput
+  lpTags?: Prisma.LpTagUncheckedUpdateManyWithoutWorkspaceNestedInput
+}
+
+export type WorkspaceCreateWithoutLpTagsInput = {
+  id?: string
+  name: string
+  slug: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
+  invitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutWorkspaceInput
+  probes?: Prisma.TenantIsolationProbeCreateNestedManyWithoutWorkspaceInput
+  templates?: Prisma.TemplateCreateNestedManyWithoutWorkspaceInput
+  brandConfig?: Prisma.BrandConfigCreateNestedOneWithoutWorkspaceInput
+  landingPages?: Prisma.LandingPageCreateNestedManyWithoutWorkspaceInput
+  lpAssets?: Prisma.LpAssetCreateNestedManyWithoutWorkspaceInput
+  folders?: Prisma.FolderCreateNestedManyWithoutWorkspaceInput
+  tags?: Prisma.TagCreateNestedManyWithoutWorkspaceInput
+}
+
+export type WorkspaceUncheckedCreateWithoutLpTagsInput = {
+  id?: string
+  name: string
+  slug: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
+  invitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutWorkspaceInput
+  probes?: Prisma.TenantIsolationProbeUncheckedCreateNestedManyWithoutWorkspaceInput
+  templates?: Prisma.TemplateUncheckedCreateNestedManyWithoutWorkspaceInput
+  brandConfig?: Prisma.BrandConfigUncheckedCreateNestedOneWithoutWorkspaceInput
+  landingPages?: Prisma.LandingPageUncheckedCreateNestedManyWithoutWorkspaceInput
+  lpAssets?: Prisma.LpAssetUncheckedCreateNestedManyWithoutWorkspaceInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutWorkspaceInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutWorkspaceInput
+}
+
+export type WorkspaceCreateOrConnectWithoutLpTagsInput = {
+  where: Prisma.WorkspaceWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkspaceCreateWithoutLpTagsInput, Prisma.WorkspaceUncheckedCreateWithoutLpTagsInput>
+}
+
+export type WorkspaceUpsertWithoutLpTagsInput = {
+  update: Prisma.XOR<Prisma.WorkspaceUpdateWithoutLpTagsInput, Prisma.WorkspaceUncheckedUpdateWithoutLpTagsInput>
+  create: Prisma.XOR<Prisma.WorkspaceCreateWithoutLpTagsInput, Prisma.WorkspaceUncheckedCreateWithoutLpTagsInput>
+  where?: Prisma.WorkspaceWhereInput
+}
+
+export type WorkspaceUpdateToOneWithWhereWithoutLpTagsInput = {
+  where?: Prisma.WorkspaceWhereInput
+  data: Prisma.XOR<Prisma.WorkspaceUpdateWithoutLpTagsInput, Prisma.WorkspaceUncheckedUpdateWithoutLpTagsInput>
+}
+
+export type WorkspaceUpdateWithoutLpTagsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
+  invitations?: Prisma.WorkspaceInvitationUpdateManyWithoutWorkspaceNestedInput
+  probes?: Prisma.TenantIsolationProbeUpdateManyWithoutWorkspaceNestedInput
+  templates?: Prisma.TemplateUpdateManyWithoutWorkspaceNestedInput
+  brandConfig?: Prisma.BrandConfigUpdateOneWithoutWorkspaceNestedInput
+  landingPages?: Prisma.LandingPageUpdateManyWithoutWorkspaceNestedInput
+  lpAssets?: Prisma.LpAssetUpdateManyWithoutWorkspaceNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutWorkspaceNestedInput
+  tags?: Prisma.TagUpdateManyWithoutWorkspaceNestedInput
+}
+
+export type WorkspaceUncheckedUpdateWithoutLpTagsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
+  invitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutWorkspaceNestedInput
+  probes?: Prisma.TenantIsolationProbeUncheckedUpdateManyWithoutWorkspaceNestedInput
+  templates?: Prisma.TemplateUncheckedUpdateManyWithoutWorkspaceNestedInput
+  brandConfig?: Prisma.BrandConfigUncheckedUpdateOneWithoutWorkspaceNestedInput
+  landingPages?: Prisma.LandingPageUncheckedUpdateManyWithoutWorkspaceNestedInput
+  lpAssets?: Prisma.LpAssetUncheckedUpdateManyWithoutWorkspaceNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutWorkspaceNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 
@@ -974,6 +1373,9 @@ export type WorkspaceCountOutputType = {
   templates: number
   landingPages: number
   lpAssets: number
+  folders: number
+  tags: number
+  lpTags: number
 }
 
 export type WorkspaceCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -983,6 +1385,9 @@ export type WorkspaceCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensi
   templates?: boolean | WorkspaceCountOutputTypeCountTemplatesArgs
   landingPages?: boolean | WorkspaceCountOutputTypeCountLandingPagesArgs
   lpAssets?: boolean | WorkspaceCountOutputTypeCountLpAssetsArgs
+  folders?: boolean | WorkspaceCountOutputTypeCountFoldersArgs
+  tags?: boolean | WorkspaceCountOutputTypeCountTagsArgs
+  lpTags?: boolean | WorkspaceCountOutputTypeCountLpTagsArgs
 }
 
 /**
@@ -1037,6 +1442,27 @@ export type WorkspaceCountOutputTypeCountLpAssetsArgs<ExtArgs extends runtime.Ty
   where?: Prisma.LpAssetWhereInput
 }
 
+/**
+ * WorkspaceCountOutputType without action
+ */
+export type WorkspaceCountOutputTypeCountFoldersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FolderWhereInput
+}
+
+/**
+ * WorkspaceCountOutputType without action
+ */
+export type WorkspaceCountOutputTypeCountTagsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TagWhereInput
+}
+
+/**
+ * WorkspaceCountOutputType without action
+ */
+export type WorkspaceCountOutputTypeCountLpTagsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.LpTagWhereInput
+}
+
 
 export type WorkspaceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1051,6 +1477,9 @@ export type WorkspaceSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   brandConfig?: boolean | Prisma.Workspace$brandConfigArgs<ExtArgs>
   landingPages?: boolean | Prisma.Workspace$landingPagesArgs<ExtArgs>
   lpAssets?: boolean | Prisma.Workspace$lpAssetsArgs<ExtArgs>
+  folders?: boolean | Prisma.Workspace$foldersArgs<ExtArgs>
+  tags?: boolean | Prisma.Workspace$tagsArgs<ExtArgs>
+  lpTags?: boolean | Prisma.Workspace$lpTagsArgs<ExtArgs>
   _count?: boolean | Prisma.WorkspaceCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["workspace"]>
 
@@ -1087,6 +1516,9 @@ export type WorkspaceInclude<ExtArgs extends runtime.Types.Extensions.InternalAr
   brandConfig?: boolean | Prisma.Workspace$brandConfigArgs<ExtArgs>
   landingPages?: boolean | Prisma.Workspace$landingPagesArgs<ExtArgs>
   lpAssets?: boolean | Prisma.Workspace$lpAssetsArgs<ExtArgs>
+  folders?: boolean | Prisma.Workspace$foldersArgs<ExtArgs>
+  tags?: boolean | Prisma.Workspace$tagsArgs<ExtArgs>
+  lpTags?: boolean | Prisma.Workspace$lpTagsArgs<ExtArgs>
   _count?: boolean | Prisma.WorkspaceCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type WorkspaceIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1102,6 +1534,9 @@ export type $WorkspacePayload<ExtArgs extends runtime.Types.Extensions.InternalA
     brandConfig: Prisma.$BrandConfigPayload<ExtArgs> | null
     landingPages: Prisma.$LandingPagePayload<ExtArgs>[]
     lpAssets: Prisma.$LpAssetPayload<ExtArgs>[]
+    folders: Prisma.$FolderPayload<ExtArgs>[]
+    tags: Prisma.$TagPayload<ExtArgs>[]
+    lpTags: Prisma.$LpTagPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1510,6 +1945,9 @@ export interface Prisma__WorkspaceClient<T, Null = never, ExtArgs extends runtim
   brandConfig<T extends Prisma.Workspace$brandConfigArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$brandConfigArgs<ExtArgs>>): Prisma.Prisma__BrandConfigClient<runtime.Types.Result.GetResult<Prisma.$BrandConfigPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   landingPages<T extends Prisma.Workspace$landingPagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$landingPagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LandingPagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   lpAssets<T extends Prisma.Workspace$lpAssetsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$lpAssetsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LpAssetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  folders<T extends Prisma.Workspace$foldersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$foldersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FolderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  tags<T extends Prisma.Workspace$tagsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$tagsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  lpTags<T extends Prisma.Workspace$lpTagsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$lpTagsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LpTagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2097,6 +2535,78 @@ export type Workspace$lpAssetsArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.LpAssetScalarFieldEnum | Prisma.LpAssetScalarFieldEnum[]
+}
+
+/**
+ * Workspace.folders
+ */
+export type Workspace$foldersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Folder
+   */
+  select?: Prisma.FolderSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Folder
+   */
+  omit?: Prisma.FolderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FolderInclude<ExtArgs> | null
+  where?: Prisma.FolderWhereInput
+  orderBy?: Prisma.FolderOrderByWithRelationInput | Prisma.FolderOrderByWithRelationInput[]
+  cursor?: Prisma.FolderWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FolderScalarFieldEnum | Prisma.FolderScalarFieldEnum[]
+}
+
+/**
+ * Workspace.tags
+ */
+export type Workspace$tagsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Tag
+   */
+  select?: Prisma.TagSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Tag
+   */
+  omit?: Prisma.TagOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TagInclude<ExtArgs> | null
+  where?: Prisma.TagWhereInput
+  orderBy?: Prisma.TagOrderByWithRelationInput | Prisma.TagOrderByWithRelationInput[]
+  cursor?: Prisma.TagWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TagScalarFieldEnum | Prisma.TagScalarFieldEnum[]
+}
+
+/**
+ * Workspace.lpTags
+ */
+export type Workspace$lpTagsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LpTag
+   */
+  select?: Prisma.LpTagSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the LpTag
+   */
+  omit?: Prisma.LpTagOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LpTagInclude<ExtArgs> | null
+  where?: Prisma.LpTagWhereInput
+  orderBy?: Prisma.LpTagOrderByWithRelationInput | Prisma.LpTagOrderByWithRelationInput[]
+  cursor?: Prisma.LpTagWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.LpTagScalarFieldEnum | Prisma.LpTagScalarFieldEnum[]
 }
 
 /**
