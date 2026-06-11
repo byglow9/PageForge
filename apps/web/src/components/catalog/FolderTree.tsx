@@ -64,8 +64,6 @@ interface FolderNodeProps {
   selectedFolderId: string | null;
   onFolderSelect: (id: string | null) => void;
   canManage: boolean;
-  openMenuId: string | null;
-  onMenuOpenChange: (id: string | null) => void;
   onDialogOpen: (state: DialogState) => void;
   slug: string;
 }
@@ -79,8 +77,6 @@ function FolderNode({
   selectedFolderId,
   onFolderSelect,
   canManage,
-  openMenuId,
-  onMenuOpenChange,
   onDialogOpen,
 }: FolderNodeProps) {
   const children = childrenMap.get(folder.id) ?? [];
@@ -142,8 +138,6 @@ function FolderNode({
         {canManage && (
           <FolderContextMenu
             folder={folder}
-            open={openMenuId === folder.id}
-            onOpenChange={(isOpen) => onMenuOpenChange(isOpen ? folder.id : null)}
             onCreateSubfolder={() =>
               onDialogOpen({ type: "create", folder, parentId: folder.id })
             }
@@ -170,8 +164,6 @@ function FolderNode({
             selectedFolderId={selectedFolderId}
             onFolderSelect={onFolderSelect}
             canManage={canManage}
-            openMenuId={openMenuId}
-            onMenuOpenChange={onMenuOpenChange}
             onDialogOpen={onDialogOpen}
             slug=""
           />
@@ -193,7 +185,6 @@ export function FolderTree({
 }: FolderTreeProps) {
   const router = useRouter();
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
-  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [dialogState, setDialogState] = useState<DialogState>({
     type: null,
     folder: null,
@@ -282,8 +273,6 @@ export function FolderTree({
           selectedFolderId={selectedFolderId}
           onFolderSelect={onFolderSelect}
           canManage={canManage}
-          openMenuId={openMenuId}
-          onMenuOpenChange={setOpenMenuId}
           onDialogOpen={openDialog}
           slug={slug}
         />
