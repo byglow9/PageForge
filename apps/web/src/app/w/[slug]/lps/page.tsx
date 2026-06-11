@@ -1,18 +1,30 @@
 /**
- * LP list page — /w/[slug]/lps
+ * LP catalog page — /w/[slug]/lps
  *
- * RSC page. Lists all LPs for the workspace or shows empty state.
+ * RSC page. Loads folders, workspace tags, LPs (with folderId), and all LP-tags
+ * in parallel at request time. Passes data to CatalogGrid (client component)
+ * for client-side folder/search/tag filtering.
+ *
+ * Layout (UI-SPEC):
+ * - Page header "Landing Pages" + "Generate LP" CTA above the two-panel area.
+ * - Two-panel row: FolderTree (w-60) left, LP grid (flex-1) right.
+ *   Both handled inside CatalogGrid.
  *
  * Security:
  * - requireWorkspace gates access (any workspace member, including viewer).
  * - Only members with lp.create permission see "Generate LP" CTA.
- * - listLpsAction uses withTenantDb scoped to ctx.workspaceId (T-04-02-05).
+ * - canManage gates FolderTree mutation actions (create/rename/delete folders).
+ * - All data fetched server-side; workspaceId comes from session (T-04-02-05).
  */
 import Link from "next/link";
-import { FileText } from "lucide-react";
 import { requireWorkspace, can } from "@/lib/workspaces/guards";
 import { listLpsAction } from "@/lib/lps/actions";
-import { LpCard } from "@/components/lps/LpCard";
+import {
+  listFoldersAction,
+  listWorkspaceTagsAction,
+  listAllLpTagsForWorkspaceAction,
+} from "@/lib/catalog/actions";
+import { CatalogGrid } from "@/components/catalog/CatalogGrid";
 
 interface LpsPageProps {
   params: Promise<{ slug: string }>;
@@ -22,15 +34,28 @@ export default async function LpsPage({ params }: LpsPageProps) {
   const { slug } = await params;
   const ctx = await requireWorkspace(slug);
 
-  const result = await listLpsAction(slug);
-  const lps = result.ok ? result.data : [];
-
   const canCreate = can(ctx.role, "lp", "create");
+  // canManage: owners/admins/editors can create/rename/delete folders
+  const canManage = ctx.role !== "viewer";
+
+  // Load all data in parallel (D-08: client-side filtering requires full dataset)
+  const [lpsResult, foldersResult, workspaceTagsResult, lpTagsResult] =
+    await Promise.all([
+      listLpsAction(slug),
+      listFoldersAction(slug),
+      listWorkspaceTagsAction(slug),
+      listAllLpTagsForWorkspaceAction(slug),
+    ]);
+
+  const lps = lpsResult.ok ? lpsResult.data : [];
+  const folders = foldersResult.ok ? foldersResult.data : [];
+  const workspaceTags = workspaceTagsResult.ok ? workspaceTagsResult.data : [];
+  const lpTagsMap = lpTagsResult.ok ? lpTagsResult.data : {};
 
   return (
-    <div className="px-8 py-6">
+    <div className="px-8 py-6 flex flex-col h-full">
       {/* Page header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between pb-6 border-b border-gray-200 shrink-0">
         <h1 className="text-2xl font-semibold text-gray-900">Landing Pages</h1>
         {canCreate && (
           <Link
@@ -42,37 +67,16 @@ export default async function LpsPage({ params }: LpsPageProps) {
         )}
       </div>
 
-      {/* LP grid or empty state */}
-      {lps.length === 0 ? (
-        /* Empty state */
-        <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
-          <FileText
-            className="h-12 w-12 text-gray-300 mb-4"
-            aria-hidden="true"
-          />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
-            No landing pages yet
-          </h2>
-          <p className="text-sm text-gray-500 mb-6">
-            Pick a template and fill in the form to generate your first landing page.
-          </p>
-          {canCreate && (
-            <Link
-              href={`/w/${slug}/lps/new`}
-              className="inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
-            >
-              Generate LP
-            </Link>
-          )}
-        </div>
-      ) : (
-        /* LP card grid */
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {lps.map((lp) => (
-            <LpCard key={lp.id} lp={lp} slug={slug} />
-          ))}
-        </div>
-      )}
+      {/* Two-panel catalog: FolderTree (left) + LP grid (right) */}
+      <CatalogGrid
+        lps={lps}
+        lpTagsMap={lpTagsMap}
+        folders={folders}
+        workspaceTags={workspaceTags}
+        slug={slug}
+        canCreate={canCreate}
+        canManage={canManage}
+      />
     </div>
   );
 }
