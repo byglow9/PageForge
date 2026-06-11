@@ -19,6 +19,26 @@ export const engine = new Liquid({
 });
 
 /**
+ * Extracts a plain URL string from a button field value.
+ *
+ * The LP form (schema-derive.ts) stores button fields as {label: string, url: string}
+ * objects. The engine renders button tokens as plain URL strings in href attributes.
+ * This helper unwraps the url property when the value is an object, preserving
+ * backward compatibility with plain string values (e.g. from fixture tests).
+ */
+function resolveButtonUrl(value: unknown): string {
+  if (typeof value === 'string') return value;
+  if (
+    typeof value === 'object' &&
+    value !== null &&
+    typeof (value as Record<string, unknown>).url === 'string'
+  ) {
+    return (value as Record<string, unknown>).url as string;
+  }
+  return '';
+}
+
+/**
  * Pré-processa valores de um repeater: aplica sanitização a cada item recursivamente.
  */
 function processRepeaterItems(
@@ -39,15 +59,17 @@ function processRepeaterItems(
       // O nome do campo dentro do item é o nome sem o prefixo do repeater
       // (ex: campo 'imagem' do repeater 'roteiro' → item.imagem)
       const fieldValue = (item as Record<string, unknown>)[field.name];
-      const rawStr = String(fieldValue ?? '');
 
       if (field.type === 'richtext') {
-        safeItem[field.name] = sanitizeRichText(rawStr);
-      } else if (field.type === 'button' || field.type === 'image') {
+        safeItem[field.name] = sanitizeRichText(String(fieldValue ?? ''));
+      } else if (field.type === 'button') {
+        // button: unwrap {label, url} object from LpForm or use plain string (backward compat)
+        safeItem[field.name] = sanitizeUrl(resolveButtonUrl(fieldValue));
+      } else if (field.type === 'image') {
         // image: src pode conter javascript: — mesmo sanitizeUrl que button (D-12)
-        safeItem[field.name] = sanitizeUrl(rawStr);
+        safeItem[field.name] = sanitizeUrl(String(fieldValue ?? ''));
       } else if (field.type === 'color') {
-        safeItem[field.name] = sanitizeCssColor(rawStr);
+        safeItem[field.name] = sanitizeCssColor(String(fieldValue ?? ''));
       } else {
         // text: escapado pelo outputEscape do LiquidJS
         safeItem[field.name] = fieldValue;
@@ -106,7 +128,10 @@ export async function render(
 
     if (field.type === 'richtext') {
       safeValues[field.name] = sanitizeRichText(String(raw ?? ''));
-    } else if (field.type === 'button' || field.type === 'image') {
+    } else if (field.type === 'button') {
+      // button: unwrap {label, url} object from LpForm or use plain string (backward compat)
+      safeValues[field.name] = sanitizeUrl(resolveButtonUrl(raw));
+    } else if (field.type === 'image') {
       // image: src pode conter javascript:/data: — mesmo sanitizeUrl que button (D-12)
       safeValues[field.name] = sanitizeUrl(String(raw ?? ''));
     } else if (field.type === 'color') {

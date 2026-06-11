@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ seo_titulo:text }}</title>
+  <meta name="description" content="{{ seo_descricao:text }}">
+  <style>
+    /* ---- Reset & Base ---- */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #1a1a2e; background: #fff; }
+    img { max-width: 100%; height: auto; display: block; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ---- Utilities ---- */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .section-subtitle { font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.1em; color: #6b7280; margin-bottom: 8px; }
+    .section-title { font-size: 2rem; font-weight: 700; color: #1a1a2e; margin-bottom: 24px; }
+
+    /* ---- Buttons ---- */
+    .btn-primary {
+      display: inline-block;
+      background: {{ brand.primary_color:color }};
+      color: #fff;
+      padding: 14px 32px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: opacity 0.2s;
+    }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-secondary {
+      display: inline-block;
+      border: 2px solid #fff;
+      color: #fff;
+      padding: 12px 28px;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+
+    /* ---- Navbar ---- */
+    .navbar { position: sticky; top: 0; z-index: 100; background: rgba(26,26,46,0.95); backdrop-filter: blur(8px); }
+    .navbar-inner { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; max-width: 1200px; margin: 0 auto; }
+    .navbar-logo { height: 36px; width: auto; }
+    .nav-links { display: flex; gap: 24px; list-style: none; }
+    .nav-links a { color: rgba(255,255,255,0.85); font-size: 0.9rem; transition: color 0.2s; }
+    .nav-links a:hover { color: #fff; }
+    .btn-reservar { background: {{ brand.primary_color:color }}; color: #fff; padding: 8px 20px; border-radius: 6px; font-size: 0.875rem; font-weight: 600; }
+
+    /* ---- Hero ---- */
+    .hero { position: relative; min-height: 90vh; display: flex; align-items: center; overflow: hidden; }
+    .hero-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+    .hero-overlay { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(26,26,46,0.75) 0%, rgba(26,26,46,0.4) 100%); z-index: 1; }
+    .hero-content { position: relative; z-index: 2; width: 100%; max-width: 1200px; margin: 0 auto; padding: 80px 24px; display: flex; gap: 48px; align-items: center; }
+    .hero-text { flex: 1; color: #fff; }
+    .hero-subtitle { font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.15em; color: rgba(255,255,255,0.7); margin-bottom: 16px; }
+    .hero-title { font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 800; line-height: 1.1; margin-bottom: 24px; }
+    .hero-descricao { font-size: 1.125rem; color: rgba(255,255,255,0.85); margin-bottom: 32px; line-height: 1.7; }
+    .hero-ctas { display: flex; gap: 16px; flex-wrap: wrap; }
+    .hero-cards { display: flex; flex-direction: column; gap: 16px; width: 320px; flex-shrink: 0; }
+    .card-destaque { background: rgba(255,255,255,0.95); border-radius: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.15); }
+    .card-destaque-img img { width: 100%; height: 160px; object-fit: cover; }
+    .card-destaque-body { padding: 16px; }
+    .card-destaque-titulo { font-size: 1rem; font-weight: 700; color: #1a1a2e; margin-bottom: 8px; }
+    .card-destaque-descricao { font-size: 0.875rem; color: #4b5563; line-height: 1.5; }
+
+    /* ---- Sobre ---- */
+    .sobre { padding: 80px 0; background: #f9fafb; }
+    .sobre-inner { display: flex; gap: 48px; align-items: flex-start; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .sobre-text { flex: 1; }
+    .sobre-titulo { font-size: 1.75rem; font-weight: 700; color: #1a1a2e; margin-bottom: 20px; }
+    .sobre-descricao { color: #374151; line-height: 1.8; margin-bottom: 16px; }
+    .info-cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; width: 380px; flex-shrink: 0; }
+    .card-info { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px; }
+    .card-info-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: #6b7280; margin-bottom: 6px; }
+    .card-info-valor { font-size: 1rem; font-weight: 600; color: #1a1a2e; }
+
+    /* ---- Inclusos ---- */
+    .inclusos { padding: 80px 0; }
+    .inclusos-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .section-header { text-align: center; margin-bottom: 48px; }
+    .inclusos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+    .card-incluso { background: #f9fafb; border-radius: 10px; padding: 28px; }
+    .card-incluso-titulo { font-size: 1.125rem; font-weight: 700; color: #1a1a2e; margin-bottom: 12px; }
+    .card-incluso-texto { color: #4b5563; line-height: 1.6; font-size: 0.95rem; }
+
+    /* ---- Roteiro ---- */
+    .roteiro { padding: 80px 0; background: #f9fafb; }
+    .roteiro-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .roteiro-subtitulo { color: #6b7280; font-size: 1rem; margin-top: -16px; margin-bottom: 40px; }
+    .roteiro-slides { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 48px; }
+    .card-roteiro { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .card-roteiro-img { position: relative; }
+    .card-roteiro-img img { width: 100%; height: 200px; object-fit: cover; }
+    .card-roteiro-dia { position: absolute; top: 12px; left: 12px; background: {{ brand.primary_color:color }}; color: #fff; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
+    .card-roteiro-body { padding: 20px; }
+    .card-roteiro-regiao-en { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: #9ca3af; margin-bottom: 4px; }
+    .card-roteiro-regiao { font-size: 1.125rem; font-weight: 700; color: #1a1a2e; margin-bottom: 4px; }
+    .card-roteiro-titulo { font-size: 0.9rem; font-weight: 600; color: #374151; margin-bottom: 12px; }
+    .card-roteiro-descricao { font-size: 0.875rem; color: #4b5563; line-height: 1.6; margin-bottom: 12px; }
+    .card-roteiro-destaque { font-size: 0.8rem; font-style: italic; color: #6b7280; }
+    .roteiro-cta { text-align: center; }
+
+    /* ---- Diferenciais ---- */
+    .por-que-renova { padding: 80px 0; }
+    .por-que-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .diferenciais-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }
+    .card-diferencial { padding: 28px; border: 1px solid #e5e7eb; border-radius: 10px; }
+    .card-diferencial-titulo { font-size: 1.125rem; font-weight: 700; color: #1a1a2e; margin-bottom: 12px; }
+    .card-diferencial-texto { color: #4b5563; line-height: 1.6; font-size: 0.95rem; }
+
+    /* ---- Depoimentos ---- */
+    .depoimentos { padding: 80px 0; background: #f9fafb; }
+    .depoimentos-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .depoimentos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+    .card-depoimento { background: #fff; border-radius: 12px; padding: 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .card-depoimento-quote { font-size: 1rem; color: #374151; line-height: 1.8; margin-bottom: 20px; font-style: italic; }
+    .card-depoimento-nome { font-weight: 700; color: #1a1a2e; font-size: 0.95rem; }
+    .card-depoimento-localidade { font-size: 0.8rem; color: #6b7280; }
+
+    /* ---- CTA / Inscreva-se ---- */
+    .inscrevase { padding: 80px 0; background: #1a1a2e; color: #fff; }
+    .inscrevase-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; gap: 64px; align-items: center; }
+    .inscrevase-text { flex: 1; }
+    .inscrevase-subtitle { font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.6); margin-bottom: 12px; }
+    .inscrevase-titulo { font-size: 2.5rem; font-weight: 800; line-height: 1.15; margin-bottom: 24px; }
+    .inscrevase-descricao { font-size: 1rem; color: rgba(255,255,255,0.8); line-height: 1.7; margin-bottom: 32px; }
+    .inscrevase-form { flex: 0 0 360px; background: rgba(255,255,255,0.08); border-radius: 12px; padding: 32px; }
+    .inscrevase-form h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 20px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 0.875rem; color: rgba(255,255,255,0.7); margin-bottom: 6px; }
+    .form-group input { width: 100%; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; padding: 10px 14px; color: #fff; font-size: 0.9rem; }
+    .btn-full { width: 100%; text-align: center; margin-top: 8px; }
+
+    /* ---- Footer ---- */
+    .footer { background: #111827; color: rgba(255,255,255,0.7); padding: 48px 0 24px; }
+    .footer-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; gap: 48px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 32px; }
+    .footer-logo-img { height: 40px; width: auto; margin-bottom: 12px; }
+    .footer-logo p { font-size: 0.875rem; }
+    .footer-social { display: flex; gap: 16px; }
+    .footer-social a { font-size: 0.875rem; color: rgba(255,255,255,0.6); transition: color 0.2s; }
+    .footer-social a:hover { color: #fff; }
+    .footer-contact a { display: block; font-size: 0.875rem; color: rgba(255,255,255,0.6); margin-bottom: 6px; }
+    .footer-bottom { max-width: 1200px; margin: 0 auto; padding: 20px 24px 0; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.8rem; color: rgba(255,255,255,0.4); }
+
+    /* ---- Responsive ---- */
+    @media (max-width: 768px) {
+      .hero-content { flex-direction: column; }
+      .hero-cards { width: 100%; }
+      .sobre-inner { flex-direction: column; }
+      .info-cards-grid { width: 100%; }
+      .inscrevase-inner { flex-direction: column; }
+      .inscrevase-form { flex: none; width: 100%; }
+      .navbar-inner { flex-wrap: wrap; gap: 12px; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="#inicio">
+      <img src="{{ brand.logo:image }}" alt="Logo" class="navbar-logo">
+    </a>
+    <ul class="nav-links">
+      <li><a href="#inicio">Início</a></li>
+      <li><a href="#sobre">Sobre</a></li>
+      <li><a href="#roteiro">Roteiro</a></li>
+      <li><a href="#contato">Contato</a></li>
+    </ul>
+    <a href="{{ brand.whatsapp:button }}" target="_blank" rel="noopener noreferrer" class="btn-reservar">
+      Reservar
+    </a>
+  </div>
+</nav>
+
+<!-- SEÇÃO 1: HERO -->
+<section id="inicio" class="hero">
+  <img src="{{ hero_imagem:image }}" alt="{{ seo_titulo:text }}" class="hero-bg">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-text">
+      <p class="hero-subtitle">{{ hero_subtitulo:text }}</p>
+      <h1 class="hero-title">
+        <span>{{ hero_titulo_linha1:text }}</span>
+        <br>
+        <span>{{ hero_titulo_linha2:text }}</span>
+        <br>
+        <span>{{ hero_titulo_linha3:text }}</span>
+      </h1>
+      <div class="hero-descricao">{{ hero_descricao:richtext }}</div>
+      <div class="hero-ctas">
+        <a href="{{ cta_primary_url:button }}" class="btn-primary">{{ cta_primary_label:text }}</a>
+        <a href="#roteiro" class="btn-secondary">Ver Roteiro</a>
+      </div>
+    </div>
+
+    <!-- SEÇÃO 2: Destaques (repeatable highlight cards) -->
+    <div class="hero-cards">
+      <!-- repeat:destaques -->
+      <article class="card-destaque">
+        <div class="card-destaque-img">
+          <img src="{{ imagem:image }}" alt="{{ titulo:text }}" loading="lazy">
+        </div>
+        <div class="card-destaque-body">
+          <h3 class="card-destaque-titulo">{{ titulo:text }}</h3>
+          <div class="card-destaque-descricao">{{ descricao:richtext }}</div>
+        </div>
+      </article>
+      <!-- /repeat:destaques -->
+    </div>
+  </div>
+</section>
+
+<!-- SOBRE A VIAGEM -->
+<section id="sobre" class="sobre">
+  <div class="sobre-inner">
+    <div class="sobre-text">
+      <p class="section-subtitle">A viagem</p>
+      <h2 class="sobre-titulo">Sobre a Jornada</h2>
+      <div class="sobre-descricao">{{ sobre_descricao_1:richtext }}</div>
+      <div class="sobre-descricao">{{ sobre_descricao_2:richtext }}</div>
+    </div>
+
+    <div class="info-cards-grid">
+      <!-- SEÇÃO 2b: Info cards (what's included / trip facts) -->
+      <!-- repeat:info_cards -->
+      <div class="card-info">
+        <p class="card-info-label">{{ label:text }}</p>
+        <p class="card-info-valor">{{ valor:text }}</p>
+      </div>
+      <!-- /repeat:info_cards -->
+    </div>
+  </div>
+</section>
+
+<!-- SEÇÃO 3: O QUE ESTÁ INCLUSO (What's included cards) -->
+<section class="inclusos">
+  <div class="inclusos-inner">
+    <div class="section-header">
+      <p class="section-subtitle">Tudo pensado para você</p>
+      <h2 class="section-title">O que está incluso</h2>
+    </div>
+
+    <div class="inclusos-grid">
+      <!-- repeat:inclusos -->
+      <div class="card-incluso">
+        <h3 class="card-incluso-titulo">{{ titulo:text }}</h3>
+        <p class="card-incluso-texto">{{ texto:text }}</p>
+      </div>
+      <!-- /repeat:inclusos -->
+    </div>
+  </div>
+</section>
+
+<!-- SEÇÃO 4: ROTEIRO DIA A DIA (Day-by-day itinerary) -->
+<section id="roteiro" class="roteiro">
+  <div class="roteiro-inner">
+    <div class="section-header">
+      <p class="section-subtitle">Sua jornada, dia a dia</p>
+      <h2 class="section-title">Roteiro Grécia</h2>
+      <p class="roteiro-subtitulo">{{ roteiro_subtitulo:text }}</p>
+    </div>
+
+    <div class="roteiro-slides">
+      <!-- repeat:roteiro -->
+      <div class="card-roteiro">
+        <div class="card-roteiro-img">
+          <img src="{{ imagem:image }}" alt="{{ imagem_alt:text }}" loading="lazy">
+          <span class="card-roteiro-dia">{{ dia:text }}</span>
+        </div>
+        <div class="card-roteiro-body">
+          <p class="card-roteiro-regiao-en">{{ regiao_en:text }}</p>
+          <h3 class="card-roteiro-regiao">{{ regiao:text }}</h3>
+          <h4 class="card-roteiro-titulo">{{ titulo:text }}</h4>
+          <div class="card-roteiro-descricao">{{ descricao:richtext }}</div>
+          <p class="card-roteiro-destaque">{{ destaque:text }}</p>
+        </div>
+      </div>
+      <!-- /repeat:roteiro -->
+    </div>
+
+    <div class="roteiro-cta">
+      <a href="{{ brand.whatsapp:button }}" target="_blank" rel="noopener noreferrer" class="btn-primary">
+        {{ cta_roteiro_label:text }}
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- SEÇÃO 5: DIFERENCIAIS (Differentiators) -->
+<section class="por-que-renova">
+  <div class="por-que-inner">
+    <div class="section-header">
+      <p class="section-subtitle">Viaje com quem entende</p>
+      <h2 class="section-title">{{ diferenciais_titulo:text }}</h2>
+    </div>
+
+    <div class="diferenciais-grid">
+      <!-- repeat:diferenciais -->
+      <div class="card-diferencial">
+        <h3 class="card-diferencial-titulo">{{ titulo:text }}</h3>
+        <p class="card-diferencial-texto">{{ texto:text }}</p>
+      </div>
+      <!-- /repeat:diferenciais -->
+    </div>
+  </div>
+</section>
+
+<!-- SEÇÃO 6: DEPOIMENTOS (Testimonials) -->
+<section id="depoimentos" class="depoimentos">
+  <div class="depoimentos-inner">
+    <div class="section-header">
+      <p class="section-subtitle">O que dizem nossos viajantes</p>
+      <h2 class="section-title">Depoimentos</h2>
+    </div>
+
+    <div class="depoimentos-grid">
+      <!-- repeat:depoimentos -->
+      <div class="card-depoimento">
+        <div class="card-depoimento-quote">{{ quote:richtext }}</div>
+        <div class="card-depoimento-autor">
+          <p class="card-depoimento-nome">{{ nome:text }}</p>
+          <p class="card-depoimento-localidade">{{ localidade:text }}</p>
+        </div>
+      </div>
+      <!-- /repeat:depoimentos -->
+    </div>
+  </div>
+</section>
+
+<!-- SEÇÃO 7: CTA / INSCREVA-SE -->
+<section id="contato" class="inscrevase">
+  <div class="inscrevase-inner">
+    <div class="inscrevase-text">
+      <p class="inscrevase-subtitle">{{ inscrevase_subtitulo:text }}</p>
+      <h2 class="inscrevase-titulo">{{ inscrevase_titulo_1:text }} {{ inscrevase_titulo_2:text }}</h2>
+      <div class="inscrevase-descricao">{{ inscrevase_descricao:richtext }}</div>
+      <a href="{{ brand.whatsapp:button }}" target="_blank" rel="noopener noreferrer" class="btn-primary">
+        {{ inscrevase_cta_label:text }}
+      </a>
+    </div>
+
+    <div class="inscrevase-form">
+      <h3>Receba a proposta</h3>
+      <form>
+        <div class="form-group">
+          <label for="nome">Nome completo</label>
+          <input type="text" id="nome" placeholder="Seu nome" required>
+        </div>
+        <div class="form-group">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" placeholder="seu@email.com" required>
+        </div>
+        <div class="form-group">
+          <label for="telefone">Telefone / WhatsApp</label>
+          <input type="tel" id="telefone" placeholder="(00) 00000-0000" required>
+        </div>
+        <button type="submit" class="btn-primary btn-full">Garantir Meu Lugar</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- SEÇÃO 8: FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-logo">
+      <img src="{{ brand.logo:image }}" alt="Logo" class="footer-logo-img">
+      <p>Aqui nós gostamos de pessoas.</p>
+    </div>
+
+    <div class="footer-social">
+      <a href="{{ brand.instagram:button }}" target="_blank" rel="noopener noreferrer" aria-label="Instagram">Instagram</a>
+      <a href="{{ brand.facebook:button }}" target="_blank" rel="noopener noreferrer" aria-label="Facebook">Facebook</a>
+      <a href="{{ brand.youtube:button }}" target="_blank" rel="noopener noreferrer" aria-label="YouTube">YouTube</a>
+    </div>
+
+    <div class="footer-contact">
+      <a href="tel:{{ brand.phone:text }}">{{ brand.phone:text }}</a>
+      <a href="mailto:{{ brand.email:text }}">{{ brand.email:text }}</a>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>&copy; 2026 Renova Turismo. Todos os direitos reservados.</p>
+  </div>
+</footer>
+
+</body>
+</html>
