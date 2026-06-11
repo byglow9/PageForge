@@ -255,6 +255,12 @@ export interface TenantTagHelpers {
    * Runs within the same withTenantDb transaction for atomicity.
    */
   setTagsForLp: (lpId: string, tagIds: string[]) => Promise<void>;
+  /**
+   * Load all LP-tag assignments for the workspace in a single query.
+   * Returns an array of { landingPageId, tag } pairs for grouping by the caller.
+   * Single query: avoids N+1 when rendering the full catalog LP grid (T-05-02-05).
+   */
+  listAllForWorkspace: () => Promise<Array<{ landingPageId: string; tag: Tag }>>;
 }
 
 // -----------------------------------------------------------------------
@@ -637,6 +643,19 @@ export async function withTenantDb<T>(
               })),
             });
           }
+        },
+
+        listAllForWorkspace: async () => {
+          // Single query joining lp_tag + tag for the workspace.
+          // Avoids N+1 when rendering the full catalog LP grid (T-05-02-05).
+          const lpTags = await tx.lpTag.findMany({
+            where: { workspaceId }, // app-level isolation (D-14)
+            include: { tag: true },
+          });
+          return lpTags.map((lt) => ({
+            landingPageId: lt.landingPageId,
+            tag: lt.tag,
+          }));
         },
       },
     };

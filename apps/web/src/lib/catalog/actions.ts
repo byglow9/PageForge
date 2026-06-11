@@ -399,3 +399,44 @@ export async function listWorkspaceTagsAction(
     return { ok: false, error: "Failed to load tags. Please try again." };
   }
 }
+
+// -----------------------------------------------------------------------
+// listAllLpTagsForWorkspaceAction
+// -----------------------------------------------------------------------
+
+/**
+ * Load all LP-tag assignments for the workspace in a single query.
+ *
+ * Returns a map of lpId → TagModel[] for efficient lookup by the catalog page
+ * (avoids N+1 queries when rendering the LP grid with tag chips).
+ *
+ * T-05-02-05: Tags are workspace-level metadata; all workspace members have
+ * lp.read; no PII exposed; scoped to workspaceId from session.
+ *
+ * @param slug - Workspace URL slug.
+ */
+export async function listAllLpTagsForWorkspaceAction(
+  slug: string
+): Promise<ActionResult<Record<string, Tag[]>>> {
+  const ctx = await requireWorkspace(slug);
+
+  try {
+    return await withTenantDb({ workspaceId: ctx.workspaceId }, async (db) => {
+      // Load all lp_tag rows for the workspace including the tag relation.
+      // This is a single query joining lp_tag + tag for the workspace.
+      const lpTagsMap = await db.tag.listAllForWorkspace();
+
+      // Group by lpId → TagModel[]
+      const result: Record<string, Tag[]> = {};
+      for (const { landingPageId, tag } of lpTagsMap) {
+        if (!result[landingPageId]) {
+          result[landingPageId] = [];
+        }
+        result[landingPageId].push(tag);
+      }
+      return { ok: true, data: result };
+    });
+  } catch {
+    return { ok: false, error: "Failed to load tags. Please try again." };
+  }
+}
