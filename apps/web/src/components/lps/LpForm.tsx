@@ -249,8 +249,18 @@ export function LpForm({
 
   // Form submit handler
   function onSubmit(data: Record<string, unknown>) {
-    const { _lpName, ...fieldValues } = data;
-    const name = (_lpName as string).trim();
+    // Field values come from the zod-parsed payload. The LP name lives in a
+    // registered field (_lpName) that the derived schema does NOT include, so
+    // the zod resolver strips it from `data` — read it from the live form
+    // values instead, and guard against an empty name.
+    const { _lpName: _stripped, ...fieldValues } = data;
+    void _stripped;
+    const rawName = getValues("_lpName");
+    const name = (typeof rawName === "string" ? rawName : "").trim();
+    if (!name) {
+      toast.error("Informe um nome para a landing page.");
+      return;
+    }
 
     startTransition(async () => {
       if (mode === "generate") {

@@ -39,6 +39,25 @@ function resolveButtonUrl(value: unknown): string {
 }
 
 /**
+ * Resolve o valor de um campo `image` para a URL pública.
+ *
+ * Valores de upload chegam como objeto { publicUrl, s3Key } (vindos do LpForm);
+ * este helper extrai `publicUrl`. Mantém compatibilidade com strings simples
+ * (ex: fixtures/testes ou dados legados) passando-as adiante inalteradas.
+ */
+function resolveImageUrl(value: unknown): string {
+  if (typeof value === 'string') return value;
+  if (
+    typeof value === 'object' &&
+    value !== null &&
+    typeof (value as Record<string, unknown>).publicUrl === 'string'
+  ) {
+    return (value as Record<string, unknown>).publicUrl as string;
+  }
+  return '';
+}
+
+/**
  * Pré-processa valores de um repeater: aplica sanitização a cada item recursivamente.
  */
 function processRepeaterItems(
@@ -66,8 +85,9 @@ function processRepeaterItems(
         // button: unwrap {label, url} object from LpForm or use plain string (backward compat)
         safeItem[field.name] = sanitizeUrl(resolveButtonUrl(fieldValue));
       } else if (field.type === 'image') {
-        // image: src pode conter javascript: — mesmo sanitizeUrl que button (D-12)
-        safeItem[field.name] = sanitizeUrl(String(fieldValue ?? ''));
+        // image: unwrap {publicUrl, s3Key} (ou string legada); src pode conter
+        // javascript: — mesmo sanitizeUrl que button (D-12)
+        safeItem[field.name] = sanitizeUrl(resolveImageUrl(fieldValue));
       } else if (field.type === 'color') {
         safeItem[field.name] = sanitizeCssColor(String(fieldValue ?? ''));
       } else {
@@ -132,8 +152,9 @@ export async function render(
       // button: unwrap {label, url} object from LpForm or use plain string (backward compat)
       safeValues[field.name] = sanitizeUrl(resolveButtonUrl(raw));
     } else if (field.type === 'image') {
-      // image: src pode conter javascript:/data: — mesmo sanitizeUrl que button (D-12)
-      safeValues[field.name] = sanitizeUrl(String(raw ?? ''));
+      // image: unwrap {publicUrl, s3Key} (ou string legada); src pode conter
+      // javascript:/data: — mesmo sanitizeUrl que button (D-12)
+      safeValues[field.name] = sanitizeUrl(resolveImageUrl(raw));
     } else if (field.type === 'color') {
       safeValues[field.name] = sanitizeCssColor(String(raw ?? ''));
     } else {
@@ -153,8 +174,10 @@ export async function render(
     const raw = (brand as Record<string, unknown>)[localName];
     if (field.type === 'richtext') {
       safeBrand[localName] = sanitizeRichText(String(raw ?? ''));
-    } else if (field.type === 'button' || field.type === 'image') {
-      safeBrand[localName] = sanitizeUrl(String(raw ?? ''));
+    } else if (field.type === 'button') {
+      safeBrand[localName] = sanitizeUrl(resolveButtonUrl(raw));
+    } else if (field.type === 'image') {
+      safeBrand[localName] = sanitizeUrl(resolveImageUrl(raw));
     } else if (field.type === 'color') {
       safeBrand[localName] = sanitizeCssColor(String(raw ?? ''));
     }
