@@ -25,6 +25,16 @@ export interface LpPreviewProps {
 }
 
 export function LpPreview({ html, lp, slug }: LpPreviewProps) {
+  // Preview safety: in a srcDoc iframe, relative/empty hrefs resolve against the
+  // PARENT page URL, so clicking an LP link with an empty href (e.g. an unconfigured
+  // brand button) navigated the iframe to the app preview route — loading the whole
+  // dashboard shell inside the preview. Inject `<base target="_blank">` so link
+  // clicks default to a new tab (silently blocked by the sandbox) instead of
+  // hijacking the iframe. Image src/CSS use absolute URLs, so they're unaffected.
+  const safeHtml = /<head[^>]*>/i.test(html)
+    ? html.replace(/<head[^>]*>/i, (m) => `${m}<base target="_blank">`)
+    : `<base target="_blank">${html}`;
+
   return (
     <div className="flex flex-col h-screen">
       {/* Preview toolbar */}
@@ -62,7 +72,7 @@ export function LpPreview({ html, lp, slug }: LpPreviewProps) {
       {/* Preview iframe */}
       <iframe
         title="Landing page preview"
-        srcDoc={html}
+        srcDoc={safeHtml}
         sandbox="allow-same-origin"
         className="w-full flex-1 border-0"
         style={{ height: "calc(100vh - 3rem)" }}
