@@ -8,6 +8,19 @@ PageForge é uma plataforma SaaS multi-tenant onde agências e times de marketin
 
 A partir de um template cadastrado uma vez, um usuário gera uma nova landing page completa e fiel ao layout apenas preenchendo um formulário — sem tocar em código.
 
+## Current Milestone: v2.0 Suporte a LPs do Lovable (templates de projeto React)
+
+**Goal:** Permitir cadastrar uma LP exportada do Lovable (pasta de projeto React/Vite multi-arquivo) e suportá-la no PageForge — gerar, organizar, pré-visualizar e exportar — coexistindo com o engine de template HTML+tokens (LiquidJS) atual.
+
+**Target features (a refinar nos requisitos):**
+- Ingestão de uma **pasta de projeto** React/Vite (não só uma string HTML+tokens)
+- Pipeline para transformar o projeto em algo servível/exportável (provável: build → output estático)
+- Modelo de **segurança** para aceitar/processar código de terceiros (reabre o vetor que a v1 evitou de propósito)
+- Coexistência de **dois tipos de template** (Liquid+tokens vs projeto Lovable) no catálogo, preview e export
+- Definir se/como a edição via formulário/tokens se aplica a esse formato (conteúdo Lovable hoje é hardcoded nos componentes)
+
+**Key context / tensão:** v1.0 escolheu LiquidJS **sem execução de JS** + export HTML estático por segurança (SSTI/XSS) e fidelidade preview==export. Suportar projetos React de terceiros muda o modelo de confiança e exige build/sandbox — principal decisão de arquitetura do milestone. Referência concreta: `renova-turismo-jornada-main/` na raiz do repo.
+
 ## Requirements
 
 ### Validated
@@ -89,4 +102,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-02 — Fase 1 (Core Engine) completa e verificada*
+*Last updated: 2026-06-17 — Milestone v2.0 (Suporte a LPs do Lovable) iniciado*

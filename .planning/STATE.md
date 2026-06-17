@@ -1,17 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-status: verified
-stopped_at: All phases verified — milestone v1.0 complete
-last_updated: "2026-06-17T13:25:37.139Z"
+milestone: v2.0
+milestone_name: Suporte a LPs do Lovable
+status: planning
+last_updated: "2026-06-17T18:57:15.290Z"
 last_activity: 2026-06-17
 progress:
-  total_phases: 5
-  completed_phases: 5
-  total_plans: 25
-  completed_plans: 25
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -25,12 +24,10 @@ See: .planning/PROJECT.md (updated 2026-06-01)
 
 ## Current Position
 
-Phase: All phases (1–5) complete and verified
+Phase: Not started (defining requirements)
 Plan: —
-Status: Milestone v1.0 — all phases verified (UAT closed for 2, 3, 5; 4 accepted via Phase 5 E2E; 1 engine tests)
-Last activity: 2026-06-17 - Closed Phase 02 UAT (Tests 7 & 10) and Phase 04 (via Phase 5)
-
-Progress: [██████████] 100%
+Status: Defining requirements
+Last activity: 2026-06-17 — Milestone v2.0 started
 
 ## Performance Metrics
 
