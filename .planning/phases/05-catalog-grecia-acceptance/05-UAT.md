@@ -59,10 +59,9 @@ result: pass
 
 ### 9. Grécia — autorar o template
 expected: Colar tests/fixtures/grecia-authored-template.html em /w/{slug}/templates/new; o painel de schema mostra os campos das 8 seções (hero, destaques, info cards, inclusos, roteiro, diferenciais, depoimentos, CTA/footer) com badges de tipo; salva sem erro.
-result: issue
-reported: "está funcionando porém tem dois botões de save template; esse toast de template save não gostei; e eu cliquei duas vezes pra salvar e gerou 2 templates"
-severity: major
-note: "Parse funciona perfeitamente: 48 fields · 6 repeaters detectados com badges de tipo e agrupamento. 3 achados: (a) bug major de duplo-save criando templates duplicados; (b) Save Template duplicado (header+footer); (c) toast não agradou (subjetivo)."
+result: pass
+reported: "RE-TESTE pós-05-05: abri o template, cliquei em Save e NÃO duplicou."
+note: "RESOLVIDO por 05-05: após criar, redireciona para /edit → saves seguintes atualizam (sem duplicata). Save Template único (botão do footer). Parse Grécia OK (48 fields · 6 repeaters). O design do toast permanece como gap separado (cosmetic, round 2)."
 
 ### 10. Grécia — gerar LP pelo formulário
 expected: Selecionar o template Grécia em /w/{slug}/lps/new; o formulário dinâmico renderiza todos os tipos de campo (text, richtext, image upload, color, button, repeater); adicionar/remover itens de repeater funciona; upload de imagem vai pro MinIO; Generate LP redireciona ao preview.
@@ -80,7 +79,7 @@ note: "Layout/texto/richtext/repeaters/imagens renderizam com fidelidade e sem t
 expected: Abrir edição da LP recarrega os valores preenchidos no formulário; alterar e salvar regenera o preview com os novos valores, mantendo a fidelidade de layout.
 result: pass
 reported: "sim recarregou tudo"
-note: "Campos de texto recarregam pré-preenchidos corretamente. OBSERVAÇÃO: campo hero_imagem mostra dropzone vazio ao editar (imagem já enviada não é re-exibida) — gap minor logado; verificar se salvar sem re-upload preserva a imagem."
+note: "Campos recarregam pré-preenchidos. OBSERVAÇÃO ORIGINAL (dropzone vazio ao editar) RESOLVIDA por 05-06: re-teste 2026-06-17 (imagem 10) mostra o campo hero_imagem com thumbnail + 'Uploaded' ao editar a LP 'Copy of gracia novo 2222'. Cosmético menor: exibe 'Uploaded · 0 B' (size 0 porque hidratado do valor salvo, sem re-upload). Banner 'Template updated to v3 / Apply new version' = reconciliação de schema esperada."
 
 ### 13. Grécia — duplicar LP
 expected: Duplicar a LP cria uma nova instância independente (mesmo conteúdo, novo registro) que aparece no catálogo; editar a cópia não afeta a original.
@@ -118,8 +117,8 @@ note: "A user story só fica plenamente coberta após o gap-closure do kebab do 
 ## Summary
 
 total: 18
-passed: 14
-issues: 4
+passed: 15
+issues: 3
 pending: 0
 skipped: 0
 blocked: 0
