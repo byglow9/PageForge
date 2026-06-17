@@ -102,6 +102,7 @@ None yet.
 | (fast) | suppressHydrationWarning no html/body (fix login GET-nativo por extensão ColorZilla) | 2026-06-17 | 83d06a9 | (gsd-fast) |
 | (fast) | Nome da conta + Log out no rodapé da sidebar do workspace shell | 2026-06-17 | 4419d49 | (gsd-fast) |
 | (fast) | Esconder nav Templates/Brand Settings para viewer (via can()) | 2026-06-17 | 281e39f | (gsd-fast) |
+| (fast) | Bloquear viewer (redirect) das rotas /templates e /brand via requireWorkspaceRole | 2026-06-17 | 1484303 | (gsd-fast) |
 
 ## Deferred Items
 
