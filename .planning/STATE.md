@@ -2,8 +2,8 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
-stopped_at: Phase 5 context gathered
+status: verified
+stopped_at: All phases verified — milestone v1.0 complete
 last_updated: "2026-06-17T13:25:37.139Z"
 last_activity: 2026-06-17
 progress:
@@ -25,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-06-01)
 
 ## Current Position
 
-Phase: 05 (catalog-grecia-acceptance) — EXECUTING
-Plan: 3 of 3
-Status: Phase complete — ready for verification
-Last activity: 2026-06-17 - Completed quick task 260617-jzg: estilizar fluxo de convite
+Phase: All phases (1–5) complete and verified
+Plan: —
+Status: Milestone v1.0 — all phases verified (UAT closed for 2, 3, 5; 4 accepted via Phase 5 E2E; 1 engine tests)
+Last activity: 2026-06-17 - Closed Phase 02 UAT (Tests 7 & 10) and Phase 04 (via Phase 5)
 
 Progress: [██████████] 100%
 
