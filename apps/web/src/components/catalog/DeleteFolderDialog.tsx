@@ -14,7 +14,7 @@
  * The corrected copy (mentioning both LPs and subfolders) is used here per plan spec.
  */
 
-import { useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -44,8 +44,17 @@ export function DeleteFolderDialog({
   onDeleted,
 }: DeleteFolderDialogProps) {
   const [isPending, startTransition] = useTransition();
+  // UAT round-2: require an explicit extra confirmation before deleting, so a folder
+  // that may contain landing pages / subfolders can't be removed in a single click.
+  const [acknowledged, setAcknowledged] = useState(false);
+
+  // Reset the acknowledgement whenever the dialog opens for a (possibly different) folder.
+  useEffect(() => {
+    if (open) setAcknowledged(false);
+  }, [open, folder.id]);
 
   function handleConfirm() {
+    if (!acknowledged) return;
     startTransition(async () => {
       const result = await deleteFolderAction(slug, { folderId: folder.id });
       if (result.ok) {
@@ -69,6 +78,19 @@ export function DeleteFolderDialog({
             will be moved to the root catalog.
           </DialogDescription>
         </DialogHeader>
+        <label className="flex items-start gap-2 text-sm text-gray-700">
+          <input
+            type="checkbox"
+            checked={acknowledged}
+            onChange={(e) => setAcknowledged(e.target.checked)}
+            disabled={isPending}
+            className="mt-0.5 size-4 shrink-0 rounded border-gray-300"
+          />
+          <span>
+            I understand that any landing pages and subfolders inside will be
+            moved to <strong>All LPs</strong>.
+          </span>
+        </label>
         <DialogFooter>
           <Button
             type="button"
@@ -82,7 +104,7 @@ export function DeleteFolderDialog({
             type="button"
             variant="destructive"
             onClick={handleConfirm}
-            disabled={isPending}
+            disabled={isPending || !acknowledged}
           >
             {isPending ? "Deleting…" : "Delete folder"}
           </Button>
