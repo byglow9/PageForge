@@ -22,7 +22,7 @@
  * - T-04-03-06: S3 key is constructed server-side using workspaceId from session.
  */
 
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { Controller, type Control } from "react-hook-form";
 import { UploadCloud, AlertCircle, X } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
@@ -283,6 +283,31 @@ export function ImageUploadField({
         const onChange = field.onChange as (
           value: string | { publicUrl: string; s3Key: string }
         ) => void;
+
+        // Edit-mode hydration: seed previewUrl from the existing field value
+        // without calling onChange (which would dirty the form / risk clobbering the value).
+        // The stored value shape is { publicUrl, s3Key } (or a plain string for back-compat).
+        // We only hydrate once — when previewUrl is still empty and field.value is truthy.
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        useEffect(() => {
+          if (!field.value) return;
+          if (previewUrl !== "") return;
+          let url = "";
+          if (
+            typeof field.value === "object" &&
+            field.value !== null &&
+            typeof (field.value as Record<string, unknown>).publicUrl === "string"
+          ) {
+            url = (field.value as { publicUrl: string; s3Key: string }).publicUrl;
+          } else if (typeof field.value === "string" && field.value !== "") {
+            url = field.value;
+          }
+          if (url) {
+            setPreviewUrl(url);
+            setUploadState("uploaded");
+          }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        }, [field.value]);
 
         return (
           <div>

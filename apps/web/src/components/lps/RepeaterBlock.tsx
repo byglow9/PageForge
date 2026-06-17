@@ -172,7 +172,7 @@ export function RepeaterBlock({
 
                     if (field.type === "richtext") {
                       return (
-                        <div key={field.name}>
+                        <div key={fieldId}>
                           <Label htmlFor={fieldId} className="mb-1 block text-sm font-medium text-gray-700">
                             {meta.label}
                             {meta.required && (
@@ -197,7 +197,7 @@ export function RepeaterBlock({
 
                     if (field.type === "button") {
                       return (
-                        <div key={field.name} className="space-y-2">
+                        <div key={fieldId} className="space-y-2">
                           <div>
                             <Label className="mb-1 block text-sm font-medium text-gray-700">
                               {meta.label} — Button Text
@@ -227,7 +227,7 @@ export function RepeaterBlock({
 
                     if (field.type === "image") {
                       return (
-                        <div key={field.name}>
+                        <div key={fieldId}>
                           <Label htmlFor={fieldId} className="mb-1 block text-sm font-medium text-gray-700">
                             {meta.label}
                             {meta.required && (
@@ -252,7 +252,7 @@ export function RepeaterBlock({
 
                     // text, color, and fallback
                     return (
-                      <div key={field.name}>
+                      <div key={fieldId}>
                         <Label htmlFor={fieldId} className="mb-1 block text-sm font-medium text-gray-700">
                           {meta.label}
                           {meta.required && (
