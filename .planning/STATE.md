@@ -98,6 +98,7 @@ None yet.
 | (fast) | Botão de logout no canto da tela /workspaces (signOut → /login) | 2026-06-17 | 0f8a21c | (gsd-fast) |
 | (fast) | Fix: Switch account / Log out navegam sempre (redirect no finally) | 2026-06-17 | 1188dd1 | (gsd-fast) |
 | (fast) | Login volta ao convite (invitationId) pós-login + nome da conta no canto de /workspaces | 2026-06-17 | 6410657 | (gsd-fast) |
+| (fast) | Nome da conta logada movido para o canto superior esquerdo de /workspaces | 2026-06-17 | 999d68f | (gsd-fast) |
 
 ## Deferred Items
 
