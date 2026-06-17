@@ -147,10 +147,10 @@ Plans:
 - [x] 05-02-PLAN.md — Tags + search + catalog layout slice: LpCatalogCard (folder badge + tag chips) + TagInput + CatalogSearchBar + CatalogFilterBar + two-panel lps/page.tsx restructure with client-side filtering
 
 **Wave 3** *(blocked on Wave 2 completion)*
-- [ ] 05-03-PLAN.md — Grécia acceptance: shadcn dropdown-menu install + FolderContextMenu upgrade + real Grécia template authored via Phase 3 UI + full pipeline (generate→preview→edit→duplicate→export) + gap fixes + Playwright E2E + UAT checkpoint
+- [x] 05-03-PLAN.md — Grécia acceptance: shadcn dropdown-menu install + FolderContextMenu upgrade + real Grécia template authored via Phase 3 UI + full pipeline (generate→preview→edit→duplicate→export) + gap fixes + Playwright E2E + UAT checkpoint
 
 **Wave 1 (gap closure — UAT diagnosed)** *(independent fixes; no file overlap → parallel)*
-- [ ] 05-04-PLAN.md — Major catalog blockers: portalize LpCatalogCard kebab (DropdownMenu) fixing clipping (UAT 4/5/7/18) + fix deleteFolderAction snake_case SQL → Prisma updateMany (UAT 16) + generate missing Phase 5 catalog migration
+- [x] 05-04-PLAN.md — Major catalog blockers: portalize LpCatalogCard kebab (DropdownMenu) fixing clipping (UAT 4/5/7/18) + fix deleteFolderAction snake_case SQL → Prisma updateMany (UAT 16) + generate missing Phase 5 catalog migration
 - [ ] 05-05-PLAN.md — Template editor double-save fix (redirect to edit after create, UAT 9) + single Save Template / single Generate LP CTA + catalog search-bar spacing (UAT 2/9)
 - [ ] 05-06-PLAN.md — LP form/render gaps: composite repeater keys (UAT 10) + ImageUploadField edit hydration (UAT 12) + template picker single-control (UAT 10) + <main>/dashboard padding (UAT 1) + review committed inline LpForm/renderer fixes (UAT 10/11)
 
@@ -165,4 +165,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Multi-Tenancy Foundation | 6/8 | Gap Closure | - |
 | 3. Template Authoring + Brand Config | 0/4 | Planning complete | - |
 | 4. LP Generation, Assets, Preview & Export | 0/4 | Planning complete | - |
-| 5. Catalog & Grécia Acceptance | 0/3 | Planning complete | - |
+| 5. Catalog & Grécia Acceptance | 4/6 | In Progress|  |

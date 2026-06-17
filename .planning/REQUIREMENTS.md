@@ -52,8 +52,8 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Catalog
 
 - [ ] **CAT-01**: Generated LPs are saved to a catalog
-- [ ] **CAT-02**: User can organize LPs into folders
-- [ ] **CAT-03**: User can categorize/tag LPs
+- [x] **CAT-02**: User can organize LPs into folders
+- [x] **CAT-03**: User can categorize/tag LPs
 - [ ] **CAT-04**: User can browse and search LPs in the catalog
 
 ## v2 Requirements
@@ -129,8 +129,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | LP-03 | Phase 4 | Pending |
 | LP-04 | Phase 4 | Pending |
 | CAT-01 | Phase 5 | Pending |
-| CAT-02 | Phase 5 | Pending |
-| CAT-03 | Phase 5 | Pending |
+| CAT-02 | Phase 5 | Complete |
+| CAT-03 | Phase 5 | Complete |
 | CAT-04 | Phase 5 | Pending |
 
 **Coverage:**
