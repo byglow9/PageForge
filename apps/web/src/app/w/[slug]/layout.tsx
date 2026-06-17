@@ -12,7 +12,11 @@
  */
 import Link from "next/link";
 import { FileText } from "lucide-react";
-import { requireWorkspace, requireVerifiedUser } from "@/lib/workspaces/guards";
+import {
+  requireWorkspace,
+  requireVerifiedUser,
+  can,
+} from "@/lib/workspaces/guards";
 import { SidebarUser } from "./SidebarUser";
 
 interface WorkspaceLayoutProps {
@@ -30,6 +34,11 @@ export default async function WorkspaceLayout({
   // Redirects to /login, /verify-email, or /workspaces/new if any check fails.
   const ctx = await requireWorkspace(slug);
   const user = await requireVerifiedUser();
+
+  // Authoring nav is gated by role: viewers can't create templates or edit
+  // brand settings, so those links are hidden for them.
+  const canAuthorTemplates = can(ctx.role, "template", "create");
+  const canEditBrand = can(ctx.role, "brand", "update");
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -52,14 +61,16 @@ export default async function WorkspaceLayout({
         {/* Nav links */}
         <nav className="flex-1 py-4">
           <ul className="space-y-1 px-2">
-            <li>
-              <Link
-                href={`/w/${slug}/templates`}
-                className="flex items-center gap-2 px-4 py-2 rounded-md text-sm text-gray-700 hover:bg-white hover:text-gray-900 transition-colors"
-              >
-                Templates
-              </Link>
-            </li>
+            {canAuthorTemplates && (
+              <li>
+                <Link
+                  href={`/w/${slug}/templates`}
+                  className="flex items-center gap-2 px-4 py-2 rounded-md text-sm text-gray-700 hover:bg-white hover:text-gray-900 transition-colors"
+                >
+                  Templates
+                </Link>
+              </li>
+            )}
             <li>
               <Link
                 href={`/w/${slug}/lps`}
@@ -69,14 +80,16 @@ export default async function WorkspaceLayout({
                 Landing Pages
               </Link>
             </li>
-            <li>
-              <Link
-                href={`/w/${slug}/brand`}
-                className="flex items-center gap-2 px-4 py-2 rounded-md text-sm text-gray-700 hover:bg-white hover:text-gray-900 transition-colors"
-              >
-                Brand Settings
-              </Link>
-            </li>
+            {canEditBrand && (
+              <li>
+                <Link
+                  href={`/w/${slug}/brand`}
+                  className="flex items-center gap-2 px-4 py-2 rounded-md text-sm text-gray-700 hover:bg-white hover:text-gray-900 transition-colors"
+                >
+                  Brand Settings
+                </Link>
+              </li>
+            )}
             <li>
               <Link
                 href={`/w/${slug}/members`}
