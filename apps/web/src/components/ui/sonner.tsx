@@ -29,12 +29,12 @@ const Toaster = ({ ...props }: ToasterProps) => {
           "--normal-text": "var(--foreground)",
           "--normal-border": "var(--border)",
           "--border-radius": "0.25rem",
-          "--width": "fit-content",
+          "--width": "20rem",
         } as React.CSSProperties
       }
       toastOptions={{
         classNames: {
-          toast: "cn-toast !rounded !shadow-sm !gap-2 !text-sm !w-fit !min-w-0 !max-w-sm",
+          toast: "cn-toast !rounded !shadow-sm !gap-2 !text-sm !py-2.5",
         },
       }}
       {...props}

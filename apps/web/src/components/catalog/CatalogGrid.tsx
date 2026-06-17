@@ -21,7 +21,7 @@
  */
 
 import { useState } from "react";
-import { FileText, Folder as FolderIcon, ChevronRight } from "lucide-react";
+import { FileText, ChevronRight } from "lucide-react";
 import { FolderTree } from "./FolderTree";
 import { CatalogSearchBar } from "./CatalogSearchBar";
 import { CatalogFilterBar } from "./CatalogFilterBar";
@@ -233,17 +233,17 @@ export function CatalogGrid({
                   key={folder.id}
                   type="button"
                   onClick={() => setSelectedFolderId(folder.id)}
-                  className="flex flex-col items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 hover:border-gray-300 transition-colors min-h-[120px]"
+                  aria-label={`Open folder ${folder.name}`}
+                  className="group flex flex-col min-h-[120px] text-left"
                 >
-                  <FolderIcon
-                    className="h-14 w-14 text-yellow-400"
-                    fill="currentColor"
-                    strokeWidth={1}
-                    aria-hidden="true"
-                  />
-                  <span className="max-w-full truncate text-sm font-medium text-gray-900">
-                    {folder.name}
-                  </span>
+                  {/* Folder tab */}
+                  <div className="h-4 w-20 rounded-t-md bg-amber-300 group-hover:bg-amber-400 transition-colors" />
+                  {/* Folder body */}
+                  <div className="flex flex-1 items-center justify-center rounded-b-md rounded-tr-md bg-amber-200 group-hover:bg-amber-300 px-4 py-6 transition-colors">
+                    <span className="max-w-full truncate text-sm font-medium text-amber-900">
+                      {folder.name}
+                    </span>
+                  </div>
                 </button>
               ))}
             {filteredLps.map((lp) => (
