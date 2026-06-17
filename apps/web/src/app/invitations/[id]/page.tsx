@@ -26,6 +26,7 @@ import {
   isInvitationExpired,
 } from "@/lib/workspaces/invitations";
 import { AcceptButton } from "./AcceptButton";
+import { SwitchAccountButton } from "./SwitchAccountButton";
 import {
   Card,
   CardHeader,
@@ -243,7 +244,8 @@ export default async function InvitationPage({
           </p>
           <AcceptButton invitationId={id} />
         </CardContent>
-        <CardFooter>
+        <CardFooter className="flex gap-2">
+          <SwitchAccountButton invitationId={id} />
           <Link
             href="/"
             className={buttonVariants({ variant: "ghost", size: "sm" })}
