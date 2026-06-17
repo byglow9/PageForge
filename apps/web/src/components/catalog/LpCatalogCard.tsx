@@ -142,7 +142,11 @@ function TagInputDialog({
           <DialogTitle>Edit tags</DialogTitle>
         </DialogHeader>
         <div className="py-2">
+          {/* Re-key on `open` so TagInput remounts and re-reads the LP's current
+              tags each time the dialog opens (UAT round-2: dialog was opening empty
+              and a destructive save could wipe existing tags). */}
           <TagInput
+            key={`${lpId}-${open}`}
             lpId={lpId}
             slug={slug}
             initialTags={initialTags}
