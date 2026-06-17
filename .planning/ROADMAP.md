@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Core Engine (Parser + Merge)** - UI-less spike proving token parsing and safe static-HTML merge against the real Grécia template; locks the engine decision. (completed 2026-06-02)
 - [ ] **Phase 2: Multi-Tenancy Foundation** - Auth, workspaces, RBAC, and per-workspace isolation across every table and storage path. (gap closure in progress — UAT Tests 7 and 10 failing)
-- [ ] **Phase 3: Template Authoring + Brand Config** - Author markup templates with all six field types (incl. repeaters) and configure reusable global brand/contact values.
+- [x] **Phase 3: Template Authoring + Brand Config** - Author markup templates with all six field types (incl. repeaters) and configure reusable global brand/contact values. (completed 2026-06-08 — UAT 6/6)
 - [ ] **Phase 4: LP Generation, Assets, Preview & Export** - Schema-driven dynamic form (with repeater add/remove + image upload) producing previewable, editable, duplicable, exportable static-HTML LPs.
 - [x] **Phase 5: Catalog & Grécia Acceptance** - Folders, categories, and browse/search over LPs, validated by the full Grécia end-to-end loop. (completed 2026-06-17)
 
@@ -163,6 +163,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Core Engine (Parser + Merge) | 3/3 | Complete   | 2026-06-02 |
 | 2. Multi-Tenancy Foundation | 6/8 | Gap Closure | - |
-| 3. Template Authoring + Brand Config | 0/4 | Planning complete | - |
+| 3. Template Authoring + Brand Config | 4/4 | Complete   | 2026-06-08 |
 | 4. LP Generation, Assets, Preview & Export | 0/4 | Planning complete | - |
 | 5. Catalog & Grécia Acceptance | 6/6 | Complete   | 2026-06-17 |

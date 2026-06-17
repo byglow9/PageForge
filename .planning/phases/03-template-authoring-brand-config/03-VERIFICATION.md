@@ -1,7 +1,9 @@
 ---
 phase: 03-template-authoring-brand-config
 verified: 2026-06-05T22:00:00Z
-status: human_needed
+status: verified
+human_verified: 2026-06-08T13:10:00Z
+human_verification_result: "6/6 passed — see 03-HUMAN-UAT.md"
 score: 7/7 must-haves verified
 overrides_applied: 0
 human_verification:
@@ -29,7 +31,7 @@ human_verification:
 
 **Phase Goal:** Let users author and edit token-markup templates with all six field types and configure reusable global brand/contact values, persisting markup + parsed schema scoped to the workspace.
 **Verified:** 2026-06-05T22:00:00Z
-**Status:** human_needed
+**Status:** verified (human UAT 6/6 passed em 2026-06-08 — ver 03-HUMAN-UAT.md)
 **Re-verification:** No — verificação inicial
 
 ## Goal Achievement
