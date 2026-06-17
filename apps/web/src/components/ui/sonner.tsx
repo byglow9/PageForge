@@ -7,13 +7,15 @@ import { CircleCheckIcon, InfoIcon, TriangleAlertIcon, OctagonXIcon, Loader2Icon
 const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = "system" } = useTheme()
 
-  // UAT round-2: user asked to KEEP the position (default bottom-right) but make the
-  // toast SIMPLER — minimal line icons, flat neutral surface, shorter auto-dismiss.
+  // UAT round-2.1: bottom-LEFT position; clean white rectangular base with slightly
+  // rounded corners; green for success / red for error (richColors).
   return (
     <Sonner
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
+      position="bottom-left"
       duration={3000}
+      richColors
       icons={{
         success: <CircleCheckIcon className="size-4" />,
         info: <InfoIcon className="size-4" />,
@@ -23,15 +25,15 @@ const Toaster = ({ ...props }: ToasterProps) => {
       }}
       style={
         {
-          "--normal-bg": "var(--background)",
+          "--normal-bg": "#ffffff",
           "--normal-text": "var(--foreground)",
           "--normal-border": "var(--border)",
-          "--border-radius": "var(--radius)",
+          "--border-radius": "0.5rem",
         } as React.CSSProperties
       }
       toastOptions={{
         classNames: {
-          toast: "cn-toast !shadow-sm !gap-2 !text-sm",
+          toast: "cn-toast !rounded-lg !shadow-sm !gap-2 !text-sm",
         },
       }}
       {...props}
