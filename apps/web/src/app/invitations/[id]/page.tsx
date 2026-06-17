@@ -34,7 +34,7 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 
 interface InvitationPageProps {
   params: Promise<{ id: string }>;
@@ -171,12 +171,18 @@ export default async function InvitationPage({
             </p>
           </CardContent>
           <CardFooter className="flex gap-2">
-            <Button asChild>
-              <Link href={`/login?invitationId=${id}`}>Sign in</Link>
-            </Button>
-            <Button variant="outline" asChild>
-              <Link href={`/signup?invitationId=${id}`}>Create an account</Link>
-            </Button>
+            <Link
+              href={`/login?invitationId=${id}`}
+              className={buttonVariants()}
+            >
+              Sign in
+            </Link>
+            <Link
+              href={`/signup?invitationId=${id}`}
+              className={buttonVariants({ variant: "outline" })}
+            >
+              Create an account
+            </Link>
           </CardFooter>
         </Card>
       </main>
@@ -197,11 +203,12 @@ export default async function InvitationPage({
             </p>
           </CardContent>
           <CardFooter>
-            <Button asChild>
-              <Link href={`/verify-email?invitationId=${id}`}>
-                Verify your email
-              </Link>
-            </Button>
+            <Link
+              href={`/verify-email?invitationId=${id}`}
+              className={buttonVariants()}
+            >
+              Verify your email
+            </Link>
           </CardFooter>
         </Card>
       </main>
@@ -237,9 +244,12 @@ export default async function InvitationPage({
           <AcceptButton invitationId={id} />
         </CardContent>
         <CardFooter>
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/">Decline</Link>
-          </Button>
+          <Link
+            href="/"
+            className={buttonVariants({ variant: "ghost", size: "sm" })}
+          >
+            Decline
+          </Link>
         </CardFooter>
       </Card>
     </main>
