@@ -13,6 +13,7 @@
 import Link from "next/link";
 import { requireVerifiedUser } from "@/lib/workspaces/guards";
 import { getUserWorkspaces } from "@/lib/workspaces/listing";
+import { LogoutButton } from "./LogoutButton";
 
 export default async function WorkspacesPage() {
   const user = await requireVerifiedUser();
@@ -29,6 +30,7 @@ export default async function WorkspacesPage() {
           padding: "1rem",
         }}
       >
+        <LogoutButton />
         <div style={{ width: "100%", maxWidth: "480px", textAlign: "center" }}>
           <h1 style={{ fontSize: "1.5rem", fontWeight: "bold", marginBottom: "0.5rem" }}>
             No workspaces yet
@@ -66,6 +68,7 @@ export default async function WorkspacesPage() {
         padding: "1rem",
       }}
     >
+      <LogoutButton />
       <div style={{ width: "100%", maxWidth: "480px" }}>
         <h1 style={{ fontSize: "1.5rem", fontWeight: "bold", marginBottom: "1.5rem" }}>
           Your workspaces
