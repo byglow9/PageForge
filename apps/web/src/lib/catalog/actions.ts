@@ -159,8 +159,8 @@ export async function renameFolderAction(
  * 1. All direct child LPs (folderId → null).
  * 2. All direct child Folders (parentId → null).
  *
- * This is done inside the same withTenantDb transaction using $executeRaw
- * for the batch updates to keep it atomic (T-05-01-03).
+ * This is done inside a Prisma $transaction using updateMany calls
+ * to keep it atomic and use camelCase field names (T-05-01-03).
  *
  * @param slug - Workspace URL slug.
  * @param input - { folderId }.
@@ -183,7 +183,7 @@ export async function deleteFolderAction(
 
   try {
     // Non-destructive delete: re-parent LPs and subfolders to root in same tx, then delete folder.
-    // Use a raw Prisma $transaction to run the batch re-parenting + delete atomically (T-05-01-03, D-03).
+    // Use Prisma $transaction with updateMany (camelCase field names) for type-safe atomic re-parenting (T-05-01-03, D-03).
     await prisma.$transaction(async (tx) => {
       // Set the RLS transaction-local workspace ID
       await tx.$executeRaw`SELECT set_config('app.current_workspace_id', ${workspaceId}, true)`;
@@ -197,20 +197,16 @@ export async function deleteFolderAction(
       }
 
       // 1. Re-parent direct child LPs to root (folderId → null) — D-03
-      await tx.$executeRaw`
-        UPDATE landing_page
-        SET folder_id = NULL
-        WHERE workspace_id = ${workspaceId}
-          AND folder_id = ${folderId}
-      `;
+      await tx.landingPage.updateMany({
+        where: { workspaceId, folderId },
+        data: { folderId: null },
+      });
 
       // 2. Re-parent direct child Folders to root (parentId → null) — D-03
-      await tx.$executeRaw`
-        UPDATE folder
-        SET parent_id = NULL
-        WHERE workspace_id = ${workspaceId}
-          AND parent_id = ${folderId}
-      `;
+      await tx.folder.updateMany({
+        where: { workspaceId, parentId: folderId },
+        data: { parentId: null },
+      });
 
       // 3. Delete the folder row
       await tx.folder.delete({
