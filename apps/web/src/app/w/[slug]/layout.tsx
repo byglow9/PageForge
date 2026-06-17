@@ -12,7 +12,8 @@
  */
 import Link from "next/link";
 import { FileText } from "lucide-react";
-import { requireWorkspace } from "@/lib/workspaces/guards";
+import { requireWorkspace, requireVerifiedUser } from "@/lib/workspaces/guards";
+import { SidebarUser } from "./SidebarUser";
 
 interface WorkspaceLayoutProps {
   children: React.ReactNode;
@@ -28,6 +29,7 @@ export default async function WorkspaceLayout({
   // Guard: validates session, verifies email, and confirms membership.
   // Redirects to /login, /verify-email, or /workspaces/new if any check fails.
   const ctx = await requireWorkspace(slug);
+  const user = await requireVerifiedUser();
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -85,6 +87,9 @@ export default async function WorkspaceLayout({
             </li>
           </ul>
         </nav>
+
+        {/* Account + logout footer */}
+        <SidebarUser name={user.name || user.email} />
       </aside>
 
       {/* Main content area */}
