@@ -1,5 +1,5 @@
 ---
-status: partial
+status: complete
 phase: 05-catalog-grecia-acceptance
 source: [05-01-SUMMARY.md, 05-02-SUMMARY.md, 05-03-SUMMARY.md]
 started: 2026-06-16T00:00:00Z
@@ -10,7 +10,7 @@ user_story: "As a membro do workspace, I want to organizar e buscar LPs no catá
 
 ## Current Test
 
-[testing complete — 1 blocked test (#7) re-testável após gap-closure]
+[testing complete — 18/18 pass after gap-closure 05-04/05/06 + round-2.1 refinements]
 
 ## Tests
 
@@ -32,17 +32,15 @@ note: "Criou pasta 'portugal' + subpasta 'portugal marav...' indentada sob ela; 
 
 ### 4. Mover LP para uma pasta
 expected: No card da LP, kebab → "Move to folder…" abre dialog com lista de pastas (Root = All LPs); ao mover, o badge da pasta aparece no card e a LP aparece dentro da pasta na árvore.
-result: issue
-reported: "RE-TESTE pós-05-04: kebab/Move to folder agora funcionam (clipping resolvido). PORÉM a navegação de pastas está errada: movi uma LP só para a subpasta 'portugal maravilhoso', mas ao abrir a pasta pai 'portugal' essa LP também aparece. Esperado: pasta pai mostra só as LPs diretas + card/acesso às subpastas; LPs da subpasta só aparecem ao clicar na subpasta."
-severity: major
-note: "Clipping do kebab (causa original) RESOLVIDO por 05-04 — itens visíveis, Move to folder abre o dialog e move. Novo achado de lógica: o filtro de pasta inclui descendentes (mostra LPs de subpastas no pai) em vez de filhos diretos + navegação por subpasta. Imagens 4 (subpasta mostra a LP) e 5 (pai mostra a mesma LP) confirmam."
+result: pass
+reported: "RE-TESTE round-2.1: navegação de pastas ficou ótima — filtro exato (LP da subpasta não aparece no pai), card de subpasta em formato de pasta + breadcrumb aprovados pelo usuário."
+note: "Resolvido em camadas: 05-04 (kebab/move + clipping) → exact-folder filter (608dc78) + subfolder cards + breadcrumb → folder-shaped card. Move to folder, badge e árvore OK."
 
 ### 5. Aplicar tags a uma LP
 expected: No card, kebab → "Edit tags…" abre input de chips; adicionar tags (Enter/vírgula) mostra chips; remover é instantâneo; limite de 10 tags desabilita o input com aviso "Maximum 10 tags reached.".
-result: issue
-reported: "RE-TESTE pós-05-04: consegui criar uma tag (funciona), mas ao abrir 'Edit tags' de outro card a tag já atribuída a ele NÃO aparece — o input vem vazio (imagem 7) apesar do card exibir o chip da tag na grade."
-severity: major
-note: "Clipping resolvido (kebab abre completo, 'Edit tags…' visível). Criação de tag OK; filtro por pill funciona (Teste 7). NOVO bug: o dialog 'Edit tags' não hidrata as tags JÁ atribuídas à LP — TagInput inicia vazio em vez de carregar listTagsForLpAction / as tags do card. Risco de sobrescrever/perder tags ao salvar. Verificar também sugestão do vocabulário de tags do workspace."
+result: pass
+reported: "RE-TESTE round-2.1: criar/remover tags OK; dialog re-hidrata as tags atribuídas (re-key on open); seção 'Existing tags' lista o vocabulário do workspace para reaproveitar."
+note: "Resolvido: re-key do TagInput no open (00c4750) + sugestões 'Existing tags' threadando workspaceTags → TagInput (608dc78). O chip 'portugal' que parecia tag era o badge da PASTA (mesmo estilo visual)."
 
 ### 6. Buscar por nome
 expected: Digitar na barra de busca filtra a grade instantaneamente (case-insensitive, sem recarregar); busca sem resultado mostra "No landing pages match your search.".
@@ -109,16 +107,15 @@ note: "Corpus de segurança do engine verde (118/118 confirmado durante o fix in
 
 ### 18. [Cobertura] "encontro e reutilizo LPs rapidamente"
 expected: O outcome da user story é observável: organizar (pastas) + classificar (tags) + buscar (nome) + filtrar (tag) + reutilizar (duplicar) — todos funcionam ponta-a-ponta no catálogo.
-result: issue
-reported: "cobertura parcial: organizar (pastas), buscar (nome) e reutilizar (duplicar) funcionam; classificar (tags) e filtrar (tag) não, por causa do kebab do card sem 'Edit tags…'/'Move to folder…'"
-severity: major
-note: "A user story só fica plenamente coberta após o gap-closure do kebab do LpCatalogCard (Testes 4/5/7). 3 de 5 capacidades observáveis; 2 bloqueadas pela mesma causa-raiz."
+result: pass
+reported: "RE-TESTE round-2.1: cobertura completa — organizar (pastas + navegação por subpasta + breadcrumb), classificar (tags + Existing tags), buscar (nome), filtrar (tag) e reutilizar (duplicar) funcionam ponta-a-ponta."
+note: "User story plenamente coberta após gap-closure 05-04/05/06 + round-2.1. 5/5 capacidades observáveis."
 
 ## Summary
 
 total: 18
-passed: 15
-issues: 3
+passed: 18
+issues: 0
 pending: 0
 skipped: 0
 blocked: 0
@@ -360,3 +357,33 @@ blocked: 0
   artifacts: []
   missing:
     - "No fluxo de delete, quando a pasta tem LPs/subpastas, reforçar a confirmação (contagem do que será re-parenteado + ação explícita)"
+
+# --- RESOLUÇÃO ROUND 2 / 2.1 (2026-06-17) — todos verificados pelo usuário ---
+
+- truth: "Pasta pai mostra só LPs diretas + card de subpasta + breadcrumb"
+  status: resolved
+  fix: "exact-folder filter (f86c5b4) + subfolder cards estilo pasta + breadcrumb (608dc78, 1943e94)"
+  test: 4
+
+- truth: "Edit tags hidrata tags atribuídas + sugere vocabulário do workspace"
+  status: resolved
+  fix: "re-key TagInput on open (00c4750) + seção 'Existing tags' threadando workspaceTags (608dc78)"
+  test: 5
+
+- truth: "Toast simples, canto inferior esquerdo, branco/verde/vermelho, compacto"
+  status: resolved
+  fix: "sonner: position bottom-left + richColors + width 16rem + menos arredondado (1943e94, narrower commits)"
+  test: 9/16
+
+- truth: "Confirmação extra (checkbox) antes de excluir pasta"
+  status: resolved
+  fix: "checkbox obrigatório gateando o botão Delete folder (20a1d74)"
+  test: 16
+
+- truth: "Preview não deve carregar o shell do app dentro do iframe ao clicar em links da LP"
+  status: resolved
+  reason: "User reported: cliquei no logo/Reservar no preview e o app inteiro (sidebar) carregou aninhado dentro do preview"
+  severity: major
+  found: round-2.1
+  root_cause: "iframe srcDoc: hrefs vazios/relativos (ex.: brand.whatsapp não configurado → href='') resolvem contra a URL da página pai (rota de preview), navegando o iframe para o app."
+  fix: "Injetar <base target=\"_blank\"> no srcDoc — cliques em links abrem em nova aba (bloqueados pelo sandbox), sem sequestrar o iframe. Imagens usam URLs absolutas, não afetadas."
