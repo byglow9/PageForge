@@ -20,7 +20,7 @@ export default async function WorkspacePage({ params }: WorkspacePageProps) {
   const ctx = await requireWorkspace(slug);
 
   return (
-    <div>
+    <div className="px-8 py-6">
       <h1 style={{ fontSize: "1.5rem", fontWeight: "bold", marginBottom: "0.5rem" }}>
         {ctx.workspaceSlug}
       </h1>
