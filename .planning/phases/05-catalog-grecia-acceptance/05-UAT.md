@@ -129,26 +129,21 @@ blocked: 1
 
 ## Gaps
 
-- truth: "O card da LP no catálogo deve oferecer 'Move to folder…' e 'Edit tags…' no kebab"
+- truth: "O card da LP no catálogo deve oferecer 'Move to folder…' e 'Edit tags…' no kebab, com o menu abrindo completo (sem corte)"
   status: failed
-  reason: "User reported: kebab da LP só mostra Duplicate / Export ZIP / Delete landing page — sem 'Move to folder…' nem 'Edit tags…' (screenshot)"
+  reason: "User reported: kebab da LP só mostra Duplicate / Export ZIP / Delete (Testes 4 e 5) e o menu sobe até o topo do card e corta"
   severity: major
   test: 4
-  root_cause: "A confirmar no diagnóstico. Hipótese: a página lps/page.tsx (ou CatalogGrid) está renderizando o LpCard da Phase 4 (kebab Duplicate/Export/Delete) em vez do LpCatalogCard da Phase 5 que adiciona os itens Move/Edit tags — o componente do 05-02-SUMMARY não foi efetivamente conectado à grade."
-  artifacts: []
+  root_cause: "DIAGNOSTICADO (gsd-debugger): defeito único, não dois. O LpCatalogCard JÁ renderiza 'Move to folder…' (LpCatalogCard.tsx:336) e 'Edit tags…' (LpCatalogCard.tsx:347) — componente correto (CatalogGrid usa LpCatalogCard; LpCard é dead code). O menu é um <div> absolute que abre PARA CIMA (className 'absolute right-0 bottom-full mb-1 z-20', LpCatalogCard.tsx:326) e não é portalizado; ele vive dentro de <Card>, cujo root tem 'overflow-hidden' (ui/card.tsx:15). Resultado: o topo do menu — exatamente os itens 'Move to folder…' e 'Edit tags…' (linhas 328–348) — é recortado na borda superior do card, sobrando só os 3 de baixo (Duplicate/Export/Delete, linhas 351–384). O screenshot bater com o LpCard antigo é coincidência do recorte."
+  artifacts:
+    - path: "apps/web/src/components/catalog/LpCatalogCard.tsx"
+      issue: "kebab é <div> absolute bottom-full não-portalizado (linha 326); itens Move/Edit tags nas linhas 336/347 ficam cortados"
+    - path: "apps/web/src/components/ui/card.tsx"
+      issue: "Card root tem overflow-hidden (linha 15) que recorta o menu"
   missing:
-    - "Garantir que a grade do catálogo renderize LpCatalogCard (com Move to folder… + Edit tags…) e não o LpCard antigo"
-  note: "Bloqueia Teste 4 (mover LP) e Teste 5 (aplicar tags), pois ambos dependem desses itens de kebab."
-
-- truth: "O dropdown do kebab do card da LP deve abrir completo, sem ser cortado pelas bordas do card"
-  status: failed
-  reason: "User reported: o menu do kebab vai até o topo do card da LP e depois corta"
-  severity: minor
-  test: 5
-  root_cause: "A confirmar no diagnóstico. Hipótese: o LpCard/LpCatalogCard tem overflow:hidden (ou rounded com clip) e o menu não é renderizado em portal, então o conteúdo do dropdown é recortado pela caixa do card."
-  artifacts: []
-  missing:
-    - "Renderizar o menu do kebab em portal OU remover o overflow-hidden do container do card para o menu não ser cortado"
+    - "Portalizar o kebab: migrar para o shadcn/Base UI DropdownMenu (já instalado) cujo content portaliza p/ document.body, escapando o overflow-hidden — alinhado ao design da Phase 5"
+    - "Alternativa rápida: forçar overflow-visible no <Card> do LpCatalogCard (não confiar só em flip p/ top-full, que ainda recortaria embaixo)"
+  note: "Fix único resolve Testes 4 (mover LP), 5 (tags + clipping), destrava 7 (filtro por tag) e 18 (cobertura)."
 
 - truth: "Conteúdo das páginas do shell de workspace deve ter padding em relação às bordas do <main>"
   status: failed
