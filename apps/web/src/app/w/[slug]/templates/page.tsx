@@ -4,14 +4,15 @@
  * RSC page. Lists all templates for the workspace, or shows an empty state CTA.
  *
  * Security:
- * - requireWorkspace gates access to any workspace member (viewer can read templates).
+ * - requireWorkspaceRole gates access to owner/admin/editor; viewers are
+ *   redirected to /w/{slug} (no read access to the templates area).
  * - Only members with template.create permission see the "Create Template" button.
  * - listTemplatesAction uses withTenantDb which scopes queries to ctx.workspaceId
  *   (T-03-03-01).
  */
 import Link from "next/link";
 import { FileCode } from "lucide-react";
-import { requireWorkspace, can } from "@/lib/workspaces/guards";
+import { requireWorkspaceRole, can } from "@/lib/workspaces/guards";
 import { listTemplatesAction } from "@/lib/templates/actions";
 import { TemplateCard } from "@/components/templates/TemplateCard";
 
@@ -21,7 +22,7 @@ interface TemplatesPageProps {
 
 export default async function TemplatesPage({ params }: TemplatesPageProps) {
   const { slug } = await params;
-  const ctx = await requireWorkspace(slug);
+  const ctx = await requireWorkspaceRole(slug, ["owner", "admin", "editor"]);
 
   const result = await listTemplatesAction(slug);
   const templates = result.ok ? result.data : [];
