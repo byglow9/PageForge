@@ -21,7 +21,7 @@
  */
 
 import { useState } from "react";
-import { FileText } from "lucide-react";
+import { FileText, Folder as FolderIcon, ChevronRight } from "lucide-react";
 import { FolderTree } from "./FolderTree";
 import { CatalogSearchBar } from "./CatalogSearchBar";
 import { CatalogFilterBar } from "./CatalogFilterBar";
@@ -113,9 +113,28 @@ export function CatalogGrid({
   // Empty state detection
   // -----------------------------------------------------------------------
 
+  // Direct child folders of the current location (root → top-level folders).
+  // Shown as navigable cards in the grid (explorer-style), but not while searching.
+  const folderMap = new Map(folders.map((f) => [f.id, f]));
+  const childFolders = folders.filter((f) => f.parentId === selectedFolderId);
+  const showFolderCards = !hasActiveFilter && childFolders.length > 0;
+
+  // Breadcrumb path from root → selected folder.
+  const breadcrumb: FolderModel[] = [];
+  {
+    let cur = selectedFolderId ? folderMap.get(selectedFolderId) : undefined;
+    while (cur) {
+      breadcrumb.unshift(cur);
+      cur = cur.parentId ? folderMap.get(cur.parentId) : undefined;
+    }
+  }
+
   const isWorkspaceEmpty = lps.length === 0;
   const isFolderEmpty =
-    !isWorkspaceEmpty && selectedFolderId !== null && folderFilteredLps.length === 0;
+    !isWorkspaceEmpty &&
+    selectedFolderId !== null &&
+    folderFilteredLps.length === 0 &&
+    childFolders.length === 0;
   const isSearchEmpty =
     !isWorkspaceEmpty && hasActiveFilter && filteredLps.length === 0;
 
@@ -132,8 +151,38 @@ export function CatalogGrid({
         />
       </div>
 
-      {/* Right panel: SearchBar + FilterBar + LP grid */}
+      {/* Right panel: Breadcrumb + SearchBar + FilterBar + LP grid */}
       <div className="flex-1 px-6 py-0 min-w-0">
+        {/* Breadcrumb — explorer-style path to the current folder */}
+        <nav
+          aria-label="Folder path"
+          className="flex items-center flex-wrap gap-1 pt-4 text-sm text-gray-500"
+        >
+          <button
+            type="button"
+            onClick={() => setSelectedFolderId(null)}
+            className={`hover:text-gray-900 transition-colors ${
+              selectedFolderId === null ? "font-medium text-gray-900" : ""
+            }`}
+          >
+            All LPs
+          </button>
+          {breadcrumb.map((f, i) => (
+            <span key={f.id} className="flex items-center gap-1">
+              <ChevronRight className="h-3.5 w-3.5 text-gray-300" aria-hidden="true" />
+              <button
+                type="button"
+                onClick={() => setSelectedFolderId(f.id)}
+                className={`hover:text-gray-900 transition-colors ${
+                  i === breadcrumb.length - 1 ? "font-medium text-gray-900" : ""
+                }`}
+              >
+                {f.name}
+              </button>
+            </span>
+          ))}
+        </nav>
+
         {/* SearchBar */}
         <div className="pt-4 pb-2">
           <CatalogSearchBar value={searchQuery} onChange={setSearchQuery} />
@@ -176,14 +225,29 @@ export function CatalogGrid({
             </p>
           </div>
         ) : (
-          /* LP card grid */
+          /* Folder cards (subfolders of current location) + LP card grid */
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
+            {showFolderCards &&
+              childFolders.map((folder) => (
+                <button
+                  key={folder.id}
+                  type="button"
+                  onClick={() => setSelectedFolderId(folder.id)}
+                  className="flex items-center gap-3 rounded-lg border border-gray-200 bg-white px-4 py-4 text-left hover:bg-gray-50 hover:border-gray-300 transition-colors min-h-[120px]"
+                >
+                  <FolderIcon className="h-6 w-6 shrink-0 text-gray-400" aria-hidden="true" />
+                  <span className="truncate text-base font-medium text-gray-900">
+                    {folder.name}
+                  </span>
+                </button>
+              ))}
             {filteredLps.map((lp) => (
               <LpCatalogCard
                 key={lp.id}
                 lp={lp}
                 folders={folders}
                 tags={lpTagsMap[lp.id] ?? []}
+                workspaceTags={workspaceTags}
                 slug={slug}
               />
             ))}

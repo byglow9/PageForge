@@ -28,16 +28,24 @@ export interface TagInputProps {
   lpId: string;
   slug: string;
   initialTags: TagModel[];
+  /** All tags already used anywhere in the workspace — offered as quick-add suggestions. */
+  workspaceTags?: TagModel[];
   onChanged?: () => void;
 }
 
-export function TagInput({ lpId, slug, initialTags, onChanged }: TagInputProps) {
+export function TagInput({ lpId, slug, initialTags, workspaceTags = [], onChanged }: TagInputProps) {
   const [currentTags, setCurrentTags] = useState<TagModel[]>(initialTags);
   const [inputValue, setInputValue] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const atMax = currentTags.length >= MAX_TAGS;
+
+  // Workspace tags not yet assigned to this LP — shown as one-click suggestions.
+  const assignedNames = new Set(currentTags.map((t) => t.name.toLowerCase()));
+  const suggestions = workspaceTags.filter(
+    (t) => !assignedNames.has(t.name.toLowerCase())
+  );
 
   async function saveTags(tagNames: string[]) {
     setIsSaving(true);
@@ -166,6 +174,26 @@ export function TagInput({ lpId, slug, initialTags, onChanged }: TagInputProps) 
           className="text-sm"
           aria-label="Add a tag"
         />
+      )}
+
+      {/* Suggestions from the workspace tag vocabulary */}
+      {!atMax && suggestions.length > 0 && (
+        <div className="flex flex-col gap-1 pt-1">
+          <span className="text-xs text-gray-500">Suggestions</span>
+          <div className="flex flex-wrap gap-1">
+            {suggestions.map((tag) => (
+              <button
+                key={tag.id}
+                type="button"
+                onClick={() => commitInput(tag.name)}
+                disabled={isSaving}
+                className="rounded-full border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700 hover:bg-gray-50 hover:border-gray-300 disabled:opacity-50 transition-colors"
+              >
+                + {tag.name}
+              </button>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );

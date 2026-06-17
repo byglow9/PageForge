@@ -122,6 +122,7 @@ interface TagInputDialogProps {
   lpId: string;
   slug: string;
   initialTags: TagModel[];
+  workspaceTags: TagModel[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onChanged: () => void;
@@ -131,6 +132,7 @@ function TagInputDialog({
   lpId,
   slug,
   initialTags,
+  workspaceTags,
   open,
   onOpenChange,
   onChanged,
@@ -150,6 +152,7 @@ function TagInputDialog({
             lpId={lpId}
             slug={slug}
             initialTags={initialTags}
+            workspaceTags={workspaceTags}
             onChanged={onChanged}
           />
         </div>
@@ -183,10 +186,11 @@ export interface LpCatalogCardProps {
   };
   folders: FolderModel[];
   tags: TagModel[];
+  workspaceTags: TagModel[];
   slug: string;
 }
 
-export function LpCatalogCard({ lp, folders, tags, slug }: LpCatalogCardProps) {
+export function LpCatalogCard({ lp, folders, tags, workspaceTags, slug }: LpCatalogCardProps) {
   const router = useRouter();
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [moveOpen, setMoveOpen] = useState(false);
@@ -382,6 +386,7 @@ export function LpCatalogCard({ lp, folders, tags, slug }: LpCatalogCardProps) {
         lpId={lp.id}
         slug={slug}
         initialTags={tags}
+        workspaceTags={workspaceTags}
         open={tagDialogOpen}
         onOpenChange={setTagDialogOpen}
         onChanged={handleTagsChanged}
