@@ -1,22 +1,16 @@
 ---
-status: testing
+status: partial
 phase: 05-catalog-grecia-acceptance
 source: [05-01-SUMMARY.md, 05-02-SUMMARY.md, 05-03-SUMMARY.md]
 started: 2026-06-16T00:00:00Z
-updated: 2026-06-16T00:00:00Z
+updated: 2026-06-17T00:00:00Z
 mode: mvp
 user_story: "As a membro do workspace, I want to organizar e buscar LPs no catálogo, so that encontro e reutilizo LPs rapidamente."
 ---
 
 ## Current Test
-<!-- OVERWRITE each test - shows where we are -->
 
-number: 4
-name: Mover LP para uma pasta
-expected: |
-  No card da LP, kebab → "Move to folder…" abre dialog com lista de pastas (Root = All LPs);
-  ao mover, o badge da pasta aparece no card e a LP aparece dentro da pasta na árvore.
-awaiting: user response
+[testing complete — 1 blocked test (#7) re-testável após gap-closure]
 
 ## Tests
 
@@ -39,19 +33,27 @@ note: "Criou pasta 'portugal' + subpasta 'portugal marav...' indentada sob ela; 
 
 ### 4. Mover LP para uma pasta
 expected: No card da LP, kebab → "Move to folder…" abre dialog com lista de pastas (Root = All LPs); ao mover, o badge da pasta aparece no card e a LP aparece dentro da pasta na árvore.
-result: [pending]
+result: issue
+reported: "esta assim ainda — o kebab da LP só mostra Duplicate / Export ZIP / Delete landing page; não há item 'Move to folder…' (nem 'Edit tags…') no menu"
+severity: major
+note: "Screenshot confirma: o LpCatalogCard renderizado NÃO inclui os itens de kebab 'Move to folder…' e 'Edit tags…' prometidos no 05-02-SUMMARY. Sem 'Move to folder…' não há como mover LP para pasta (Teste 4 falha); 'Edit tags…' ausente bloqueia o Teste 5. Provável regressão/omissão na fusão do kebab: o card está usando o menu do LpCard (Phase 4: Duplicate/Export/Delete) em vez do LpCatalogCard (Phase 5: + Move/Edit tags)."
 
 ### 5. Aplicar tags a uma LP
 expected: No card, kebab → "Edit tags…" abre input de chips; adicionar tags (Enter/vírgula) mostra chips; remover é instantâneo; limite de 10 tags desabilita o input com aviso "Maximum 10 tags reached.".
-result: [pending]
+result: issue
+reported: "nao consigo ver nada disso de tags porque parece que o card do kebab das lps vai até o top do card da lp dps corta"
+severity: major
+note: "Mesma causa-raiz do Teste 4: kebab do card só tem Duplicate/Export ZIP/Delete — sem 'Edit tags…'. Sem o item, não há acesso ao TagInput. Achado adicional: o dropdown do kebab abre subindo até o topo do card e fica cortado (clipping/overflow) — provável overflow:hidden no card ou portal/posicionamento do menu. Ambos a tratar no gap-closure."
 
 ### 6. Buscar por nome
 expected: Digitar na barra de busca filtra a grade instantaneamente (case-insensitive, sem recarregar); busca sem resultado mostra "No landing pages match your search.".
-result: [pending]
+result: pass
 
 ### 7. Filtrar por pill de tag
 expected: A CatalogFilterBar mostra pill "All" + uma pill por tag do workspace; selecionar uma tag filtra a grade para LPs com aquela tag (single-select, aria-pressed alterna).
-result: [pending]
+result: blocked
+blocked_by: other
+reason: "Não testável até o kebab do card ser corrigido — sem 'Edit tags…' não há como criar tags, então não existem pills para filtrar. Re-testar após o gap-closure dos Testes 4/5."
 
 ### 8. Menu de contexto da pasta (DropdownMenu acessível)
 expected: O kebab da pasta abre via DropdownMenu (shadcn/Base UI); navegável por teclado (setas, Enter, Esc); item "Delete folder" em vermelho/destructive.
@@ -111,18 +113,42 @@ note: "Corpus de segurança do engine verde (118/118 confirmado durante o fix in
 
 ### 18. [Cobertura] "encontro e reutilizo LPs rapidamente"
 expected: O outcome da user story é observável: organizar (pastas) + classificar (tags) + buscar (nome) + filtrar (tag) + reutilizar (duplicar) — todos funcionam ponta-a-ponta no catálogo.
-result: [pending]
+result: issue
+reported: "cobertura parcial: organizar (pastas), buscar (nome) e reutilizar (duplicar) funcionam; classificar (tags) e filtrar (tag) não, por causa do kebab do card sem 'Edit tags…'/'Move to folder…'"
+severity: major
+note: "A user story só fica plenamente coberta após o gap-closure do kebab do LpCatalogCard (Testes 4/5/7). 3 de 5 capacidades observáveis; 2 bloqueadas pela mesma causa-raiz."
 
 ## Summary
 
 total: 18
-passed: 10
-issues: 3
-pending: 5
+passed: 11
+issues: 6
+pending: 0
 skipped: 0
-blocked: 0
+blocked: 1
 
 ## Gaps
+
+- truth: "O card da LP no catálogo deve oferecer 'Move to folder…' e 'Edit tags…' no kebab"
+  status: failed
+  reason: "User reported: kebab da LP só mostra Duplicate / Export ZIP / Delete landing page — sem 'Move to folder…' nem 'Edit tags…' (screenshot)"
+  severity: major
+  test: 4
+  root_cause: "A confirmar no diagnóstico. Hipótese: a página lps/page.tsx (ou CatalogGrid) está renderizando o LpCard da Phase 4 (kebab Duplicate/Export/Delete) em vez do LpCatalogCard da Phase 5 que adiciona os itens Move/Edit tags — o componente do 05-02-SUMMARY não foi efetivamente conectado à grade."
+  artifacts: []
+  missing:
+    - "Garantir que a grade do catálogo renderize LpCatalogCard (com Move to folder… + Edit tags…) e não o LpCard antigo"
+  note: "Bloqueia Teste 4 (mover LP) e Teste 5 (aplicar tags), pois ambos dependem desses itens de kebab."
+
+- truth: "O dropdown do kebab do card da LP deve abrir completo, sem ser cortado pelas bordas do card"
+  status: failed
+  reason: "User reported: o menu do kebab vai até o topo do card da LP e depois corta"
+  severity: minor
+  test: 5
+  root_cause: "A confirmar no diagnóstico. Hipótese: o LpCard/LpCatalogCard tem overflow:hidden (ou rounded com clip) e o menu não é renderizado em portal, então o conteúdo do dropdown é recortado pela caixa do card."
+  artifacts: []
+  missing:
+    - "Renderizar o menu do kebab em portal OU remover o overflow-hidden do container do card para o menu não ser cortado"
 
 - truth: "Conteúdo das páginas do shell de workspace deve ter padding em relação às bordas do <main>"
   status: failed
