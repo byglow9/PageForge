@@ -30,7 +30,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Given the Grécia markup plus hand-written values, the merge engine produces complete, layout-faithful static HTML, correctly iterating repeaters for 0, 1, and N items.
   3. SSTI payloads (e.g. `{{constructor.constructor('return 1')()}}`, `{{__proto__}}`) render inert (literal/empty), with no `eval`/`compile` on user markup — proven by a payload test corpus.
   4. Every field type fuzzed with XSS payloads (`"><img src=x onerror=...>`, `javascript:`, malformed color/URL) produces inert HTML via context-aware escaping; rich text is sanitized to a strict tag allowlist.
-**Plans**: 3 plans
+**Plans**: 6 plans (3 original + 3 gap-closure)
 **KEY DECISION GATE**: RESOLVIDO (D-10, 2026-06-01) — engine = LiquidJS v10.27.0 com outputEscape:'escape' + ownPropertyOnly:true.
 
 Plans:
@@ -148,6 +148,11 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 05-03-PLAN.md — Grécia acceptance: shadcn dropdown-menu install + FolderContextMenu upgrade + real Grécia template authored via Phase 3 UI + full pipeline (generate→preview→edit→duplicate→export) + gap fixes + Playwright E2E + UAT checkpoint
+
+**Wave 1 (gap closure — UAT diagnosed)** *(independent fixes; no file overlap → parallel)*
+- [ ] 05-04-PLAN.md — Major catalog blockers: portalize LpCatalogCard kebab (DropdownMenu) fixing clipping (UAT 4/5/7/18) + fix deleteFolderAction snake_case SQL → Prisma updateMany (UAT 16) + generate missing Phase 5 catalog migration
+- [ ] 05-05-PLAN.md — Template editor double-save fix (redirect to edit after create, UAT 9) + single Save Template / single Generate LP CTA + catalog search-bar spacing (UAT 2/9)
+- [ ] 05-06-PLAN.md — LP form/render gaps: composite repeater keys (UAT 10) + ImageUploadField edit hydration (UAT 12) + template picker single-control (UAT 10) + <main>/dashboard padding (UAT 1) + review committed inline LpForm/renderer fixes (UAT 10/11)
 
 ## Progress
 
