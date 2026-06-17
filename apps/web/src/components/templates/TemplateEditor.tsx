@@ -24,8 +24,9 @@
 "use client";
 
 import { useState, useRef, useCallback, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Loader2, RefreshCw } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { parse } from "pageforge-engine";
 import type { ParsedSchema } from "pageforge-engine";
 import { toast } from "sonner";
@@ -49,6 +50,8 @@ export interface TemplateEditorProps {
 }
 
 export function TemplateEditor({ slug, mode, initialTemplate }: TemplateEditorProps) {
+  const router = useRouter();
+
   // Form state
   const [name, setName] = useState(initialTemplate?.name ?? "");
   const [markup, setMarkup] = useState(initialTemplate?.markup ?? "");
@@ -135,11 +138,17 @@ export function TemplateEditor({ slug, mode, initialTemplate }: TemplateEditorPr
       }
 
       if (result.ok) {
-        setSavedSchemaVersion(result.data.schemaVersion);
-        if (result.data.warnings.length > 0) {
-          setSaveWarnings(result.data.warnings);
-        }
         toast.success(`Template saved — schema v${result.data.schemaVersion}`);
+        if (mode === "create") {
+          // Redirect to edit route so a subsequent save calls updateTemplateAction
+          // instead of creating a duplicate template (T-05-05-01).
+          router.replace(`/w/${slug}/templates/${result.data.id}/edit`);
+        } else {
+          setSavedSchemaVersion(result.data.schemaVersion);
+          if (result.data.warnings.length > 0) {
+            setSaveWarnings(result.data.warnings);
+          }
+        }
       } else {
         toast.error("Failed to save. Try again.");
       }
@@ -150,8 +159,8 @@ export function TemplateEditor({ slug, mode, initialTemplate }: TemplateEditorPr
 
   return (
     <div className="flex flex-col h-full">
-      {/* Toolbar row: breadcrumb + save button */}
-      <div className="flex items-center justify-between px-8 py-4 border-b border-gray-200 bg-white">
+      {/* Toolbar row: breadcrumb only — single Save CTA is in the bottom action bar */}
+      <div className="flex items-center px-8 py-4 border-b border-gray-200 bg-white">
         <nav className="text-sm text-gray-500" aria-label="Breadcrumb">
           <Link
             href={`/w/${slug}/templates`}
@@ -162,20 +171,6 @@ export function TemplateEditor({ slug, mode, initialTemplate }: TemplateEditorPr
           <span className="mx-2">/</span>
           <span className="text-gray-900 font-medium">{breadcrumbLabel}</span>
         </nav>
-        <Button
-          onClick={handleSave}
-          disabled={isPending || !name.trim()}
-          className="bg-gray-900 text-white hover:bg-gray-800"
-        >
-          {isPending ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
-              Saving…
-            </>
-          ) : (
-            "Save Template"
-          )}
-        </Button>
       </div>
 
       {/* Template name input */}
