@@ -179,7 +179,7 @@ export function TagInput({ lpId, slug, initialTags, workspaceTags = [], onChange
       {/* Suggestions from the workspace tag vocabulary */}
       {!atMax && suggestions.length > 0 && (
         <div className="flex flex-col gap-1 pt-1">
-          <span className="text-xs text-gray-500">Suggestions</span>
+          <span className="text-xs text-gray-500">Existing tags</span>
           <div className="flex flex-wrap gap-1">
             {suggestions.map((tag) => (
               <button

@@ -233,10 +233,15 @@ export function CatalogGrid({
                   key={folder.id}
                   type="button"
                   onClick={() => setSelectedFolderId(folder.id)}
-                  className="flex items-center gap-3 rounded-lg border border-gray-200 bg-white px-4 py-4 text-left hover:bg-gray-50 hover:border-gray-300 transition-colors min-h-[120px]"
+                  className="flex flex-col items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 hover:border-gray-300 transition-colors min-h-[120px]"
                 >
-                  <FolderIcon className="h-6 w-6 shrink-0 text-gray-400" aria-hidden="true" />
-                  <span className="truncate text-base font-medium text-gray-900">
+                  <FolderIcon
+                    className="h-14 w-14 text-yellow-400"
+                    fill="currentColor"
+                    strokeWidth={1}
+                    aria-hidden="true"
+                  />
+                  <span className="max-w-full truncate text-sm font-medium text-gray-900">
                     {folder.name}
                   </span>
                 </button>
