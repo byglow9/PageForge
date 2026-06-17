@@ -30,7 +30,7 @@ export default async function WorkspacesPage() {
           padding: "1rem",
         }}
       >
-        <LogoutButton />
+        <LogoutButton userName={user.name || user.email} />
         <div style={{ width: "100%", maxWidth: "480px", textAlign: "center" }}>
           <h1 style={{ fontSize: "1.5rem", fontWeight: "bold", marginBottom: "0.5rem" }}>
             No workspaces yet

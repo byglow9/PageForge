@@ -56,9 +56,16 @@ export default function LoginPage() {
       return;
     }
 
-    // Login succeeded — redirect to workspace list
+    // Login succeeded. If this login came from an invite link (invitationId in
+    // the URL), return the user to the invitation so they can accept it;
+    // otherwise go to the workspace list.
     // (Using window.location for simplicity; will use Next.js router when auth guard is wired)
-    window.location.href = "/workspaces";
+    const invitationId = new URLSearchParams(window.location.search).get(
+      "invitationId",
+    );
+    window.location.href = invitationId
+      ? `/invitations/${invitationId}`
+      : "/workspaces";
   }
 
   if (formState.status === "verification_required") {
