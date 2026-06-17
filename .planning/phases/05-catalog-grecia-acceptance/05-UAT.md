@@ -21,10 +21,9 @@ note: "Banco resetado e recriado (drop schema + migrate deploy 0001-0004 + db pu
 
 ### 2. Catálogo — layout de dois painéis
 expected: Em /w/{slug}/lps a página mostra a FolderTree à esquerda (com raiz "All LPs") e a grade de LPs à direita; header com separador acima dos dois painéis.
-result: issue
+result: pass
 reported: "tem dois botões de gerar lp na tela e também a barra de search está colada na linha de cima"
-severity: minor
-note: "Layout de dois painéis funciona (FolderTree + 'All LPs', empty state 'No landing pages yet', header com border-b). Dois achados: (a) Generate LP duplicado quando vazio; (b) search bar sem respiro do header."
+note: "RESOLVIDO por 05-05. Re-teste 2026-06-17 (imagem 3): um único 'Generate LP' no header; CTA do empty state removido; search bar com respiro (pt-4). Layout de dois painéis OK."
 
 ### 3. Criar e aninhar pastas
 expected: Pelo menu da pasta (kebab) "New subfolder" / botão de criar, criar uma pasta e uma subpastas dentro dela; a árvore mostra indentação de 16px/nível e chevrons de expandir/colapsar.
@@ -34,16 +33,16 @@ note: "Criou pasta 'portugal' + subpasta 'portugal marav...' indentada sob ela; 
 ### 4. Mover LP para uma pasta
 expected: No card da LP, kebab → "Move to folder…" abre dialog com lista de pastas (Root = All LPs); ao mover, o badge da pasta aparece no card e a LP aparece dentro da pasta na árvore.
 result: issue
-reported: "esta assim ainda — o kebab da LP só mostra Duplicate / Export ZIP / Delete landing page; não há item 'Move to folder…' (nem 'Edit tags…') no menu"
+reported: "RE-TESTE pós-05-04: kebab/Move to folder agora funcionam (clipping resolvido). PORÉM a navegação de pastas está errada: movi uma LP só para a subpasta 'portugal maravilhoso', mas ao abrir a pasta pai 'portugal' essa LP também aparece. Esperado: pasta pai mostra só as LPs diretas + card/acesso às subpastas; LPs da subpasta só aparecem ao clicar na subpasta."
 severity: major
-note: "Screenshot confirma: o LpCatalogCard renderizado NÃO inclui os itens de kebab 'Move to folder…' e 'Edit tags…' prometidos no 05-02-SUMMARY. Sem 'Move to folder…' não há como mover LP para pasta (Teste 4 falha); 'Edit tags…' ausente bloqueia o Teste 5. Provável regressão/omissão na fusão do kebab: o card está usando o menu do LpCard (Phase 4: Duplicate/Export/Delete) em vez do LpCatalogCard (Phase 5: + Move/Edit tags)."
+note: "Clipping do kebab (causa original) RESOLVIDO por 05-04 — itens visíveis, Move to folder abre o dialog e move. Novo achado de lógica: o filtro de pasta inclui descendentes (mostra LPs de subpastas no pai) em vez de filhos diretos + navegação por subpasta. Imagens 4 (subpasta mostra a LP) e 5 (pai mostra a mesma LP) confirmam."
 
 ### 5. Aplicar tags a uma LP
 expected: No card, kebab → "Edit tags…" abre input de chips; adicionar tags (Enter/vírgula) mostra chips; remover é instantâneo; limite de 10 tags desabilita o input com aviso "Maximum 10 tags reached.".
 result: issue
-reported: "nao consigo ver nada disso de tags porque parece que o card do kebab das lps vai até o top do card da lp dps corta"
+reported: "RE-TESTE pós-05-04: consegui criar uma tag (funciona), mas ao abrir 'Edit tags' de outro card a tag já atribuída a ele NÃO aparece — o input vem vazio (imagem 7) apesar do card exibir o chip da tag na grade."
 severity: major
-note: "Mesma causa-raiz do Teste 4: kebab do card só tem Duplicate/Export ZIP/Delete — sem 'Edit tags…'. Sem o item, não há acesso ao TagInput. Achado adicional: o dropdown do kebab abre subindo até o topo do card e fica cortado (clipping/overflow) — provável overflow:hidden no card ou portal/posicionamento do menu. Ambos a tratar no gap-closure."
+note: "Clipping resolvido (kebab abre completo, 'Edit tags…' visível). Criação de tag OK; filtro por pill funciona (Teste 7). NOVO bug: o dialog 'Edit tags' não hidrata as tags JÁ atribuídas à LP — TagInput inicia vazio em vez de carregar listTagsForLpAction / as tags do card. Risco de sobrescrever/perder tags ao salvar. Verificar também sugestão do vocabulário de tags do workspace."
 
 ### 6. Buscar por nome
 expected: Digitar na barra de busca filtra a grade instantaneamente (case-insensitive, sem recarregar); busca sem resultado mostra "No landing pages match your search.".
@@ -51,9 +50,8 @@ result: pass
 
 ### 7. Filtrar por pill de tag
 expected: A CatalogFilterBar mostra pill "All" + uma pill por tag do workspace; selecionar uma tag filtra a grade para LPs com aquela tag (single-select, aria-pressed alterna).
-result: blocked
-blocked_by: other
-reason: "Não testável até o kebab do card ser corrigido — sem 'Edit tags…' não há como criar tags, então não existem pills para filtrar. Re-testar após o gap-closure dos Testes 4/5."
+result: pass
+note: "RE-TESTE pós-05-04: com tags criáveis, a CatalogFilterBar mostra pill 'All' + pill por tag do workspace ('sabedor') e o filtro opera (imagem 6). Destravado pelo fix do kebab."
 
 ### 8. Menu de contexto da pasta (DropdownMenu acessível)
 expected: O kebab da pasta abre via DropdownMenu (shadcn/Base UI); navegável por teclado (setas, Enter, Esc); item "Delete folder" em vermelho/destructive.
@@ -101,10 +99,9 @@ note: "Verificado por code review (não testável manualmente sem 2 workspaces).
 
 ### 16. [Técnico] Delete de pasta não-destrutivo
 expected: Excluir uma pasta com LPs e subpastas re-parenteia tudo para a raiz (não apaga LPs); a confirmação avisa que LPs e subpastas vão para a raiz.
-result: issue
-reported: "Diálogo de confirmação correto (texto avisa que LPs e subpastas vão para a raiz), mas ao clicar 'Delete folder' aparece toast 'Failed to delete folder. Try again.' — a exclusão falha."
-severity: major
-note: "O aviso/copy do AlertDialog está correto (parte do requisito atendida). O que falha é a operação de delete em si — deleteFolderAction caiu no catch genérico. Causa-raiz a confirmar no diagnóstico."
+result: pass
+reported: "RE-TESTE pós-05-04: excluiu a pasta sem erro (toast 'Folder deleted.') e as LPs que estavam dentro voltaram para All LPs (imagem 8). Dois feedbacks novos: (a) não gostei do design do toast; (b) consegui excluir pasta com LPs dentro — deveria ter uma confirmação extra antes."
+note: "Requisito original (delete não-destrutivo + re-parenteamento) ATENDIDO — bug do SQL snake_case resolvido por 05-04. Feedbacks (toast design global; confirmação extra p/ pasta não-vazia) registrados como novos gaps abaixo."
 
 ### 17. [Técnico] Sanitização de URL em campos button
 expected: URLs com esquema perigoso (javascript:, data:) em campos button são bloqueadas por sanitizeUrl no render; corpus de segurança (118 testes unitários) passa.
@@ -121,11 +118,11 @@ note: "A user story só fica plenamente coberta após o gap-closure do kebab do 
 ## Summary
 
 total: 18
-passed: 11
-issues: 6
+passed: 14
+issues: 4
 pending: 0
 skipped: 0
-blocked: 1
+blocked: 0
 
 ## Gaps
 
@@ -315,3 +312,51 @@ blocked: 1
       issue: "endpoint/baseURL do cliente de organização aparentemente incorreto"
   missing:
     - "Investigar config do cliente better-auth (organization plugin) e corrigir o path do endpoint"
+
+# --- NOVOS GAPS (re-teste pós gap-closure 05-04/05/06, 2026-06-17) ---
+
+- truth: "Ao abrir uma pasta, a grade deve mostrar só as LPs DIRETAS dela + acesso às subpastas; LPs de subpastas só aparecem ao entrar na subpasta"
+  status: failed
+  reason: "User reported: movi uma LP só para a subpasta 'portugal maravilhoso', mas ao abrir a pasta pai 'portugal' a LP também aparece (imagens 4 e 5)"
+  severity: major
+  test: 4
+  round: 2
+  root_cause: "A confirmar. Hipótese: o filtro de pasta na CatalogGrid inclui LPs de pastas descendentes (recursivo) em vez de filhos diretos; e a grade não renderiza cards/atalhos de subpasta para navegação hierárquica."
+  artifacts: []
+  missing:
+    - "Filtrar a grade por folderId EXATO da pasta selecionada (filhos diretos), não por descendência"
+    - "Renderizar as subpastas da pasta atual como itens navegáveis na grade (ou confiar só na FolderTree) — definir o padrão de navegação"
+
+- truth: "O dialog 'Edit tags' deve pré-carregar as tags já atribuídas à LP"
+  status: failed
+  reason: "User reported: consegui criar tag, mas ao abrir 'Edit tags' de outro card a tag já atribuída não aparece — input vem vazio (imagem 7)"
+  severity: major
+  test: 5
+  round: 2
+  root_cause: "A confirmar. Hipótese: o componente de Edit tags (TagInput) não inicializa o estado com as tags atuais da LP (listTagsForLpAction / lpTags já carregadas na CatalogGrid) — começa vazio, com risco de sobrescrever/limpar tags ao salvar."
+  artifacts: []
+  missing:
+    - "Hidratar o TagInput/dialog com as tags atuais da LP ao abrir (passar lpTags do card ou buscar via listTagsForLpAction)"
+    - "Confirmar que salvar preserva tags não alteradas (não fazer set destrutivo a partir de estado vazio)"
+
+- truth: "Os toasts devem seguir um design agradável e consistente"
+  status: failed
+  reason: "User reported (recorrente): não gostei do design do toast — citado no 'Template saved' (Teste 9) e no 'Folder deleted.' (Teste 16)"
+  severity: cosmetic
+  test: 9
+  round: 2
+  root_cause: "Feedback de design global sobre os toasts (sonner/shadcn). Precisa de decisão do usuário: posição, estilo, duração, ícones."
+  artifacts: []
+  missing:
+    - "Definir com o usuário o design pretendido dos toasts e aplicar globalmente (posição/estilo/duração)"
+
+- truth: "Excluir uma pasta NÃO-VAZIA (com LPs/subpastas) deve exigir confirmação extra"
+  status: failed
+  reason: "User reported: consegui excluir uma pasta que tinha LPs dentro sem salvaguarda adicional; deveria ter uma confirmação extra antes"
+  severity: minor
+  test: 16
+  round: 2
+  root_cause: "Hoje há um único AlertDialog de confirmação; para pasta não-vazia o usuário quer um aviso/confirmação reforçado (ex.: mostrar quantas LPs/subpastas serão movidas e exigir confirmação explícita)."
+  artifacts: []
+  missing:
+    - "No fluxo de delete, quando a pasta tem LPs/subpastas, reforçar a confirmação (contagem do que será re-parenteado + ação explícita)"
