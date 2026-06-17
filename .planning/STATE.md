@@ -100,6 +100,7 @@ None yet.
 | (fast) | Login volta ao convite (invitationId) pós-login + nome da conta no canto de /workspaces | 2026-06-17 | 6410657 | (gsd-fast) |
 | (fast) | Nome da conta logada movido para o canto superior esquerdo de /workspaces | 2026-06-17 | 999d68f | (gsd-fast) |
 | (fast) | suppressHydrationWarning no html/body (fix login GET-nativo por extensão ColorZilla) | 2026-06-17 | 83d06a9 | (gsd-fast) |
+| (fast) | Nome da conta + Log out no rodapé da sidebar do workspace shell | 2026-06-17 | 4419d49 | (gsd-fast) |
 
 ## Deferred Items
 
