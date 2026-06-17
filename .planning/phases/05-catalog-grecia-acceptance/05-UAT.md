@@ -344,10 +344,11 @@ blocked: 0
   severity: cosmetic
   test: 9
   round: 2
-  root_cause: "Feedback de design global sobre os toasts (sonner/shadcn). Precisa de decisão do usuário: posição, estilo, duração, ícones."
+  root_cause: "Feedback de design global sobre os toasts (sonner/shadcn)."
+  decision: "User (2026-06-17): MANTER a posição atual (canto inferior), deixar o toast mais SIMPLES."
   artifacts: []
   missing:
-    - "Definir com o usuário o design pretendido dos toasts e aplicar globalmente (posição/estilo/duração)"
+    - "Simplificar o visual do toast globalmente (config sonner/Toaster) mantendo a posição atual — estilo mais limpo/minimalista"
 
 - truth: "Excluir uma pasta NÃO-VAZIA (com LPs/subpastas) deve exigir confirmação extra"
   status: failed
