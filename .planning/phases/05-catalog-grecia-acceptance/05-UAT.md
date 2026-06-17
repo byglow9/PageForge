@@ -295,13 +295,14 @@ blocked: 1
   reason: "User reported: diálogo correto, mas ao clicar 'Delete folder' aparece toast 'Failed to delete folder. Try again.' — exclusão falha"
   severity: major
   test: 16
+  root_cause: "DIAGNOSTICADO (gsd-debugger): os dois UPDATE raw em deleteFolderAction usam colunas snake_case (folder_id, parent_id, workspace_id) que NÃO existem no Postgres — as colunas físicas são camelCase ('folderId', 'parentId', 'workspaceId'), pois o schema Prisma só aplica @@map em tabelas, sem @map de coluna. Postgres lança 'column \"folder_id\" does not exist', engolido pelo catch genérico → toast. O set_config/RLS (linha 189) e o tx.folder.delete (field names Prisma) estão corretos; só os 2 raw UPDATEs estão errados."
   artifacts:
     - path: "apps/web/src/lib/catalog/actions.ts"
-      issue: "deleteFolderAction (linhas ~168-229): prisma.$transaction com set_config + raw UPDATEs + tx.folder.delete({ where: { id, workspaceId } }); algo na tx lança e cai no catch genérico 'Failed to delete folder.'"
+      issue: "linhas 200-205 (re-parent LPs: UPDATE landing_page SET folder_id=NULL WHERE workspace_id=... AND folder_id=...) e 208-213 (re-parent subpastas: UPDATE folder SET parent_id=NULL WHERE workspace_id=... AND parent_id=...) — 3 colunas inexistentes em cada"
   missing:
-    - "Diagnosticar a causa exata do throw na transação (candidatos: tx.folder.delete com where composto {id,workspaceId} não-único para Prisma delete; política RLS de DELETE na tabela folder vs set_config(...true) transaction-local; FK self-relation parent_id sem onDelete cobrindo subpastas mais profundas)"
-    - "Logar o erro real (catch atualmente engole err) para confirmar a causa antes do fix"
-  note: "Copy/aviso do AlertDialog está correto — só a operação de delete falha. Diagnóstico formal pendente (debug agents)."
+    - "Trocar os 2 raw UPDATEs por Prisma updateMany (field names): tx.landingPage.updateMany({where:{workspaceId,folderId},data:{folderId:null}}) e tx.folder.updateMany({where:{workspaceId,parentId:folderId},data:{parentId:null}}) — evita o trap de naming. Alternativa: aspas camelCase no SQL raw."
+    - "Verificar que existe migration commitada das tabelas folder/landing_page do catálogo (migrations param em 0004; UAT usou db push) — gerar a migration Phase 5 se faltar, senão o mesmo statement falha com 'relation does not exist' em ambientes limpos."
+  note: "Copy/aviso do AlertDialog está correto — só a operação de delete falha, por nomes de coluna errados no SQL raw."
 
 - truth: "O cliente better-auth não deve disparar 404 contínuo em /auth/organizations"
   status: failed
