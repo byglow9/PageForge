@@ -22,6 +22,8 @@
 
 import { useState, useTransition } from "react";
 import { acceptInvitationAction } from "@/lib/workspaces/actions";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface AcceptButtonProps {
   invitationId: string;
@@ -45,17 +47,18 @@ export function AcceptButton({ invitationId }: AcceptButtonProps) {
 
   return (
     <div>
-      <button
+      <Button
         type="button"
         onClick={handleClick}
         disabled={isPending}
+        className="w-full"
       >
         {isPending ? "Accepting…" : "Accept invitation"}
-      </button>
+      </Button>
       {error !== null && (
-        <p role="alert" style={{ color: "#dc2626" }}>
-          {error}
-        </p>
+        <Alert variant="destructive" role="alert" className="mt-3">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       )}
     </div>
   );

@@ -21,7 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { InviteLinkDialog } from "./InviteLinkDialog";
 
 interface MembersPageProps {
   params: Promise<{ slug: string }>;
@@ -112,17 +112,6 @@ export default async function MembersPage({
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {inviteUrl && (
-              <Alert>
-                <AlertTitle>Invite link generated</AlertTitle>
-                <AlertDescription>
-                  Share the link below. It expires after use.{" "}
-                  <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs break-all">
-                    {inviteUrl}
-                  </code>
-                </AlertDescription>
-              </Alert>
-            )}
             <form action={inviteAction} className="space-y-4">
               <div className="space-y-1.5">
                 <label htmlFor="invite-email" className="text-sm font-medium leading-none">
@@ -273,6 +262,7 @@ export default async function MembersPage({
           </table>
         </CardContent>
       </Card>
+      <InviteLinkDialog inviteUrl={inviteUrl} />
     </div>
   );
 }

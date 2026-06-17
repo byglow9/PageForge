@@ -19,12 +19,22 @@
  * back here and can accept.
  */
 import { headers } from "next/headers";
+import Link from "next/link";
 import { auth } from "@/lib/auth/auth";
 import {
   lookupInvitation,
   isInvitationExpired,
 } from "@/lib/workspaces/invitations";
 import { AcceptButton } from "./AcceptButton";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 interface InvitationPageProps {
   params: Promise<{ id: string }>;
@@ -40,41 +50,93 @@ export default async function InvitationPage({
 
   if (!invitation) {
     return (
-      <div>
-        <h1>Invitation not found</h1>
-        <p>This invitation link is invalid or has been removed.</p>
-        <a href="/">Go to home</a>
-      </div>
+      <main className="flex min-h-screen items-center justify-center bg-background px-4">
+        <Card className="w-full max-w-sm">
+          <CardHeader>
+            <CardTitle>Invitation not found</CardTitle>
+            <CardDescription>
+              This invitation link is invalid or has been removed.
+            </CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Link
+              href="/"
+              className="text-sm text-muted-foreground hover:text-foreground underline underline-offset-4"
+            >
+              Go to home
+            </Link>
+          </CardFooter>
+        </Card>
+      </main>
     );
   }
 
   if (invitation.status === "revoked") {
     return (
-      <div>
-        <h1>Invitation revoked</h1>
-        <p>This invitation has been revoked by the workspace administrator.</p>
-        <a href="/">Go to home</a>
-      </div>
+      <main className="flex min-h-screen items-center justify-center bg-background px-4">
+        <Card className="w-full max-w-sm">
+          <CardHeader>
+            <CardTitle>Invitation revoked</CardTitle>
+            <CardDescription>
+              This invitation has been revoked by the workspace administrator.
+            </CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Link
+              href="/"
+              className="text-sm text-muted-foreground hover:text-foreground underline underline-offset-4"
+            >
+              Go to home
+            </Link>
+          </CardFooter>
+        </Card>
+      </main>
     );
   }
 
   if (invitation.status === "accepted") {
     return (
-      <div>
-        <h1>Invitation already accepted</h1>
-        <p>This invitation has already been used.</p>
-        <a href="/">Go to home</a>
-      </div>
+      <main className="flex min-h-screen items-center justify-center bg-background px-4">
+        <Card className="w-full max-w-sm">
+          <CardHeader>
+            <CardTitle>Invitation already accepted</CardTitle>
+            <CardDescription>
+              This invitation has already been used.
+            </CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Link
+              href="/"
+              className="text-sm text-muted-foreground hover:text-foreground underline underline-offset-4"
+            >
+              Go to home
+            </Link>
+          </CardFooter>
+        </Card>
+      </main>
     );
   }
 
   if (isInvitationExpired(invitation)) {
     return (
-      <div>
-        <h1>Invitation expired</h1>
-        <p>This invitation link has expired. Please ask the workspace administrator for a new invite.</p>
-        <a href="/">Go to home</a>
-      </div>
+      <main className="flex min-h-screen items-center justify-center bg-background px-4">
+        <Card className="w-full max-w-sm">
+          <CardHeader>
+            <CardTitle>Invitation expired</CardTitle>
+            <CardDescription>
+              This invitation link has expired. Please ask the workspace administrator for a new invite.
+            </CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Link
+              href="/"
+              className="text-sm text-muted-foreground hover:text-foreground underline underline-offset-4"
+            >
+              Go to home
+            </Link>
+          </CardFooter>
+        </Card>
+      </main>
     );
   }
 
@@ -85,36 +147,64 @@ export default async function InvitationPage({
   // Case 1: Not signed in → redirect to login/signup with invitation ID preserved (D-07)
   if (!session?.user) {
     return (
-      <div>
-        <h1>You have been invited</h1>
-        <p>
-          You have been invited to join a workspace as <strong>{invitation.role}</strong>.
-        </p>
-        <p>To accept this invitation, please sign in or create an account.</p>
-        <div>
-          <a href={`/login?invitationId=${id}`}>Sign in</a>
-          <span> or </span>
-          <a href={`/signup?invitationId=${id}`}>Create an account</a>
-        </div>
-        <p>
-          <small>This invitation expires on {invitation.expiresAt.toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })}.</small>
-        </p>
-      </div>
+      <main className="flex min-h-screen items-center justify-center bg-background px-4">
+        <Card className="w-full max-w-sm">
+          <CardHeader>
+            <CardTitle>You have been invited</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <p className="text-sm">
+              You have been invited to join a workspace as{" "}
+              <strong>{invitation.role}</strong>.
+            </p>
+            <p className="text-sm">
+              To accept, please sign in or create an account.
+            </p>
+            <p className="text-xs text-muted-foreground mt-2">
+              This invitation expires on{" "}
+              {invitation.expiresAt.toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+              .
+            </p>
+          </CardContent>
+          <CardFooter className="flex gap-2">
+            <Button asChild>
+              <Link href={`/login?invitationId=${id}`}>Sign in</Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link href={`/signup?invitationId=${id}`}>Create an account</Link>
+            </Button>
+          </CardFooter>
+        </Card>
+      </main>
     );
   }
 
   // Case 2: Signed in but email not verified → redirect to verify-email (T-02-03-01)
   if (!session.user.emailVerified) {
     return (
-      <div>
-        <h1>Email verification required</h1>
-        <p>You must verify your email address before accepting an invitation.</p>
-        <a href={`/verify-email?invitationId=${id}`}>Verify your email</a>
-      </div>
+      <main className="flex min-h-screen items-center justify-center bg-background px-4">
+        <Card className="w-full max-w-sm">
+          <CardHeader>
+            <CardTitle>Email verification required</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm">
+              You must verify your email address before accepting an invitation.
+            </p>
+          </CardContent>
+          <CardFooter>
+            <Button asChild>
+              <Link href={`/verify-email?invitationId=${id}`}>
+                Verify your email
+              </Link>
+            </Button>
+          </CardFooter>
+        </Card>
+      </main>
     );
   }
 
@@ -123,29 +213,35 @@ export default async function InvitationPage({
   // allowing the returned {ok:false, error} to be surfaced in the UI (UAT Test 7).
   // invitationId flows from server-rendered await params — never from client input (T-02-07-01).
   return (
-    <div>
-      <h1>Workspace invitation</h1>
-      <p>
-        You have been invited to join as <strong>{invitation.role}</strong>.
-      </p>
-      <p>
-        Signed in as: <strong>{session.user.email}</strong>
-      </p>
-      <p>
-        <small>
-          This invitation expires on{" "}
-          {invitation.expiresAt.toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })}
-          .
-        </small>
-      </p>
-      <AcceptButton invitationId={id} />
-      <p>
-        <a href="/">Decline</a>
-      </p>
-    </div>
+    <main className="flex min-h-screen items-center justify-center bg-background px-4">
+      <Card className="w-full max-w-sm">
+        <CardHeader>
+          <CardTitle>Workspace invitation</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          <p className="text-sm">
+            You have been invited to join as <strong>{invitation.role}</strong>.
+          </p>
+          <p className="text-sm">
+            Signed in as: <strong>{session.user.email}</strong>
+          </p>
+          <p className="text-xs text-muted-foreground mt-2">
+            This invitation expires on{" "}
+            {invitation.expiresAt.toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
+            .
+          </p>
+          <AcceptButton invitationId={id} />
+        </CardContent>
+        <CardFooter>
+          <Button variant="ghost" size="sm" asChild>
+            <Link href="/">Decline</Link>
+          </Button>
+        </CardFooter>
+      </Card>
+    </main>
   );
 }
