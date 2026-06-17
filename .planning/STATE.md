@@ -93,6 +93,7 @@ None yet.
 | 260608-d6s-2 | Fix: dev script usa webpack (next dev --webpack) p/ resolver imports .js→.ts do engine | 2026-06-08 | abd6862 | (gsd-fast) |
 | 260608-ly0 | Estilizar página de Members (Card/tabelas/Badge/Button) preservando server actions e Server Component | 2026-06-08 | 7dae599 | [260608-ly0](./quick/260608-ly0-style-members-page/) |
 | 260617-jzg | Estilizar fluxo de convite (Phase 02): invite link como popup/modal + estilizar página de aceite de convite | 2026-06-17 | d5b4247 | [260617-jzg](./quick/260617-jzg-estilizar-fluxo-de-convite-phase-02-invi/) |
+| (fast) | Botão "Switch account" na página de convite (logout + volta a /login?invitationId) | 2026-06-17 | 87b60a7 | (gsd-fast) |
 
 ## Deferred Items
 
