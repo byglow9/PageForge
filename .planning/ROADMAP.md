@@ -13,7 +13,7 @@ PageForge delivers its core value — generate a complete, layout-faithful landi
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Core Engine (Parser + Merge)** - UI-less spike proving token parsing and safe static-HTML merge against the real Grécia template; locks the engine decision. (completed 2026-06-02)
-- [ ] **Phase 2: Multi-Tenancy Foundation** - Auth, workspaces, RBAC, and per-workspace isolation across every table and storage path. (gap closure in progress — UAT Tests 7 and 10 failing)
+- [x] **Phase 2: Multi-Tenancy Foundation** - Auth, workspaces, RBAC, and per-workspace isolation across every table and storage path. (completed 2026-06-17 — UAT 9/10 pass, 1 skipped; Tests 7 & 10 closed)
 - [x] **Phase 3: Template Authoring + Brand Config** - Author markup templates with all six field types (incl. repeaters) and configure reusable global brand/contact values. (completed 2026-06-08 — UAT 6/6)
 - [ ] **Phase 4: LP Generation, Assets, Preview & Export** - Schema-driven dynamic form (with repeater add/remove + image upload) producing previewable, editable, duplicable, exportable static-HTML LPs.
 - [x] **Phase 5: Catalog & Grécia Acceptance** - Folders, categories, and browse/search over LPs, validated by the full Grécia end-to-end loop. (completed 2026-06-17)
@@ -54,7 +54,7 @@ Plans:
   3. A user in workspace A cannot read or edit workspace B's templates, LPs, brand config, or assets by ID — proven by per-endpoint cross-tenant access tests.
   4. Tenant context is derived from the server session only (never client-supplied), and `workspace_id` scoping is enforced at the data layer with an RLS backstop.
 **Plans**: 8 plans (3 original + 5 gap-closure)
-**Verification score**: UAT 8/10 passed; 2 UAT gaps (Tests 7 and 10) closed by plans 07 and 08
+**Verification score**: UAT 9/10 passed, 1 skipped (Test 8 — server-side RBAC confirmed in code); Tests 7 and 10 closed by plans 07/08 + re-verified 2026-06-17
 
 Plans:
 **Wave 1**
@@ -76,8 +76,8 @@ Plans:
 - [x] 02-06-PLAN.md — Per-endpoint cross-tenant integration tests against live PostgreSQL with RLS active (SC-3)
 
 **Wave 7** *(gap closure — parallel; both blocked on Wave 6 completion)*
-- [ ] 02-07-PLAN.md — AcceptButton client island: surface invitation-acceptance failure message (UAT Test 7)
-- [ ] 02-08-PLAN.md — Workspace listing page + post-login redirect to /workspaces (UAT Test 10)
+- [x] 02-07-PLAN.md — AcceptButton client island: surface invitation-acceptance failure message (UAT Test 7)
+- [x] 02-08-PLAN.md — Workspace listing page + post-login redirect to /workspaces (UAT Test 10)
 
 ### Phase 3: Template Authoring + Brand Config
 **Goal**: Let users author and edit token-markup templates with all six field types and configure reusable global brand/contact values, persisting markup + parsed schema scoped to the workspace.
@@ -162,7 +162,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Core Engine (Parser + Merge) | 3/3 | Complete   | 2026-06-02 |
-| 2. Multi-Tenancy Foundation | 6/8 | Gap Closure | - |
+| 2. Multi-Tenancy Foundation | 8/8 | Complete   | 2026-06-17 |
 | 3. Template Authoring + Brand Config | 4/4 | Complete   | 2026-06-08 |
 | 4. LP Generation, Assets, Preview & Export | 0/4 | Planning complete | - |
 | 5. Catalog & Grécia Acceptance | 6/6 | Complete   | 2026-06-17 |

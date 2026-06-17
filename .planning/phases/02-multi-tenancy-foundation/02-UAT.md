@@ -3,7 +3,7 @@ status: complete
 phase: 02-multi-tenancy-foundation
 source: [02-01-SUMMARY.md, 02-02-SUMMARY.md, 02-03-SUMMARY.md, 02-04-SUMMARY.md, 02-05-SUMMARY.md, 02-06-SUMMARY.md, 260603-ju4-SUMMARY.md]
 started: 2026-06-03T17:45:00Z
-updated: 2026-06-03T17:45:00Z
+updated: 2026-06-17T18:30:00Z
 ---
 
 ## Current Test
@@ -38,17 +38,14 @@ result: pass
 
 ### 7. Invite Email Mismatch Rejected
 expected: Accepting an invitation while logged in as a user whose email does NOT match the invited email is rejected (you do not silently join the workspace).
-result: issue
-reported: "clico em accept mas nao vai nada — nenhum feedback ao aceitar"
-severity: major
+result: pass
 note: |
-  Security IS correct — CR-01 email-match rejection fires server-side; the
-  mismatched user was NOT added (verified: micdozylonty stayed owner-only;
-  invitation was for renancavenaghizuri). BUT there is NO UI feedback: the
-  accept Server Action returns an ActionResult ({ok:false,error} on mismatch)
-  and the page's submitAcceptInvitation wrapper IGNORES the return — no error
-  shown, no redirect surfaced. CR-03 (POST-only accept) wired the form to the
-  action but never wired the result back to the UI.
+  Re-verified 2026-06-17. Closed by plan 02-07 (AcceptButton client island that
+  surfaces the {ok:false,error} return via a role="alert" Alert) plus session
+  fast tasks: a "Switch account" button on the invite page and a post-login
+  invite-redirect. User confirmed end-to-end: switching to the invited account
+  and accepting joins correctly; a mismatched accept shows a visible error and
+  does NOT join the workspace.
 
 ### 8. RBAC — Member Management Restricted
 expected: Member management actions (invite, change role, remove) are available to owner/admin only. An editor or viewer cannot invite/remove members.
@@ -62,21 +59,19 @@ note: "User confirmed: accessing a workspace they are not a member of redirects 
 
 ### 10. Post-Login Workspace Landing (emergent finding)
 expected: After logging in, a returning user who already has workspace(s) can reach them — e.g. lands on a workspace list/picker or is redirected to a workspace — without memorizing URLs.
-result: issue
-reported: "quando logo em uma conta que já tem workspace sou redirecionado para a criação de workspace; só consigo acessar os que já criei digitando a URL"
-severity: major
+result: pass
 note: |
-  No post-login landing / workspace list exists. A returning owner is dumped on
-  /workspaces/new with no list of their existing workspaces and must type the
-  /w/{slug} URL manually. Breaks usability of the D-05 multi-workspace model
-  (no switcher/list). Likely: /workspaces/new (or a new /workspaces index) should
-  list the user's memberships with links, and post-login should route there.
+  Re-verified 2026-06-17. Closed by plan 02-08 (/workspaces listing page using a
+  non-RLS organization/member query + post-login redirect to /workspaces) plus a
+  session fast task adding the account name and Log out control to /workspaces.
+  User confirmed: after login they land on /workspaces with their membership
+  list and can open each workspace via a link.
 
 ## Summary
 
 total: 10
-passed: 7
-issues: 2
+passed: 9
+issues: 0
 pending: 0
 skipped: 1
 blocked: 0
@@ -84,17 +79,15 @@ blocked: 0
 ## Gaps
 
 - truth: "Accepting an invitation gives the user clear feedback (success → land in workspace; failure/email-mismatch → visible error message)."
-  status: failed
-  reason: "User reported: clicking Accept does nothing visible. Root cause: submitAcceptInvitation (apps/web/src/app/invitations/[id]/page.tsx) awaits acceptInvitationAction(id) but ignores the returned ActionResult — on {ok:false} (e.g. email mismatch) no error is rendered; only the success path's internal redirect() produces any navigation. Server-side rejection (CR-01) works correctly and securely; the defect is missing UI feedback on the failure/rejection path."
+  status: resolved
+  reason: "Closed by plan 02-07 (AcceptButton client island surfacing {ok:false,error} via role=\"alert\") + session fast tasks (Switch account button, post-login invite-redirect). Re-verified by user 2026-06-17."
   severity: major
   test: 7
-  artifacts: ["apps/web/src/app/invitations/[id]/page.tsx", "apps/web/src/lib/workspaces/actions.ts"]
-  missing: ["error-state rendering on the accept form (useActionState or returned-error display)", "user-visible rejection message when invited email != session email"]
+  artifacts: ["apps/web/src/app/invitations/[id]/AcceptButton.tsx", "apps/web/src/app/invitations/[id]/SwitchAccountButton.tsx", "apps/web/src/app/(auth)/login/page.tsx"]
 
 - truth: "A returning user who already has workspaces can navigate to them after login without typing URLs."
-  status: failed
-  reason: "User reported: after login (account with existing workspaces) they are dropped on /workspaces/new and can only reach existing workspaces by typing /w/{slug} manually. No workspace list/picker and no post-login redirect to an existing workspace."
+  status: resolved
+  reason: "Closed by plan 02-08 (/workspaces listing page + post-login redirect) + session fast task (account name + Log out on /workspaces). Re-verified by user 2026-06-17."
   severity: major
   test: 10
-  artifacts: ["apps/web/src/app/workspaces/new/page.tsx", "apps/web/src/app/page.tsx", "apps/web/src/lib/workspaces/guards.ts"]
-  missing: ["a workspaces index/list page showing the user's memberships (organization/member) with links to /w/{slug}", "post-login routing to that list (or to a single workspace when only one exists)"]
+  artifacts: ["apps/web/src/app/workspaces/page.tsx", "apps/web/src/app/workspaces/LogoutButton.tsx", "apps/web/src/lib/workspaces/listing.ts"]
