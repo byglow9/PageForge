@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 2: Multi-Tenancy Foundation** - Auth, workspaces, RBAC, and per-workspace isolation across every table and storage path. (gap closure in progress — UAT Tests 7 and 10 failing)
 - [ ] **Phase 3: Template Authoring + Brand Config** - Author markup templates with all six field types (incl. repeaters) and configure reusable global brand/contact values.
 - [ ] **Phase 4: LP Generation, Assets, Preview & Export** - Schema-driven dynamic form (with repeater add/remove + image upload) producing previewable, editable, duplicable, exportable static-HTML LPs.
-- [ ] **Phase 5: Catalog & Grécia Acceptance** - Folders, categories, and browse/search over LPs, validated by the full Grécia end-to-end loop.
+- [x] **Phase 5: Catalog & Grécia Acceptance** - Folders, categories, and browse/search over LPs, validated by the full Grécia end-to-end loop. (completed 2026-06-17)
 
 ## Phase Details
 
@@ -152,7 +152,7 @@ Plans:
 **Wave 1 (gap closure — UAT diagnosed)** *(independent fixes; no file overlap → parallel)*
 - [x] 05-04-PLAN.md — Major catalog blockers: portalize LpCatalogCard kebab (DropdownMenu) fixing clipping (UAT 4/5/7/18) + fix deleteFolderAction snake_case SQL → Prisma updateMany (UAT 16) + generate missing Phase 5 catalog migration
 - [x] 05-05-PLAN.md — Template editor double-save fix (redirect to edit after create, UAT 9) + single Save Template / single Generate LP CTA + catalog search-bar spacing (UAT 2/9)
-- [ ] 05-06-PLAN.md — LP form/render gaps: composite repeater keys (UAT 10) + ImageUploadField edit hydration (UAT 12) + template picker single-control (UAT 10) + <main>/dashboard padding (UAT 1) + review committed inline LpForm/renderer fixes (UAT 10/11)
+- [x] 05-06-PLAN.md — LP form/render gaps: composite repeater keys (UAT 10) + ImageUploadField edit hydration (UAT 12) + template picker single-control (UAT 10) + <main>/dashboard padding (UAT 1) + review committed inline LpForm/renderer fixes (UAT 10/11)
 
 ## Progress
 
@@ -165,4 +165,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Multi-Tenancy Foundation | 6/8 | Gap Closure | - |
 | 3. Template Authoring + Brand Config | 0/4 | Planning complete | - |
 | 4. LP Generation, Assets, Preview & Export | 0/4 | Planning complete | - |
-| 5. Catalog & Grécia Acceptance | 5/6 | In Progress|  |
+| 5. Catalog & Grécia Acceptance | 6/6 | Complete   | 2026-06-17 |

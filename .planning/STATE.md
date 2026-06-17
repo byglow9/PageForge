@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
+status: verifying
 stopped_at: Phase 5 context gathered
-last_updated: "2026-06-17T13:20:21.773Z"
+last_updated: "2026-06-17T13:25:37.139Z"
 last_activity: 2026-06-17
 progress:
   total_phases: 5
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 25
-  completed_plans: 24
-  percent: 96
+  completed_plans: 25
+  percent: 100
 ---
 
 # Project State
@@ -27,10 +27,10 @@ See: .planning/PROJECT.md (updated 2026-06-01)
 
 Phase: 05 (catalog-grecia-acceptance) — EXECUTING
 Plan: 3 of 3
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-06-17
 
-Progress: [██████████] 96%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -55,6 +55,7 @@ Progress: [██████████] 96%
 | Phase 01-core-engine-parser-merge P01 | 223 | 3 tasks | 10 files |
 | Phase 01-core-engine-parser-merge P03 | 8 | 2 tasks | 4 files |
 | Phase 05 P04 | 20 | 3 tasks | 3 files |
+| Phase 05-catalog-grecia-acceptance P06 | 20 | 3 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -69,6 +70,9 @@ Recent decisions affecting current work:
 - [Phase ?]: ESM + NodeNext: type:module + moduleResolution:NodeNext para imports .js em runtime Node
 - [Phase ?]: pnpm 11: allowBuilds:esbuild em pnpm-workspace.yaml (pnpm.onlyBuiltDependencies obsoleto)
 - [Phase ?]: D-03/D-05 implementados: FieldTypeSchema 6 tipos; schema mínimo (name, type, repeater, global) via Zod
+- [Phase ?]: Shell padding via page-wrapper not shared main
+- [Phase ?]: ImageUploadField hydration via useEffect on field.value without calling onChange — stored value remains RHF source of truth
+- [Phase ?]: Base UI SelectValue children render function maps template ID to human-readable name in trigger
 
 ### Pending Todos
 
@@ -99,6 +103,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-17T13:20:21.767Z
+Last session: 2026-06-17T13:25:10.704Z
 Stopped at: Phase 5 context gathered
 Resume file: None
