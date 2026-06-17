@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-06-01)
 Phase: 05 (catalog-grecia-acceptance) — EXECUTING
 Plan: 3 of 3
 Status: Phase complete — ready for verification
-Last activity: 2026-06-17
+Last activity: 2026-06-17 - Completed quick task 260617-jzg: estilizar fluxo de convite
 
 Progress: [██████████] 100%
 
@@ -92,6 +92,7 @@ None yet.
 | 260608-dbk | Estilizar páginas de login e signup (Card/Input/Label/Button/Alert) preservando toda a lógica de auth | 2026-06-08 | c651e39 | [260608-dbk](./quick/260608-dbk-style-auth-pages/) |
 | 260608-d6s-2 | Fix: dev script usa webpack (next dev --webpack) p/ resolver imports .js→.ts do engine | 2026-06-08 | abd6862 | (gsd-fast) |
 | 260608-ly0 | Estilizar página de Members (Card/tabelas/Badge/Button) preservando server actions e Server Component | 2026-06-08 | 7dae599 | [260608-ly0](./quick/260608-ly0-style-members-page/) |
+| 260617-jzg | Estilizar fluxo de convite (Phase 02): invite link como popup/modal + estilizar página de aceite de convite | 2026-06-17 | d5b4247 | [260617-jzg](./quick/260617-jzg-estilizar-fluxo-de-convite-phase-02-invi/) |
 
 ## Deferred Items
 
