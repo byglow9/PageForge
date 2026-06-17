@@ -151,7 +151,7 @@ Plans:
 
 **Wave 1 (gap closure — UAT diagnosed)** *(independent fixes; no file overlap → parallel)*
 - [x] 05-04-PLAN.md — Major catalog blockers: portalize LpCatalogCard kebab (DropdownMenu) fixing clipping (UAT 4/5/7/18) + fix deleteFolderAction snake_case SQL → Prisma updateMany (UAT 16) + generate missing Phase 5 catalog migration
-- [ ] 05-05-PLAN.md — Template editor double-save fix (redirect to edit after create, UAT 9) + single Save Template / single Generate LP CTA + catalog search-bar spacing (UAT 2/9)
+- [x] 05-05-PLAN.md — Template editor double-save fix (redirect to edit after create, UAT 9) + single Save Template / single Generate LP CTA + catalog search-bar spacing (UAT 2/9)
 - [ ] 05-06-PLAN.md — LP form/render gaps: composite repeater keys (UAT 10) + ImageUploadField edit hydration (UAT 12) + template picker single-control (UAT 10) + <main>/dashboard padding (UAT 1) + review committed inline LpForm/renderer fixes (UAT 10/11)
 
 ## Progress
@@ -165,4 +165,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Multi-Tenancy Foundation | 6/8 | Gap Closure | - |
 | 3. Template Authoring + Brand Config | 0/4 | Planning complete | - |
 | 4. LP Generation, Assets, Preview & Export | 0/4 | Planning complete | - |
-| 5. Catalog & Grécia Acceptance | 4/6 | In Progress|  |
+| 5. Catalog & Grécia Acceptance | 5/6 | In Progress|  |

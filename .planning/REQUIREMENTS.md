@@ -21,7 +21,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **TPL-02**: System parses tokens into a typed field schema when the template is saved
 - [ ] **TPL-03**: User can assign a type to each token (text, rich text, image, color, button+URL, repeater)
 - [ ] **TPL-04**: User can define repeatable blocks (repeaters) that group multiple fields
-- [ ] **TPL-05**: User can edit an existing template
+- [x] **TPL-05**: User can edit an existing template
 - [ ] **TPL-06**: Templates are listed and selectable within the workspace
 
 ### Brand Settings
@@ -54,7 +54,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **CAT-01**: Generated LPs are saved to a catalog
 - [x] **CAT-02**: User can organize LPs into folders
 - [x] **CAT-03**: User can categorize/tag LPs
-- [ ] **CAT-04**: User can browse and search LPs in the catalog
+- [x] **CAT-04**: User can browse and search LPs in the catalog
 
 ## v2 Requirements
 
@@ -113,7 +113,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TPL-02 | Phase 1 | Complete |
 | TPL-03 | Phase 3 | Pending |
 | TPL-04 | Phase 1 | Pending |
-| TPL-05 | Phase 3 | Pending |
+| TPL-05 | Phase 3 | Complete |
 | TPL-06 | Phase 3 | Pending |
 | BRD-01 | Phase 3 | Pending |
 | BRD-02 | Phase 3 | Pending |
@@ -131,7 +131,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CAT-01 | Phase 5 | Pending |
 | CAT-02 | Phase 5 | Complete |
 | CAT-03 | Phase 5 | Complete |
-| CAT-04 | Phase 5 | Pending |
+| CAT-04 | Phase 5 | Complete |
 
 **Coverage:**
 - v1 requirements: 28 total (WS:5, TPL:6, BRD:2, GEN:6, AST:1, LP:4, CAT:4)
