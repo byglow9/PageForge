@@ -5,7 +5,8 @@
  * Receives all LPs (with folderId + tags) from the RSC page and handles:
  * - Folder selection state (selectedFolderId) from FolderTree.
  * - Name/tag search state (searchQuery, activeTagId) from SearchBar/FilterBar.
- * - Folder subtree filtering (D-10): selected folder + all descendants.
+ * - Folder filtering (D-10 revised, UAT round-2): exact folder match — a folder shows
+ *   only its DIRECT LPs; subfolder LPs are reached by selecting the subfolder in the tree.
  * - Client-side name substring filter (D-08/D-09): case-insensitive includes.
  * - Tag filter (D-09): LP must have the active tag (AND-combined with search).
  * - Three empty states:
@@ -53,32 +54,6 @@ export interface CatalogGridProps {
 }
 
 // -----------------------------------------------------------------------
-// Folder subtree helpers
-// -----------------------------------------------------------------------
-
-/**
- * Compute all folder IDs in the subtree rooted at startId (inclusive).
- * Uses the flat adjacency list (O(n) per folder query).
- */
-function getSubtreeFolderIds(
-  startId: string,
-  folders: FolderModel[]
-): Set<string> {
-  const result = new Set<string>();
-  const queue = [startId];
-  while (queue.length > 0) {
-    const current = queue.shift()!;
-    result.add(current);
-    for (const folder of folders) {
-      if (folder.parentId === current) {
-        queue.push(folder.id);
-      }
-    }
-  }
-  return result;
-}
-
-// -----------------------------------------------------------------------
 // CatalogGrid
 // -----------------------------------------------------------------------
 
@@ -96,7 +71,7 @@ export function CatalogGrid({
   const [activeTagId, setActiveTagId] = useState<string | null>(null);
 
   // -----------------------------------------------------------------------
-  // 1. Folder filter (D-10): scope to selected folder + descendants
+  // 1. Folder filter (D-10 revised): exact folder match (direct children only)
   // -----------------------------------------------------------------------
 
   let folderFilteredLps: CatalogLp[];
@@ -104,10 +79,7 @@ export function CatalogGrid({
     // "All LPs" — no folder filter
     folderFilteredLps = lps;
   } else {
-    const subtreeIds = getSubtreeFolderIds(selectedFolderId, folders);
-    folderFilteredLps = lps.filter(
-      (lp) => lp.folderId !== null && subtreeIds.has(lp.folderId)
-    );
+    folderFilteredLps = lps.filter((lp) => lp.folderId === selectedFolderId);
   }
 
   // -----------------------------------------------------------------------
