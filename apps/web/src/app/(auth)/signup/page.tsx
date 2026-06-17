@@ -12,7 +12,6 @@ import { Label } from "@/components/ui/label";
 type FormState =
   | { status: "idle" }
   | { status: "loading" }
-  | { status: "verification_sent"; email: string }
   | { status: "error"; message: string };
 
 export default function SignupPage() {
@@ -42,40 +41,15 @@ export default function SignupPage() {
       return;
     }
 
-    // Signup succeeded; email verification is required before accessing workspaces.
-    setFormState({ status: "verification_sent", email });
-  }
-
-  if (formState.status === "verification_sent") {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-background px-4">
-        <Card className="w-full max-w-sm">
-          <CardHeader>
-            <CardTitle>Check your email</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Alert>
-              <AlertDescription>
-                We sent a verification link to <strong>{formState.email}</strong>.
-                Click the link in the email to verify your address and activate your
-                account.
-              </AlertDescription>
-              <AlertDescription>
-                You cannot create or join a workspace until your email is verified.
-              </AlertDescription>
-            </Alert>
-          </CardContent>
-          <CardFooter>
-            <Link
-              href="/login"
-              className="text-sm text-muted-foreground hover:text-foreground underline underline-offset-4"
-            >
-              Back to login
-            </Link>
-          </CardFooter>
-        </Card>
-      </main>
+    // Signup succeeded; email verification is required before accessing
+    // workspaces. Send the user straight to the login screen with a notice,
+    // preserving the invitationId if this signup came from an invite link.
+    const invitationId = new URLSearchParams(window.location.search).get(
+      "invitationId",
     );
+    const params = new URLSearchParams({ registered: "1" });
+    if (invitationId) params.set("invitationId", invitationId);
+    window.location.href = `/login?${params.toString()}`;
   }
 
   return (

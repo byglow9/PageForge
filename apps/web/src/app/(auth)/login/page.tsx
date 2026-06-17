@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { signIn } from "@/lib/auth/auth-client";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
@@ -17,6 +17,12 @@ type FormState =
 
 export default function LoginPage() {
   const [formState, setFormState] = useState<FormState>({ status: "idle" });
+  const [justRegistered, setJustRegistered] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setJustRegistered(params.get("registered") === "1");
+  }, []);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -95,6 +101,15 @@ export default function LoginPage() {
           <CardDescription>Enter your email and password to access your workspace</CardDescription>
         </CardHeader>
         <CardContent>
+          {justRegistered && (
+            <Alert className="mb-4">
+              <AlertDescription>
+                Account created. We sent a verification link to your email —
+                verify it, then log in below.
+              </AlertDescription>
+            </Alert>
+          )}
+
           {formState.status === "error" && (
             <Alert variant="destructive" className="mb-4">
               <AlertDescription>{formState.message}</AlertDescription>
