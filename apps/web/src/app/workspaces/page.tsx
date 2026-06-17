@@ -30,7 +30,19 @@ export default async function WorkspacesPage() {
           padding: "1rem",
         }}
       >
-        <LogoutButton userName={user.name || user.email} />
+        <span
+          style={{
+            position: "fixed",
+            top: "1rem",
+            left: "1rem",
+            zIndex: 10,
+            fontSize: "0.875rem",
+            color: "#6b7280",
+          }}
+        >
+          {user.name || user.email}
+        </span>
+        <LogoutButton />
         <div style={{ width: "100%", maxWidth: "480px", textAlign: "center" }}>
           <h1 style={{ fontSize: "1.5rem", fontWeight: "bold", marginBottom: "0.5rem" }}>
             No workspaces yet
@@ -68,6 +80,18 @@ export default async function WorkspacesPage() {
         padding: "1rem",
       }}
     >
+      <span
+        style={{
+          position: "fixed",
+          top: "1rem",
+          left: "1rem",
+          zIndex: 10,
+          fontSize: "0.875rem",
+          color: "#6b7280",
+        }}
+      >
+        {user.name || user.email}
+      </span>
       <LogoutButton />
       <div style={{ width: "100%", maxWidth: "480px" }}>
         <h1 style={{ fontSize: "1.5rem", fontWeight: "bold", marginBottom: "1.5rem" }}>
