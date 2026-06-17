@@ -95,6 +95,7 @@ None yet.
 | 260617-jzg | Estilizar fluxo de convite (Phase 02): invite link como popup/modal + estilizar página de aceite de convite | 2026-06-17 | d5b4247 | [260617-jzg](./quick/260617-jzg-estilizar-fluxo-de-convite-phase-02-invi/) |
 | (fast) | Botão "Switch account" na página de convite (logout + volta a /login?invitationId) | 2026-06-17 | 87b60a7 | (gsd-fast) |
 | (fast) | Signup redireciona para /login após cadastro (?registered=1) com aviso de verificar e-mail | 2026-06-17 | c5dbcaf | (gsd-fast) |
+| (fast) | Botão de logout no canto da tela /workspaces (signOut → /login) | 2026-06-17 | 0f8a21c | (gsd-fast) |
 
 ## Deferred Items
 
