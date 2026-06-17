@@ -20,7 +20,6 @@
  */
 
 import { useState } from "react";
-import Link from "next/link";
 import { FileText } from "lucide-react";
 import { FolderTree } from "./FolderTree";
 import { CatalogSearchBar } from "./CatalogSearchBar";
@@ -164,7 +163,7 @@ export function CatalogGrid({
       {/* Right panel: SearchBar + FilterBar + LP grid */}
       <div className="flex-1 px-6 py-0 min-w-0">
         {/* SearchBar */}
-        <div className="pt-0 pb-2">
+        <div className="pt-4 pb-2">
           <CatalogSearchBar value={searchQuery} onChange={setSearchQuery} />
         </div>
 
@@ -188,17 +187,9 @@ export function CatalogGrid({
             <h2 className="text-xl font-semibold text-gray-900 mb-2">
               No landing pages yet
             </h2>
-            <p className="text-sm text-gray-500 mb-6">
+            <p className="text-sm text-gray-500">
               Pick a template and fill in the form to generate your first landing page.
             </p>
-            {canCreate && (
-              <Link
-                href={`/w/${slug}/lps/new`}
-                className="inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
-              >
-                Generate LP
-              </Link>
-            )}
           </div>
         ) : isFolderEmpty ? (
           /* Folder has no LPs: "This folder is empty." */
