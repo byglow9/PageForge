@@ -38,6 +38,13 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 import { duplicateLpAction, deleteLpAction } from "@/lib/lps/actions";
 import { MoveLpDialog } from "./MoveLpDialog";
 import { TagInput } from "./TagInput";
@@ -177,7 +184,6 @@ export interface LpCatalogCardProps {
 
 export function LpCatalogCard({ lp, folders, tags, slug }: LpCatalogCardProps) {
   const router = useRouter();
-  const [menuOpen, setMenuOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [moveOpen, setMoveOpen] = useState(false);
   const [tagDialogOpen, setTagDialogOpen] = useState(false);
@@ -203,7 +209,6 @@ export function LpCatalogCard({ lp, folders, tags, slug }: LpCatalogCardProps) {
   });
 
   function handleDuplicate() {
-    setMenuOpen(false);
     startDuplicateTransition(async () => {
       const result = await duplicateLpAction(slug, lp.id);
       if (result.ok) {
@@ -215,7 +220,6 @@ export function LpCatalogCard({ lp, folders, tags, slug }: LpCatalogCardProps) {
   }
 
   function handleExportZip() {
-    setMenuOpen(false);
     setIsExporting(true);
     try {
       const a = document.createElement("a");
@@ -300,11 +304,9 @@ export function LpCatalogCard({ lp, folders, tags, slug }: LpCatalogCardProps) {
           >
             Edit
           </Link>
-          {/* Kebab menu */}
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => setMenuOpen((v) => !v)}
+          {/* Kebab menu — portaled via DropdownMenu to escape Card's overflow-hidden */}
+          <DropdownMenu>
+            <DropdownMenuTrigger
               aria-label="Landing page options"
               disabled={isDuplicating || isExporting}
               className="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors disabled:opacity-50"
@@ -314,78 +316,40 @@ export function LpCatalogCard({ lp, folders, tags, slug }: LpCatalogCardProps) {
               ) : (
                 <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
               )}
-            </button>
-            {menuOpen && (
-              <>
-                {/* Backdrop to close menu */}
-                <div
-                  className="fixed inset-0 z-10"
-                  onClick={() => setMenuOpen(false)}
-                  aria-hidden="true"
-                />
-                <div className="absolute right-0 bottom-full mb-1 z-20 min-w-[160px] bg-white border border-gray-200 rounded-md shadow-md py-1">
-                  {/* Move to folder — new item */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMenuOpen(false);
-                      setMoveOpen(true);
-                    }}
-                    className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                  >
-                    Move to folder…
-                  </button>
-                  {/* Edit tags — new item */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMenuOpen(false);
-                      setTagDialogOpen(true);
-                    }}
-                    className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                  >
-                    Edit tags…
-                  </button>
-                  {/* Separator before existing items */}
-                  <div className="my-1 border-t border-gray-100" aria-hidden="true" />
-                  <button
-                    type="button"
-                    onClick={handleDuplicate}
-                    className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                  >
-                    Duplicate
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleExportZip}
-                    disabled={isExporting}
-                    className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
-                  >
-                    {isExporting ? (
-                      <span className="flex items-center gap-1.5">
-                        <Loader2 className="h-3 w-3 animate-spin" aria-hidden="true" />
-                        Exporting…
-                      </span>
-                    ) : (
-                      "Export ZIP"
-                    )}
-                  </button>
-                  {/* Separator */}
-                  <div className="my-1 border-t border-gray-100" aria-hidden="true" />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMenuOpen(false);
-                      setDeleteOpen(true);
-                    }}
-                    className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                  >
-                    Delete landing page
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setMoveOpen(true)}>
+                Move to folder…
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTagDialogOpen(true)}>
+                Edit tags…
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleDuplicate}>
+                Duplicate
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={handleExportZip}
+                disabled={isExporting}
+              >
+                {isExporting ? (
+                  <span className="flex items-center gap-1.5">
+                    <Loader2 className="h-3 w-3 animate-spin" aria-hidden="true" />
+                    Exporting…
+                  </span>
+                ) : (
+                  "Export ZIP"
+                )}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => setDeleteOpen(true)}
+                className="text-red-600 focus:text-red-600 focus:bg-red-50"
+              >
+                Delete landing page
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </CardFooter>
       </Card>
 
