@@ -4,6 +4,8 @@
 
 PageForge delivers its core value — generate a complete, layout-faithful landing page by filling a form, no code — through a schema-centric pipeline. The journey starts where the risk and leverage concentrate: a UI-less spike that proves the token **parser → schema → merge/render** engine against the real "Grécia" travel template, locking the engine decision (LiquidJS vs. logic-less substitution) and baking SSTI/XSS safety in from the first line. Multi-tenancy lands next as an un-retrofittable foundation (workspace isolation + RBAC). On top of those two foundations we build template authoring with all six field types and global brand config, then the end-to-end generation experience (dynamic form, repeaters, image assets, preview, edit, duplicate, export). The final phase adds catalog organization and proves the whole loop by authoring, generating, previewing, editing, duplicating, and exporting the Grécia LP end to end — the v1 acceptance anchor.
 
+**Milestone v2.0 — Suporte a LPs do Lovable (templates de projeto React/Vite).** A v2.0 adiciona um segundo tipo de template ao lado do LiquidJS: projetos React/Vite exportados do Lovable. A tensão central é o modelo de confiança — a v1 nunca executava JS de terceiros; um projeto Lovable exige build. A decisão load-bearing (D1-A) **remove esse risco do milestone**: a v2.0 aceita apenas o `dist/` **pré-buildado** (o usuário roda `vite build` localmente e sobe o ZIP), eliminando toda a superfície de RCE de `npm install`/`vite build`. O foco de segurança desloca-se então para **servir** código de terceiros com segurança: origem isolada do dashboard + iframe sandbox (D4, não-retrofitável) e isolamento cross-tenant do `dist/`. A editabilidade fica restrita a brand CSS vars (D2, template opaco); build server-side + form-driven editing ficam para a v2.1. O percurso: (6) ingestão + discriminador de tipo + coexistência no catálogo → (7) serving isolado + preview sandboxed → (8) geração de LP por rota + tema + export, provados de ponta a ponta com o projeto `renova-turismo` coexistindo com o template Liquid Grécia.
+
 ## Phases
 
 **Phase Numbering:**
@@ -17,6 +19,12 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Template Authoring + Brand Config** - Author markup templates with all six field types (incl. repeaters) and configure reusable global brand/contact values. (completed 2026-06-08 — UAT 6/6)
 - [x] **Phase 4: LP Generation, Assets, Preview & Export** - Schema-driven dynamic form (with repeater add/remove + image upload) producing previewable, editable, duplicable, exportable static-HTML LPs. (completed 2026-06-17 — validated end-to-end by Phase 5 Grécia acceptance UAT 18/18)
 - [x] **Phase 5: Catalog & Grécia Acceptance** - Folders, categories, and browse/search over LPs, validated by the full Grécia end-to-end loop. (completed 2026-06-17)
+
+### Milestone v2.0 — Suporte a LPs do Lovable
+
+- [ ] **Phase 6: Project-Template Ingestion + Type Coexistence** - Cadastrar um projeto Lovable como template VITE_SPA via upload do `dist/` pré-buildado (validado + escaneado + isolado por workspace), coexistindo com templates LIQUID no catálogo. (sem serving ainda)
+- [ ] **Phase 7: Isolated Serving + Sandboxed Preview** - Servir e pré-visualizar o `dist/` do tenant em origem isolada do dashboard, com iframe sandbox e isolamento cross-tenant — a decisão de origem não-retrofitável (D4).
+- [ ] **Phase 8: LP Generation, Brand Theming, Export & v2.0 Acceptance** - Gerar LPs de templates VITE_SPA (rota de entrada + tema por brand CSS vars), exportar ZIP do `dist/`, e provar o fluxo completo com `renova-turismo` coexistindo com o Liquid Grécia.
 
 ## Phase Details
 
@@ -154,10 +162,53 @@ Plans:
 - [x] 05-05-PLAN.md — Template editor double-save fix (redirect to edit after create, UAT 9) + single Save Template / single Generate LP CTA + catalog search-bar spacing (UAT 2/9)
 - [x] 05-06-PLAN.md — LP form/render gaps: composite repeater keys (UAT 10) + ImageUploadField edit hydration (UAT 12) + template picker single-control (UAT 10) + <main>/dashboard padding (UAT 1) + review committed inline LpForm/renderer fixes (UAT 10/11)
 
+### Phase 6: Project-Template Ingestion + Type Coexistence
+**Goal**: Permitir cadastrar um projeto Lovable como template do tipo VITE_SPA via upload do `dist/` pré-buildado, validado, escaneado e isolado por workspace, coexistindo com os templates LIQUID no catálogo — sem ainda servir/pré-visualizar.
+**Mode:** mvp
+**Depends on**: Phase 5 (catálogo/pastas/tags), Phase 2 (tenancy + storage S3)
+**Requirements**: PRJ-01, PRJ-02, PRJ-03, PRJ-11
+**Decisions in play**: D1-A (dist pré-buildado), D3 (kind discriminator), D6 (scan de segredos)
+**Success Criteria** (what must be TRUE):
+  1. `Template` e `LandingPage` ganham o discriminador `kind` (LIQUID|VITE_SPA) via migração **aditiva** e RLS-aware; todas as linhas LIQUID existentes continuam funcionando sem alteração de código de leitura.
+  2. O usuário faz upload do ZIP de um `dist/` pré-buildado; a validação server-side **rejeita** ZIP sem `index.html`, com entradas de path traversal (`../`), ou acima do limite de tamanho — com mensagem clara.
+  3. O upload é escaneado por credenciais embutidas (JWT Supabase, `sk_live_`, chaves AWS) e por meta/scripts Lovable (`*.lovable.app`); achados são **avisados** ao usuário antes de concluir (D6).
+  4. O `dist/` é armazenado sob prefixo S3 tenant-scoped não-enumerável (`workspaces/{wId}/project-templates/{templateId}/dist/`); o catálogo, pastas e tags operam para ambos os kinds, com um **badge de tipo** distinguindo VITE_SPA de LIQUID.
+  5. Separação estrita de tipo (V2-11): passar um template VITE_SPA ao caminho de render LIQUID (ou vice-versa) **falha explicitamente** — coberto por teste de fronteira.
+**Plans**: TBD (via /gsd-plan-phase)
+
+### Phase 7: Isolated Serving + Sandboxed Preview
+**Goal**: Servir e pré-visualizar o `dist/` de projetos a partir de uma **origem isolada** do dashboard, com sandbox de iframe e isolamento cross-tenant — a decisão de origem que não pode ser refeita depois.
+**Mode:** mvp
+**Depends on**: Phase 6
+**Requirements**: PRJ-04, PRJ-05, PRJ-06
+**Decisions in play**: D4 (origem isolada + iframe sandbox) — **não-retrofitável**
+**Success Criteria** (what must be TRUE):
+  1. O `dist/` do tenant é servido a partir de uma **origem separada** do dashboard (subdomínio/host dedicado, na raiz da origem para `base:'/'` funcionar), nunca compartilhando os cookies de sessão do PageForge.
+  2. O preview embute o `dist/` via `<iframe>` cross-origin com `sandbox="allow-scripts"` (**sem** `allow-same-origin`) e CSP `frame-ancestors` restrita ao dashboard.
+  3. Verificado por teste: dentro do iframe de preview, `document.cookie` **não** expõe o cookie de sessão do PageForge.
+  4. As chaves/URLs de serving são não-enumeráveis e escopadas por workspace; um usuário do workspace A **não** acessa o `dist/` do workspace B — teste cross-tenant retorna 403/404.
+  5. O SPA carrega na origem isolada com assets de base relativa resolvidos e **fallback de roteamento** configurado (qualquer rota → `index.html`), sem 404 de asset ou de rota.
+**Plans**: TBD (via /gsd-plan-phase)
+
+### Phase 8: LP Generation, Brand Theming, Export & v2.0 Acceptance
+**Goal**: Gerar LPs a partir de templates VITE_SPA (seleção de rota de entrada + tema de marca via CSS vars), exportá-las como ZIP do `dist/`, e provar o fluxo completo com o projeto `renova-turismo` coexistindo com o template Liquid Grécia.
+**Mode:** mvp
+**Depends on**: Phase 7
+**Requirements**: PRJ-07, PRJ-08, PRJ-09, PRJ-10, PRJ-12
+**Decisions in play**: D2 (opaco + brand CSS vars), D3 (rota = LP)
+**Success Criteria** (what must be TRUE):
+  1. Gerar LP de um template VITE_SPA cria uma `LandingPage` `kind=VITE_SPA` apontando para o `dist/`, com a **rota de entrada** escolhida quando o projeto é multi-rota — **sem etapa de build**.
+  2. Injeção de **brand CSS vars**: as variáveis de marca do workspace (`--primary`, etc.) são aplicadas via `<style>` prepended no serve/preview/export (a editabilidade "grátis"), sem rebuild.
+  3. O export gera um ZIP da árvore `dist/` (branch por `kind` na rota de export existente); a CSP estrita `script-src 'none'` do export LIQUID **não** é aplicada ao VITE_SPA (tem runtime JS próprio).
+  4. O usuário pode reabrir/editar (rota, tema) e **duplicar** uma LP VITE_SPA; catálogo/pastas/tags permanecem inalterados para ambos os kinds.
+  5. **Aceitação v2.0**: o `dist/` do `renova-turismo` é cadastrado, LP gerada por rota, pré-visualizada em origem isolada, tematizada por marca e exportada — tudo **coexistindo** com o template Liquid Grécia (caminho v1 intacto e verificado).
+**Plans**: TBD (via /gsd-plan-phase)
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
+v1.0 (Fases 1-5) concluído. v2.0 (Fases 6-8) é o milestone ativo.
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -166,3 +217,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 3. Template Authoring + Brand Config | 4/4 | Complete   | 2026-06-08 |
 | 4. LP Generation, Assets, Preview & Export | 4/4 | Complete   | 2026-06-17 |
 | 5. Catalog & Grécia Acceptance | 6/6 | Complete   | 2026-06-17 |
+| 6. Project-Template Ingestion + Type Coexistence | 0/? | Not started | — |
+| 7. Isolated Serving + Sandboxed Preview | 0/? | Not started | — |
+| 8. LP Generation, Brand Theming, Export & v2.0 Acceptance | 0/? | Not started | — |

@@ -696,8 +696,9 @@ export async function createProjectTemplateAction(
   // Persist Template record with kind='VITE_SPA'
   await withTenantDb({ workspaceId: ctx.workspaceId }, async (db) => {
     await db.template.create({
+      id: templateId,      // explicit — DB row id MUST equal the S3 key prefix templateId (Phase 7 serving lookup)
       // kind defaults to 'LIQUID' in the DB; must pass 'VITE_SPA' explicitly
-      // After TenantTemplateHelpers.create() is extended with kind?:
+      // After TenantTemplateHelpers.create() is extended with kind?: and id?:
       kind: "VITE_SPA",
       name: parsed.data.name,
       markup: "",          // VITE_SPA has no markup; empty string satisfies NOT NULL
@@ -768,7 +769,7 @@ describe("type boundary (V2-11)", () => {
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **ZIP size limits**
    - What we know: no current defined limit for this phase; Phase 4 image limit is 5 MB.
