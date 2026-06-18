@@ -4,8 +4,8 @@ milestone: v2.0
 milestone_name: Suporte a LPs do Lovable
 status: executing
 stopped_at: Phase 5 context gathered
-last_updated: "2026-06-18T18:34:01.051Z"
-last_activity: 2026-06-18 -- Phase 6 planning complete
+last_updated: "2026-06-18T18:38:42.687Z"
+last_activity: 2026-06-18 -- Phase 06 execution started
 progress:
   total_phases: 8
   completed_phases: 5
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-01)
 
 **Core value:** A partir de um template cadastrado uma vez, um usuário gera uma nova landing page completa e fiel ao layout apenas preenchendo um formulário — sem tocar em código.
-**Current focus:** Phase 05 — catalog-grecia-acceptance
+**Current focus:** Phase 06 — project-template-ingestion-type-coexistence
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Ready to execute
-Last activity: 2026-06-18 -- Phase 6 planning complete
+Phase: 06 (project-template-ingestion-type-coexistence) — EXECUTING
+Plan: 1 of 2
+Status: Executing Phase 06
+Last activity: 2026-06-18 -- Phase 06 execution started
 
 ## Performance Metrics
 
