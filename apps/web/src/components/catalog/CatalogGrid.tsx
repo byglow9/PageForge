@@ -139,9 +139,9 @@ export function CatalogGrid({
     !isWorkspaceEmpty && hasActiveFilter && filteredLps.length === 0;
 
   return (
-    <div className="flex flex-row flex-1 min-h-0">
+    <div className="mt-4 flex flex-row gap-4 flex-1 min-h-0">
       {/* Left panel: FolderTree */}
-      <div className="w-60 shrink-0 border-r border-gray-200 py-4 px-2">
+      <div className="w-60 shrink-0 rounded-lg border border-gray-200 bg-white/70 shadow-sm backdrop-blur-sm py-4 px-2 overflow-auto">
         <FolderTree
           folders={folders}
           selectedFolderId={selectedFolderId}
@@ -152,7 +152,7 @@ export function CatalogGrid({
       </div>
 
       {/* Right panel: Breadcrumb + SearchBar + FilterBar + LP grid */}
-      <div className="flex-1 px-6 py-0 min-w-0">
+      <div className="@container flex-1 min-w-0 px-2 py-0">
         {/* Breadcrumb — explorer-style path to the current folder */}
         <nav
           aria-label="Folder path"
@@ -226,7 +226,7 @@ export function CatalogGrid({
           </div>
         ) : (
           /* Folder cards (subfolders of current location) + LP card grid */
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
+          <div className="grid grid-cols-1 @[30rem]:grid-cols-2 @[46rem]:grid-cols-3 @[62rem]:grid-cols-4 gap-6 pt-2">
             {showFolderCards &&
               childFolders.map((folder) => (
                 <button

@@ -93,8 +93,8 @@ function FolderNode({
         className={[
           "group relative flex items-center h-8 gap-1 rounded-md pr-1 cursor-pointer",
           isSelected
-            ? "bg-white font-semibold text-gray-900"
-            : "text-gray-700 hover:bg-white/60",
+            ? "bg-white shadow-sm ring-1 ring-gray-200 font-semibold text-gray-900"
+            : "text-gray-700 hover:bg-white/80",
         ].join(" ")}
         style={{ paddingLeft: `${paddingLeft}px` }}
       >
@@ -240,7 +240,7 @@ export function FolderTree({
           onClick={() =>
             openDialog({ type: "create", folder: null, parentId: null })
           }
-          className="flex items-center gap-1.5 h-8 px-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-white/60 rounded-md transition-colors"
+          className="flex items-center gap-1.5 h-8 px-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-white/80 rounded-md transition-colors"
         >
           <Plus className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
           New folder
@@ -254,8 +254,8 @@ export function FolderTree({
         className={[
           "flex items-center h-8 px-2 text-sm rounded-md transition-colors w-full text-left",
           selectedFolderId === null
-            ? "bg-white font-semibold text-gray-900"
-            : "text-gray-700 hover:bg-white/60",
+            ? "bg-white shadow-sm ring-1 ring-gray-200 font-semibold text-gray-900"
+            : "text-gray-700 hover:bg-white/80",
         ].join(" ")}
       >
         All LPs

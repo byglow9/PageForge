@@ -70,7 +70,7 @@ export default function LoginPage() {
 
   if (formState.status === "verification_required") {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-background px-4">
+      <main className="pageforge-grid-bg flex min-h-screen items-center justify-center px-4">
         <Card className="w-full max-w-sm">
           <CardHeader>
             <CardTitle>Verify your email first</CardTitle>
@@ -101,7 +101,7 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-background px-4">
+    <main className="pageforge-grid-bg flex min-h-screen items-center justify-center px-4">
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>Log in to PageForge</CardTitle>

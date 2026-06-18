@@ -64,23 +64,18 @@ export default async function MembersPage({
     redirect(`/w/${slug}/members`);
   }
 
-  // Fetch all workspace members with their user info
-  const members = await prisma.workspaceMember.findMany({
-    where: { workspaceId: ctx.workspaceId },
+  // Fetch all workspace members from the AUTHORITATIVE better-auth `member`
+  // table. The app-level `workspace_member` mirror is RLS-forced and is not
+  // populated for reads here, so querying it (without a workspace RLS context)
+  // returns zero rows. Per WR-03, membership display/authz must read the
+  // authoritative member, not the mirror.
+  const members = await prisma.member.findMany({
+    where: { organizationId: ctx.workspaceId },
     include: {
-      workspace: false,
+      user: { select: { id: true, name: true, email: true } },
     },
     orderBy: { createdAt: "asc" },
   });
-
-  // Fetch user display info for each member
-  const userIds = members.map((m) => m.userId);
-  const users = await prisma.user.findMany({
-    where: { id: { in: userIds } },
-    select: { id: true, name: true, email: true },
-  });
-
-  const userMap = new Map(users.map((u) => [u.id, u]));
 
   // Fetch pending invitations
   const invitations = await prisma.workspaceInvitation.findMany({
@@ -211,12 +206,11 @@ export default async function MembersPage({
             </thead>
             <tbody className="divide-y divide-border">
               {members.map((member) => {
-                const user = userMap.get(member.userId);
                 const isCurrentUser = member.userId === ctx.userId;
                 return (
                   <tr key={member.id} className="hover:bg-muted/30 transition-colors">
-                    <td className="px-4 py-2 font-medium">{user?.name ?? "(unknown)"}</td>
-                    <td className="px-4 py-2 text-muted-foreground">{user?.email ?? "(unknown)"}</td>
+                    <td className="px-4 py-2 font-medium">{member.user.name || "(unnamed)"}</td>
+                    <td className="px-4 py-2 text-muted-foreground">{member.user.email}</td>
                     <td className="px-4 py-2">
                       <Badge variant="outline">{member.role}</Badge>
                     </td>

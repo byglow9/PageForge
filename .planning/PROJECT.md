@@ -45,6 +45,23 @@ A partir de um template cadastrado uma vez, um usuário gera uma nova landing pa
 - [ ] Catálogo de LPs com pastas e categorias para organização
 - [ ] Template de referência inicial ("Grécia" — LP de turismo) cadastrável de ponta a ponta com seus blocos repetíveis
 
+### Active — v2.0 (templates de projeto Lovable/Vite)
+
+<!-- Hipóteses do milestone v2.0. Escopo travado pelas decisões D1-A/D2/D3/D4/D6 (ver Key Decisions). -->
+
+- [ ] **PRJ-01** Ingestão de template tipo projeto: upload do `dist/` **pré-buildado** (ZIP) de um projeto Lovable/Vite (sem build server-side no v2.0)
+- [ ] **PRJ-02** Validação + scan no upload: estrutura (`index.html`/assets), rejeição de path traversal e tamanho excessivo, aviso de credenciais embutidas e meta Lovable
+- [ ] **PRJ-03** Discriminador `kind` (LIQUID|VITE_SPA) em Template/LandingPage + coexistência no catálogo/pastas/tags com badge de tipo
+- [ ] **PRJ-04** Serving do `dist/` do tenant a partir de **origem isolada** do dashboard (não compartilha cookies de sessão)
+- [ ] **PRJ-05** Preview via `<iframe>` cross-origin com `sandbox="allow-scripts"` (sem `allow-same-origin`) + CSP `frame-ancestors`
+- [ ] **PRJ-06** Isolamento cross-tenant do `dist/` servido/armazenado (chaves não-enumeráveis, escopo por workspace)
+- [ ] **PRJ-07** Geração de LP a partir de template VITE_SPA, com seleção de rota de entrada para projetos multi-rota
+- [ ] **PRJ-08** Injeção de brand CSS vars no serve/preview/export (a "editabilidade grátis": cor/logo via `--primary` etc., sem rebuild)
+- [ ] **PRJ-09** Export como ZIP da árvore `dist/` (branch por `kind`; sem CSP `script-src none` para VITE_SPA)
+- [ ] **PRJ-10** Editar (rota/tema) e duplicar LPs VITE_SPA, reaproveitando catálogo/pastas/tags
+- [ ] **PRJ-11** Separação estrita de tipo: VITE_SPA nunca entra no caminho de render LIQUID e vice-versa
+- [ ] **PRJ-12** Aceitação v2.0: `renova-turismo` cadastrado, LP gerada por rota, prevista em origem isolada, tematizada e exportada — coexistindo com o template Liquid Grécia
+
 ### Out of Scope
 
 <!-- Limites explícitos, com motivo, para evitar re-inclusão. -->
@@ -55,6 +72,10 @@ A partir de um template cadastrado uma vez, um usuário gera uma nova landing pa
 - Repositório global de templates compartilhado entre workspaces — templates são por workspace no v1
 - Builder visual de campos / upload+mapeamento visual — autoria é via markup com tokens no v1
 - A/B testing e analytics das LPs — fora do escopo inicial
+- **(v2.0) Build server-side de projetos Lovable** — v2.0 aceita apenas `dist/` pré-buildado (D1-A); `npm install`/`vite build` em sandbox fica para v2.1, quando houver demanda. Remove toda a superfície de RCE de build do milestone
+- **(v2.0) Editabilidade por formulário de conteúdo Lovable** — conteúdo é hardcoded nos componentes; v2.0 só oferece tema via brand CSS vars (D2). Manifesto/patch/rebuild dependem do build server-side → v2.1
+- **(v2.0) Dependência de backend vivo (Supabase) em runtime** — PageForge só faz snapshot do build estático; LP que depende de backend externo pode quebrar no export (D6, fronteira declarada)
+- **(v2.0) Ingestão por URL de Git** — v2.0 usa upload de ZIP; Git URL (OAuth/clone) fica para v2.x
 
 ## Context
 
@@ -83,6 +104,11 @@ A partir de um template cadastrado uma vez, um usuário gera uma nova landing pa
 | Hospedagem só export/download no v1 | Simplifica muito a operação; URL hospedada fica para depois | — Pending |
 | Validações mínimas no v1 | Reduz escopo inicial; regras avançadas podem vir depois | — Pending |
 | Catálogo com pastas só de organização | Permissões ficam no workspace; menos complexidade | — Pending |
+| **(v2.0 / D1) Aceitar `dist/` pré-buildado, sem build server-side** | Elimina toda a superfície de RCE de build (npm/vite) — a parte mais arriscada da v2.0; entrega valor já | ✅ Decidido 2026-06-18 |
+| **(v2.0 / D2) Editabilidade só por brand CSS vars (template opaco)** | Form-driven editing depende de build server-side; manter v2.0 enxuto. Lovable já usa `hsl(var(--primary))` → troca de cor quase grátis | ✅ Decidido 2026-06-18 |
+| **(v2.0 / D3) 1 projeto = 1 template; cada rota = 1 LP** | Único modelo que respeita o projeto Lovable real (SPA multi-rota); reaproveita o catálogo | ✅ Decidido 2026-06-18 |
+| **(v2.0 / D4) Servir `dist/` em origem isolada + iframe sandbox** | Impede roubo de cookie de sessão do dashboard (PITFALLS V2-4); decisão não-retrofitável | ✅ Decidido 2026-06-18 |
+| **(v2.0 / D6) Strip/scan de segredos + fronteira de backend declarada** | `.env` Lovable tem credenciais vivas; snapshot estático não substitui backend Supabase | ✅ Decidido 2026-06-18 |
 
 ## Evolution
 
@@ -102,4 +128,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-17 — Milestone v2.0 (Suporte a LPs do Lovable) iniciado*
+*Last updated: 2026-06-18 — Milestone v2.0: decisões D1-A/D2/D3/D4/D6 travadas + requisitos PRJ-01..12 + roadmap (Fases 6-8)*

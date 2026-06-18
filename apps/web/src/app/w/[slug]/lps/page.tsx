@@ -55,8 +55,8 @@ export default async function LpsPage({ params }: LpsPageProps) {
   return (
     <div className="px-8 py-6 flex flex-col h-full">
       {/* Page header */}
-      <div className="flex items-center justify-between pb-6 border-b border-gray-200 shrink-0">
-        <h1 className="text-2xl font-semibold text-gray-900">Landing Pages</h1>
+      <div className="flex items-center justify-between shrink-0 rounded-lg border border-gray-200 bg-white/85 px-5 py-4 shadow-sm backdrop-blur-sm">
+        <h1 className="font-display text-2xl font-semibold tracking-tight text-gray-900">Landing Pages</h1>
         {canCreate && (
           <Link
             href={`/w/${slug}/lps/new`}

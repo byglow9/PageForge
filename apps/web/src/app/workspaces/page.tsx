@@ -22,6 +22,7 @@ export default async function WorkspacesPage() {
   if (workspaces.length === 0) {
     return (
       <div
+        className="pageforge-grid-bg"
         style={{
           minHeight: "100vh",
           display: "flex",
@@ -43,7 +44,18 @@ export default async function WorkspacesPage() {
           {user.name || user.email}
         </span>
         <LogoutButton />
-        <div style={{ width: "100%", maxWidth: "480px", textAlign: "center" }}>
+        <div
+          style={{
+            width: "100%",
+            maxWidth: "480px",
+            border: "1px solid #e5e7eb",
+            borderRadius: "8px",
+            background: "rgba(255, 255, 255, 0.82)",
+            boxShadow: "0 10px 30px rgba(17, 24, 39, 0.07)",
+            padding: "1.5rem",
+            textAlign: "center",
+          }}
+        >
           <h1 style={{ fontSize: "1.5rem", fontWeight: "bold", marginBottom: "0.5rem" }}>
             No workspaces yet
           </h1>
@@ -72,6 +84,7 @@ export default async function WorkspacesPage() {
 
   return (
     <div
+      className="pageforge-grid-bg"
       style={{
         minHeight: "100vh",
         display: "flex",
@@ -93,7 +106,17 @@ export default async function WorkspacesPage() {
         {user.name || user.email}
       </span>
       <LogoutButton />
-      <div style={{ width: "100%", maxWidth: "480px" }}>
+      <div
+        style={{
+          width: "100%",
+          maxWidth: "480px",
+          border: "1px solid #e5e7eb",
+          borderRadius: "8px",
+          background: "rgba(255, 255, 255, 0.82)",
+          boxShadow: "0 10px 30px rgba(17, 24, 39, 0.07)",
+          padding: "1.5rem",
+        }}
+      >
         <h1 style={{ fontSize: "1.5rem", fontWeight: "bold", marginBottom: "1.5rem" }}>
           Your workspaces
         </h1>

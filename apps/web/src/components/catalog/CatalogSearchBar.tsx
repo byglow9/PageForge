@@ -31,7 +31,7 @@ export function CatalogSearchBar({ value, onChange }: CatalogSearchBarProps) {
         onChange={(e) => onChange(e.target.value)}
         placeholder="Search landing pages…"
         aria-label="Search landing pages"
-        className="pl-8 w-full text-sm"
+        className="pl-8 w-full text-sm bg-white/80 backdrop-blur-sm"
       />
     </div>
   );

@@ -51,7 +51,7 @@ export default async function InvitationPage({
 
   if (!invitation) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-background px-4">
+      <main className="pageforge-grid-bg flex min-h-screen items-center justify-center px-4">
         <Card className="w-full max-w-sm">
           <CardHeader>
             <CardTitle>Invitation not found</CardTitle>
@@ -74,7 +74,7 @@ export default async function InvitationPage({
 
   if (invitation.status === "revoked") {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-background px-4">
+      <main className="pageforge-grid-bg flex min-h-screen items-center justify-center px-4">
         <Card className="w-full max-w-sm">
           <CardHeader>
             <CardTitle>Invitation revoked</CardTitle>
@@ -97,7 +97,7 @@ export default async function InvitationPage({
 
   if (invitation.status === "accepted") {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-background px-4">
+      <main className="pageforge-grid-bg flex min-h-screen items-center justify-center px-4">
         <Card className="w-full max-w-sm">
           <CardHeader>
             <CardTitle>Invitation already accepted</CardTitle>
@@ -120,7 +120,7 @@ export default async function InvitationPage({
 
   if (isInvitationExpired(invitation)) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-background px-4">
+      <main className="pageforge-grid-bg flex min-h-screen items-center justify-center px-4">
         <Card className="w-full max-w-sm">
           <CardHeader>
             <CardTitle>Invitation expired</CardTitle>
@@ -148,7 +148,7 @@ export default async function InvitationPage({
   // Case 1: Not signed in → redirect to login/signup with invitation ID preserved (D-07)
   if (!session?.user) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-background px-4">
+      <main className="pageforge-grid-bg flex min-h-screen items-center justify-center px-4">
         <Card className="w-full max-w-sm">
           <CardHeader>
             <CardTitle>You have been invited</CardTitle>
@@ -193,7 +193,7 @@ export default async function InvitationPage({
   // Case 2: Signed in but email not verified → redirect to verify-email (T-02-03-01)
   if (!session.user.emailVerified) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-background px-4">
+      <main className="pageforge-grid-bg flex min-h-screen items-center justify-center px-4">
         <Card className="w-full max-w-sm">
           <CardHeader>
             <CardTitle>Email verification required</CardTitle>
@@ -221,7 +221,7 @@ export default async function InvitationPage({
   // allowing the returned {ok:false, error} to be surfaced in the UI (UAT Test 7).
   // invitationId flows from server-rendered await params — never from client input (T-02-07-01).
   return (
-    <main className="flex min-h-screen items-center justify-center bg-background px-4">
+    <main className="pageforge-grid-bg flex min-h-screen items-center justify-center px-4">
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>Workspace invitation</CardTitle>

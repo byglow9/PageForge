@@ -25,6 +25,8 @@
   --radius-md: 0.375rem;
   --radius-lg: 0.5rem;
   --radius-xl: 0.75rem;
+
+  --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
 }
 
 @layer base {
@@ -32,7 +34,27 @@
     border-color: var(--color-border);
   }
   body {
-    background-color: var(--color-background);
+    background-color: #f8fafc;
+    background-image:
+      /* linhas finas da grade */
+      linear-gradient(90deg, rgba(21, 21, 21, 0.045) 1px, transparent 1px),
+      linear-gradient(180deg, rgba(21, 21, 21, 0.045) 1px, transparent 1px),
+      /* sombra suave para dentro de cada quadrado (vinheta por célula) */
+      radial-gradient(ellipse at center, transparent 80%, rgba(21, 21, 21, 0.05) 100%);
+    background-size: 72px 72px;
     color: var(--color-foreground);
+  }
+}
+
+@layer utilities {
+  .pageforge-grid-bg {
+    background-color: #f8fafc;
+    background-image:
+      /* linhas finas da grade */
+      linear-gradient(90deg, rgba(21, 21, 21, 0.045) 1px, transparent 1px),
+      linear-gradient(180deg, rgba(21, 21, 21, 0.045) 1px, transparent 1px),
+      /* sombra suave para dentro de cada quadrado (vinheta por célula) */
+      radial-gradient(ellipse at center, transparent 80%, rgba(21, 21, 21, 0.05) 100%);
+    background-size: 72px 72px;
   }
 }

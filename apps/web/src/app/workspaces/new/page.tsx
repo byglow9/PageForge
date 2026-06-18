@@ -62,6 +62,7 @@ export default function NewWorkspacePage() {
 
   return (
     <div
+      className="pageforge-grid-bg"
       style={{
         minHeight: "100vh",
         display: "flex",

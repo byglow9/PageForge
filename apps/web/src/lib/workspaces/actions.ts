@@ -271,11 +271,12 @@ export async function changeMemberRoleAction(
     };
   }
 
-  // Look up the target member — must belong to this workspace
-  const targetMember = await prisma.workspaceMember.findFirst({
+  // Look up the target member in the AUTHORITATIVE better-auth `member` table.
+  // The app-level workspace_member mirror is RLS-forced and unused here.
+  const targetMember = await prisma.member.findFirst({
     where: {
       id: memberId,
-      workspaceId: ctx.workspaceId, // app-level isolation: ensure member is in this workspace
+      organizationId: ctx.workspaceId, // ensure member is in this workspace
     },
   });
 
@@ -285,8 +286,8 @@ export async function changeMemberRoleAction(
 
   // Prevent downgrading the only owner (T-02-03-02)
   if (targetMember.role === "owner") {
-    const ownerCount = await prisma.workspaceMember.count({
-      where: { workspaceId: ctx.workspaceId, role: "owner" },
+    const ownerCount = await prisma.member.count({
+      where: { organizationId: ctx.workspaceId, role: "owner" },
     });
     if (ownerCount <= 1) {
       return {
@@ -297,21 +298,9 @@ export async function changeMemberRoleAction(
   }
 
   try {
-    await prisma.$transaction(async (tx) => {
-      // Update app-level WorkspaceMember
-      await tx.workspaceMember.update({
-        where: { id: memberId },
-        data: { role: roleParsed.data },
-      });
-
-      // Update better-auth Member (keyed by organizationId + userId)
-      await tx.member.updateMany({
-        where: {
-          organizationId: ctx.workspaceId,
-          userId: targetMember.userId,
-        },
-        data: { role: roleParsed.data },
-      });
+    await prisma.member.update({
+      where: { id: memberId },
+      data: { role: roleParsed.data },
     });
 
     return { ok: true, data: undefined };
@@ -343,11 +332,12 @@ export async function removeMemberAction(
   // D-09: only owner/admin can remove members
   const ctx = await requireWorkspaceRole(slug, ["owner", "admin"]);
 
-  // Look up the target member — must belong to this workspace
-  const targetMember = await prisma.workspaceMember.findFirst({
+  // Look up the target member in the AUTHORITATIVE better-auth `member` table.
+  // The app-level workspace_member mirror is RLS-forced and unused here.
+  const targetMember = await prisma.member.findFirst({
     where: {
       id: memberId,
-      workspaceId: ctx.workspaceId, // app-level isolation
+      organizationId: ctx.workspaceId, // ensure member is in this workspace
     },
   });
 
@@ -357,8 +347,8 @@ export async function removeMemberAction(
 
   // Prevent removing the last owner (T-02-03-02)
   if (targetMember.role === "owner") {
-    const ownerCount = await prisma.workspaceMember.count({
-      where: { workspaceId: ctx.workspaceId, role: "owner" },
+    const ownerCount = await prisma.member.count({
+      where: { organizationId: ctx.workspaceId, role: "owner" },
     });
     if (ownerCount <= 1) {
       return {
@@ -369,19 +359,8 @@ export async function removeMemberAction(
   }
 
   try {
-    await prisma.$transaction(async (tx) => {
-      // Remove app-level WorkspaceMember
-      await tx.workspaceMember.delete({
-        where: { id: memberId },
-      });
-
-      // Remove better-auth Member
-      await tx.member.deleteMany({
-        where: {
-          organizationId: ctx.workspaceId,
-          userId: targetMember.userId,
-        },
-      });
+    await prisma.member.delete({
+      where: { id: memberId },
     });
 
     return { ok: true, data: undefined };
