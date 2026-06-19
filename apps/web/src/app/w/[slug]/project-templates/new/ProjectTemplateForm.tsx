@@ -43,13 +43,15 @@ export function ProjectTemplateForm({ slug }: ProjectTemplateFormProps) {
       if (result.ok) {
         setFindings(result.data.findings);
         if (result.data.findings.length > 0) {
+          // Stay on the page so the user can read the findings rendered below
+          // before navigating away (D6: warn before concluding).
           toast.warning(
             `Template created with ${result.data.findings.length} security warning(s). Review the findings below before deploying.`
           );
         } else {
           toast.success("Project template created.");
+          router.push(`/w/${slug}/templates`);
         }
-        router.push(`/w/${slug}/templates`);
       } else {
         if (result.fieldErrors?.name) {
           setNameError(result.fieldErrors.name[0]);
@@ -117,6 +119,13 @@ export function ProjectTemplateForm({ slug }: ProjectTemplateFormProps) {
               </li>
             ))}
           </ul>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.push(`/w/${slug}/templates`)}
+          >
+            I&apos;ve reviewed these — continue to templates
+          </Button>
         </section>
       )}
     </div>
