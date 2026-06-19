@@ -12,6 +12,9 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      // Resolve pageforge-engine from the monorepo root (worktree-safe path)
+      // In the main repo, this is a symlink; in a worktree it must be resolved explicitly.
+      "pageforge-engine": path.resolve(__dirname, "../../src/engine/index.ts"),
     },
   },
 });
