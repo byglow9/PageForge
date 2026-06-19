@@ -200,7 +200,7 @@ Plans:
 - [x] 07-01-PLAN.md — Serve libs: lib/serve/token.ts (HMAC-SHA256 mint/verify + createTokenUtils factory) + lib/serve/serve-vite-spa.ts (assertViteSpaKind D-08 + resolveServePath SPA fallback + getContentType MIME helper)
 
 **Wave 2** *(parallel — both blocked on Wave 1 completion)*
-- [ ] 07-02-PLAN.md — Isolated serving: proxy.ts (host detection *.serve.* → rewrite) + app/serve/[tplId]/[[...path]]/route.ts (token validation + S3 stream + SPA fallback + security headers)
+- [x] 07-02-PLAN.md — Isolated serving: proxy.ts (host detection *.serve.* → rewrite) + app/serve/[tplId]/[[...path]]/route.ts (token validation + S3 stream + SPA fallback + security headers)
 - [ ] 07-03-PLAN.md — Preview page + isolation tests: /w/[slug]/project-templates/[id]/preview/page.tsx (sandboxed iframe, mintServeToken server-side) + type-boundary.test.ts extension (assertViteSpaKind D-08) + SC3 human-verify checkpoint
 
 ### Phase 8: LP Generation, Brand Theming, Export & v2.0 Acceptance
