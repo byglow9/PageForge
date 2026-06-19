@@ -64,7 +64,8 @@ export async function validateAndExtractZip(
       }
 
       const entries: ZipEntry[] = [];
-      let totalUncompressed = 0;
+      let totalUncompressed = 0; // sum of central-directory-declared sizes
+      let actualUncompressed = 0; // sum of bytes actually inflated (WR-06)
       let hasIndexHtml = false;
 
       zipfile.readEntry();
@@ -117,7 +118,22 @@ export async function validateAndExtractZip(
           }
 
           const chunks: Buffer[] = [];
-          readStream.on("data", (chunk: Buffer) => chunks.push(chunk));
+          readStream.on("data", (chunk: Buffer) => {
+            // T-06-06 defense-in-depth (WR-05/WR-06): enforce the cap against the
+            // ACTUAL decompressed bytes, not just the central-directory-declared
+            // size. A malformed entry that under-declares uncompressedSize would
+            // otherwise be buffered fully into memory before any mismatch shows.
+            actualUncompressed += chunk.length;
+            if (actualUncompressed > MAX_UNCOMPRESSED_BYTES) {
+              readStream.destroy();
+              zipfile.close();
+              return resolve({
+                ok: false,
+                error: `ZIP total uncompressed size exceeds the ${MAX_UNCOMPRESSED_MB} MB limit.`,
+              });
+            }
+            chunks.push(chunk);
+          });
           readStream.on("end", () => {
             entries.push({ fileName: normalizedFileName, buffer: Buffer.concat(chunks) });
             zipfile.readEntry();
