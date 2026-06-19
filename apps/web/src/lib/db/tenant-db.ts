@@ -146,6 +146,7 @@ export interface TenantLpHelpers {
     markupSnapshot: string;
     schemaVersion: number;
     values: Prisma.InputJsonValue;
+    kind?: string;
   }) => Promise<LandingPage>;
   /** Find a landing page by ID. Returns null if the row does not exist OR belongs to a different workspace. */
   findById: (id: string) => Promise<LandingPage | null>;
