@@ -25,11 +25,25 @@ export interface ZipValidationResult {
   entries?: ZipEntry[];
 }
 
-// Size limits are env-var-backed so they can be tuned in production
-const MAX_COMPRESSED_BYTES =
-  parseInt(process.env.PROJECT_TEMPLATE_MAX_ZIP_MB ?? "50") * 1024 * 1024;
-const MAX_UNCOMPRESSED_BYTES =
-  parseInt(process.env.PROJECT_TEMPLATE_MAX_UNCOMPRESSED_MB ?? "200") * 1024 * 1024;
+// Size limits are env-var-backed so they can be tuned in production.
+// Fail-closed: a non-numeric / non-positive env value falls back to the default
+// instead of yielding NaN (every `> NaN` comparison is false, which would
+// silently disable the size and zip-bomb caps this module exists to enforce).
+function parseMb(value: string | undefined, fallbackMb: number): number {
+  const n = Number(value);
+  const mb = Number.isFinite(n) && n > 0 ? n : fallbackMb;
+  return mb * 1024 * 1024;
+}
+
+const MAX_ZIP_MB = Number.isFinite(Number(process.env.PROJECT_TEMPLATE_MAX_ZIP_MB)) &&
+  Number(process.env.PROJECT_TEMPLATE_MAX_ZIP_MB) > 0
+  ? Number(process.env.PROJECT_TEMPLATE_MAX_ZIP_MB)
+  : 50;
+const MAX_COMPRESSED_BYTES = parseMb(process.env.PROJECT_TEMPLATE_MAX_ZIP_MB, 50);
+const MAX_UNCOMPRESSED_BYTES = parseMb(
+  process.env.PROJECT_TEMPLATE_MAX_UNCOMPRESSED_MB,
+  200
+);
 
 export async function validateAndExtractZip(
   zipBuffer: Buffer
@@ -38,7 +52,7 @@ export async function validateAndExtractZip(
   if (zipBuffer.length > MAX_COMPRESSED_BYTES) {
     return {
       ok: false,
-      error: `ZIP file exceeds the ${parseInt(process.env.PROJECT_TEMPLATE_MAX_ZIP_MB ?? "50")} MB compressed size limit.`,
+      error: `ZIP file exceeds the ${MAX_ZIP_MB} MB compressed size limit.`,
     };
   }
 
