@@ -44,6 +44,7 @@ const MAX_UNCOMPRESSED_BYTES = parseMb(
   process.env.PROJECT_TEMPLATE_MAX_UNCOMPRESSED_MB,
   200
 );
+const MAX_UNCOMPRESSED_MB = MAX_UNCOMPRESSED_BYTES / (1024 * 1024);
 
 export async function validateAndExtractZip(
   zipBuffer: Buffer
@@ -99,7 +100,7 @@ export async function validateAndExtractZip(
           zipfile.close();
           return resolve({
             ok: false,
-            error: "ZIP total uncompressed size exceeds the 200 MB limit.",
+            error: `ZIP total uncompressed size exceeds the ${MAX_UNCOMPRESSED_MB} MB limit.`,
           });
         }
 
