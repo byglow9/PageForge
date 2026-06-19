@@ -173,6 +173,16 @@ export async function generateLpAction(
         return { ok: false, error: "Template not found in this workspace." };
       }
 
+      // VITE_SPA templates are not a valid source for the LiquidJS generate flow.
+      // Reject up front with a clear message instead of letting the type-boundary
+      // guard in renderLp() throw and surface as a generic 500 (WR-03).
+      if ((template.kind ?? "LIQUID") === "VITE_SPA") {
+        return {
+          ok: false,
+          error: "This template type cannot generate LiquidJS landing pages.",
+        };
+      }
+
       // Step 4: Snapshot markup + schemaVersion (D-06)
       const markupSnapshot = template.markup;
       const schemaVersion = template.schemaVersion;
@@ -197,6 +207,7 @@ export async function generateLpAction(
         markupSnapshot,
         schemaVersion,
         values: values as object, // store original values (with image objects for Plan 03)
+        kind: template.kind ?? "LIQUID", // propagate source template kind (WR-04)
       });
 
       // Step 8: Bulk-create LpAsset records (best-effort — T-04-02-02)
@@ -565,7 +576,15 @@ export async function validateUploadedImageAction(
   slug: string,
   input: { key: string }
 ): Promise<ActionResult<{ width: number; height: number }>> {
-  await requireWorkspaceRole(slug, ["owner", "admin", "editor"]);
+  const ctx = await requireWorkspaceRole(slug, ["owner", "admin", "editor"]);
+
+  // CR-01: never act on a client-supplied S3 key without verifying it belongs to
+  // the caller's workspace. Without this guard an editor in workspace A could pass
+  // any other tenant's key and force its deletion (cross-tenant delete/DoS).
+  const expectedPrefix = `workspaces/${ctx.workspaceId}/lps/assets/`;
+  if (!input.key.startsWith(expectedPrefix)) {
+    return { ok: false, error: "Invalid object key." };
+  }
 
   try {
     // Ranged GET — only fetch the image header bytes (first 64 KB)
