@@ -183,6 +183,7 @@ export interface LpCatalogCardProps {
     createdAt: Date;
     updatedAt: Date;
     folderId: string | null;
+    kind: string;
   };
   folders: FolderModel[];
   tags: TagModel[];
@@ -275,12 +276,18 @@ export function LpCatalogCard({ lp, folders, tags, workspaceTags, slug }: LpCata
         <CardContent>
           <p className="text-sm text-gray-500">{formattedDate}</p>
 
-          {/* Folder badge + tag chips */}
+          {/* Folder badge + kind badge + tag chips */}
           <div className="flex flex-wrap items-center gap-1 mt-2">
             {/* Folder badge — only shown when LP is in a folder */}
             {folderName && (
               <Badge variant="secondary" className="text-xs">
                 {folderName}
+              </Badge>
+            )}
+            {/* Kind badge — only shown for VITE_SPA LPs (D3 discriminator) */}
+            {lp.kind === "VITE_SPA" && (
+              <Badge variant="outline" className="text-xs shrink-0">
+                Vite SPA
               </Badge>
             )}
             {/* Tag chips — up to 3 visible */}

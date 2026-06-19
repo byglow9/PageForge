@@ -75,10 +75,12 @@ export interface TenantProbeHelpers {
 export interface TenantTemplateHelpers {
   /** Create a template scoped to the current workspace. */
   create: (data: {
+    id?: string;
     name: string;
     markup: string;
     schema: Prisma.InputJsonValue;
     metadataOverlay: Prisma.InputJsonValue;
+    kind?: string;
   }) => Promise<Template>;
   /** Find a template by ID. Returns null if the row does not exist OR belongs to a different workspace. */
   findById: (id: string) => Promise<Template | null>;

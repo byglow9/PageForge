@@ -21,6 +21,7 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DeleteTemplateDialog } from "./DeleteTemplateDialog";
 
@@ -30,6 +31,7 @@ export interface TemplateCardProps {
     name: string;
     schemaVersion: number;
     schema: unknown;
+    kind: string;
   };
   slug: string;
 }
@@ -68,9 +70,17 @@ export function TemplateCard({ template, slug }: TemplateCardProps) {
             <span className="truncate text-base font-semibold text-gray-900">
               {template.name}
             </span>
-            <span className="shrink-0 text-sm text-gray-400 font-normal">
-              v{template.schemaVersion}
-            </span>
+            <div className="flex items-center gap-1.5 shrink-0">
+              {/* Kind badge — only shown for VITE_SPA templates (D3 discriminator) */}
+              {template.kind === "VITE_SPA" && (
+                <Badge variant="outline" className="text-xs">
+                  Vite SPA
+                </Badge>
+              )}
+              <span className="text-sm text-gray-400 font-normal">
+                v{template.schemaVersion}
+              </span>
+            </div>
           </CardTitle>
         </CardHeader>
         <CardContent>

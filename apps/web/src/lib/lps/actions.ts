@@ -390,6 +390,7 @@ export async function listLpsAction(
       templateId: string | null;
       schemaVersion: number;
       folderId: string | null;
+      kind: string;
       createdAt: Date;
       updatedAt: Date;
     }>
@@ -409,6 +410,7 @@ export async function listLpsAction(
           templateId: lp.templateId,
           schemaVersion: lp.schemaVersion,
           folderId: lp.folderId,
+          kind: lp.kind,
           createdAt: lp.createdAt,
           updatedAt: lp.updatedAt,
         })),
