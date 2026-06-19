@@ -604,22 +604,25 @@ describe('type boundary (V2-11) — serve path', () => {
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Token para assets (após index.html)**
    - What we know: O token no query-string não acompanha requests de assets do SPA automaticamente
    - What's unclear: MVP — sem token para assets (confiar na não-enumerabilidade do UUID do prefixo S3) ou cookie de sessão de serving (mais seguro, requer HTTPS/Secure)?
    - Recommendation: MVP sem token para assets — a chave S3 é o segredo implícito para requests de assets; token obrigatório apenas para `index.html`. Documentar como limitação e planejar cookie-based para pós-MVP quando HTTPS estiver configurado.
+   - RESOLVED: MVP tradeoff adopted — token required only for `index.html`; subsequent asset requests authorized by the non-enumerable `tplId` UUID in the S3 key path. Documented as a known limitation in Plan 07-02 objective. — see Plan 07-02.
 
 2. **`SERVE_TOKEN_SECRET` em ambiente de teste**
    - What we know: A variável env `SERVE_TOKEN_SECRET` precisa existir para `verifyServeToken()` não lançar
    - What's unclear: Como configurar em Vitest para os testes de fronteira do token
    - Recommendation: Exportar um `createTokenUtils(secret: string)` em `token.ts` que recebe o secret como parâmetro — testável sem `process.env`. A versão de produção usa `process.env.SERVE_TOKEN_SECRET!`.
+   - RESOLVED: `createTokenUtils(secret)` factory pattern implemented in `token.ts` — tests pass a known secret directly without any `process.env` dependency. — see Plan 07-01.
 
 3. **Env var `SERVE_DOMAIN` em produção**
    - What we know: Em dev, o serving origin é `http://{id}.serve.localhost:{PORT}`; em produção é `https://{id}.serve.{SERVE_DOMAIN}`
    - What's unclear: O domínio de produção não está definido ainda (o produto está em desenvolvimento)
    - Recommendation: Usar `SERVE_DOMAIN` como env var; deixar sem valor padrão para forçar configuração explícita em produção. Em dev, `NODE_ENV === 'development'` é o seletor.
+   - RESOLVED: `NODE_ENV === 'development'` conditional selects `*.localhost` for dev; `SERVE_DOMAIN` env var required for production (no default, explicit config enforced). — see Plan 07-03.
 
 ---
 
