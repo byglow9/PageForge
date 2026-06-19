@@ -29,8 +29,29 @@ findings:
   warning: 6
   info: 5
   total: 13
-status: issues_found
+status: resolved
+resolved: 2026-06-19T11:15:00Z
+resolution_note: "12 of 13 findings fixed (commits 0f12e68, bff03fe, 72ed9b4, a86e7f9, d4cae0f, 61c3a55, e7c2ef9, 72a00b7). IN-02 (placeholder MIME/size) intentionally deferred to Plan 03 per existing code comments."
 ---
+
+## Resolution Log (2026-06-19)
+
+| ID | Status | Commit | Note |
+|----|--------|--------|------|
+| CR-01 | Fixed | a86e7f9 | Tenant-prefix guard on client-supplied S3 key before GetObject/DeleteObject |
+| CR-02 | Fixed | 0f12e68 | Fail-closed `parseMb()` with `Number.isFinite(n) && n > 0` |
+| WR-01 | Fixed | bff03fe | Defer redirect when findings exist; findings section renders + continue button |
+| WR-02 | Fixed | 61c3a55 | Export route returns 409 for VITE_SPA instead of opaque 500 |
+| WR-03 | Fixed | a86e7f9 | `generateLpAction` rejects VITE_SPA templates up front |
+| WR-04 | Fixed | a86e7f9, d4cae0f | `kind` propagated to `lp.create`; helper accepts `kind` |
+| WR-05 | Fixed | 72ed9b4 | Uncompressed-size error message interpolates real limit |
+| WR-06 | Fixed | e7c2ef9 | Stream-level byte accounting aborts on actual-size overflow |
+| IN-01 | Fixed | a86e7f9 | `ctx` captured (folded into CR-01 fix) |
+| IN-02 | Deferred | — | MIME/size placeholders documented as Plan 03 scope |
+| IN-03 | Fixed | 61c3a55 | Asset extraction covers single-quoted `src` and `srcset` |
+| IN-04 | Fixed | 61c3a55 | Empty slug falls back to `landing-page` |
+| IN-05 | Fixed | 72a00b7 | Test asserts rendered HTML content, not just truthiness |
+
 
 # Phase 6: Code Review Report
 
