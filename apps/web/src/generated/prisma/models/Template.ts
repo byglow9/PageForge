@@ -43,6 +43,7 @@ export type TemplateMinAggregateOutputType = {
   name: string | null
   markup: string | null
   schemaVersion: number | null
+  kind: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -53,6 +54,7 @@ export type TemplateMaxAggregateOutputType = {
   name: string | null
   markup: string | null
   schemaVersion: number | null
+  kind: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -65,6 +67,7 @@ export type TemplateCountAggregateOutputType = {
   schema: number
   metadataOverlay: number
   schemaVersion: number
+  kind: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -85,6 +88,7 @@ export type TemplateMinAggregateInputType = {
   name?: true
   markup?: true
   schemaVersion?: true
+  kind?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -95,6 +99,7 @@ export type TemplateMaxAggregateInputType = {
   name?: true
   markup?: true
   schemaVersion?: true
+  kind?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -107,6 +112,7 @@ export type TemplateCountAggregateInputType = {
   schema?: true
   metadataOverlay?: true
   schemaVersion?: true
+  kind?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -206,6 +212,7 @@ export type TemplateGroupByOutputType = {
   schema: runtime.JsonValue
   metadataOverlay: runtime.JsonValue
   schemaVersion: number
+  kind: string
   createdAt: Date
   updatedAt: Date
   _count: TemplateCountAggregateOutputType | null
@@ -241,6 +248,7 @@ export type TemplateWhereInput = {
   schema?: Prisma.JsonFilter<"Template">
   metadataOverlay?: Prisma.JsonFilter<"Template">
   schemaVersion?: Prisma.IntFilter<"Template"> | number
+  kind?: Prisma.StringFilter<"Template"> | string
   createdAt?: Prisma.DateTimeFilter<"Template"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Template"> | Date | string
   workspace?: Prisma.XOR<Prisma.WorkspaceScalarRelationFilter, Prisma.WorkspaceWhereInput>
@@ -254,6 +262,7 @@ export type TemplateOrderByWithRelationInput = {
   schema?: Prisma.SortOrder
   metadataOverlay?: Prisma.SortOrder
   schemaVersion?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   workspace?: Prisma.WorkspaceOrderByWithRelationInput
@@ -270,6 +279,7 @@ export type TemplateWhereUniqueInput = Prisma.AtLeast<{
   schema?: Prisma.JsonFilter<"Template">
   metadataOverlay?: Prisma.JsonFilter<"Template">
   schemaVersion?: Prisma.IntFilter<"Template"> | number
+  kind?: Prisma.StringFilter<"Template"> | string
   createdAt?: Prisma.DateTimeFilter<"Template"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Template"> | Date | string
   workspace?: Prisma.XOR<Prisma.WorkspaceScalarRelationFilter, Prisma.WorkspaceWhereInput>
@@ -283,6 +293,7 @@ export type TemplateOrderByWithAggregationInput = {
   schema?: Prisma.SortOrder
   metadataOverlay?: Prisma.SortOrder
   schemaVersion?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.TemplateCountOrderByAggregateInput
@@ -303,6 +314,7 @@ export type TemplateScalarWhereWithAggregatesInput = {
   schema?: Prisma.JsonWithAggregatesFilter<"Template">
   metadataOverlay?: Prisma.JsonWithAggregatesFilter<"Template">
   schemaVersion?: Prisma.IntWithAggregatesFilter<"Template"> | number
+  kind?: Prisma.StringWithAggregatesFilter<"Template"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Template"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Template"> | Date | string
 }
@@ -314,6 +326,7 @@ export type TemplateCreateInput = {
   schema: Prisma.JsonNullValueInput | runtime.InputJsonValue
   metadataOverlay: Prisma.JsonNullValueInput | runtime.InputJsonValue
   schemaVersion?: number
+  kind?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   workspace: Prisma.WorkspaceCreateNestedOneWithoutTemplatesInput
@@ -327,6 +340,7 @@ export type TemplateUncheckedCreateInput = {
   schema: Prisma.JsonNullValueInput | runtime.InputJsonValue
   metadataOverlay: Prisma.JsonNullValueInput | runtime.InputJsonValue
   schemaVersion?: number
+  kind?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -338,6 +352,7 @@ export type TemplateUpdateInput = {
   schema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   metadataOverlay?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   schemaVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutTemplatesNestedInput
@@ -351,6 +366,7 @@ export type TemplateUncheckedUpdateInput = {
   schema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   metadataOverlay?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   schemaVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -363,6 +379,7 @@ export type TemplateCreateManyInput = {
   schema: Prisma.JsonNullValueInput | runtime.InputJsonValue
   metadataOverlay: Prisma.JsonNullValueInput | runtime.InputJsonValue
   schemaVersion?: number
+  kind?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -374,6 +391,7 @@ export type TemplateUpdateManyMutationInput = {
   schema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   metadataOverlay?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   schemaVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -386,6 +404,7 @@ export type TemplateUncheckedUpdateManyInput = {
   schema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   metadataOverlay?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   schemaVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -408,6 +427,7 @@ export type TemplateCountOrderByAggregateInput = {
   schema?: Prisma.SortOrder
   metadataOverlay?: Prisma.SortOrder
   schemaVersion?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -422,6 +442,7 @@ export type TemplateMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   markup?: Prisma.SortOrder
   schemaVersion?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -432,6 +453,7 @@ export type TemplateMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   markup?: Prisma.SortOrder
   schemaVersion?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -497,6 +519,7 @@ export type TemplateCreateWithoutWorkspaceInput = {
   schema: Prisma.JsonNullValueInput | runtime.InputJsonValue
   metadataOverlay: Prisma.JsonNullValueInput | runtime.InputJsonValue
   schemaVersion?: number
+  kind?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -508,6 +531,7 @@ export type TemplateUncheckedCreateWithoutWorkspaceInput = {
   schema: Prisma.JsonNullValueInput | runtime.InputJsonValue
   metadataOverlay: Prisma.JsonNullValueInput | runtime.InputJsonValue
   schemaVersion?: number
+  kind?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -549,6 +573,7 @@ export type TemplateScalarWhereInput = {
   schema?: Prisma.JsonFilter<"Template">
   metadataOverlay?: Prisma.JsonFilter<"Template">
   schemaVersion?: Prisma.IntFilter<"Template"> | number
+  kind?: Prisma.StringFilter<"Template"> | string
   createdAt?: Prisma.DateTimeFilter<"Template"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Template"> | Date | string
 }
@@ -560,6 +585,7 @@ export type TemplateCreateManyWorkspaceInput = {
   schema: Prisma.JsonNullValueInput | runtime.InputJsonValue
   metadataOverlay: Prisma.JsonNullValueInput | runtime.InputJsonValue
   schemaVersion?: number
+  kind?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -571,6 +597,7 @@ export type TemplateUpdateWithoutWorkspaceInput = {
   schema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   metadataOverlay?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   schemaVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -582,6 +609,7 @@ export type TemplateUncheckedUpdateWithoutWorkspaceInput = {
   schema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   metadataOverlay?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   schemaVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -593,6 +621,7 @@ export type TemplateUncheckedUpdateManyWithoutWorkspaceInput = {
   schema?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   metadataOverlay?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   schemaVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -607,6 +636,7 @@ export type TemplateSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   schema?: boolean
   metadataOverlay?: boolean
   schemaVersion?: boolean
+  kind?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
@@ -620,6 +650,7 @@ export type TemplateSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   schema?: boolean
   metadataOverlay?: boolean
   schemaVersion?: boolean
+  kind?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
@@ -633,6 +664,7 @@ export type TemplateSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   schema?: boolean
   metadataOverlay?: boolean
   schemaVersion?: boolean
+  kind?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
@@ -646,11 +678,12 @@ export type TemplateSelectScalar = {
   schema?: boolean
   metadataOverlay?: boolean
   schemaVersion?: boolean
+  kind?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type TemplateOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "name" | "markup" | "schema" | "metadataOverlay" | "schemaVersion" | "createdAt" | "updatedAt", ExtArgs["result"]["template"]>
+export type TemplateOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "name" | "markup" | "schema" | "metadataOverlay" | "schemaVersion" | "kind" | "createdAt" | "updatedAt", ExtArgs["result"]["template"]>
 export type TemplateInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
 }
@@ -674,6 +707,7 @@ export type $TemplatePayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     schema: runtime.JsonValue
     metadataOverlay: runtime.JsonValue
     schemaVersion: number
+    kind: string
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["template"]>
@@ -1107,6 +1141,7 @@ export interface TemplateFieldRefs {
   readonly schema: Prisma.FieldRef<"Template", 'Json'>
   readonly metadataOverlay: Prisma.FieldRef<"Template", 'Json'>
   readonly schemaVersion: Prisma.FieldRef<"Template", 'Int'>
+  readonly kind: Prisma.FieldRef<"Template", 'String'>
   readonly createdAt: Prisma.FieldRef<"Template", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Template", 'DateTime'>
 }

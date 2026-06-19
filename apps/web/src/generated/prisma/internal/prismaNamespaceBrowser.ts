@@ -237,6 +237,7 @@ export const TemplateScalarFieldEnum = {
   schema: 'schema',
   metadataOverlay: 'metadataOverlay',
   schemaVersion: 'schemaVersion',
+  kind: 'kind',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -266,6 +267,7 @@ export const LandingPageScalarFieldEnum = {
   schemaVersion: 'schemaVersion',
   values: 'values',
   folderId: 'folderId',
+  kind: 'kind',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
