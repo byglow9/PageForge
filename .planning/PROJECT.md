@@ -26,6 +26,7 @@ A partir de um template cadastrado uma vez, um usuário gera uma nova landing pa
 ### Validated
 
 - **Engine core (Fase 1, 2026-06-02):** `parse(markup) → Schema` e `render(markup, values, brand) → HTML estático` provados contra o template Grécia real (UI-less). Detecção dos 6 tipos de campo, repeaters (0/1/N), e tokens globais `brand.*`; geração de HTML estático layout-fiel; segurança SSTI/XSS validada por corpus (118 testes). Cobre TPL-02, TPL-04, GEN-05, GEN-06 no nível de engine. A UI de authoring/form/persistência permanece hipótese (Fases 3-4).
+- **Ingestão de projeto + coexistência de tipo (Fase 6, 2026-06-19):** discriminador `kind` (LIQUID|VITE_SPA) aditivo em Template/LandingPage com fluxos LIQUID intactos; ingestão VITE_SPA via upload do `dist/` ZIP (validação zip-slip/zip-bomb/index.html, secret-scan de 5 padrões, upload S3 tenant-scoped não-enumerável); badge de tipo no catálogo; separação estrita de tipo no render boundary (`renderLp()` rejeita VITE_SPA). Valida **PRJ-01, PRJ-02, PRJ-03, PRJ-11**. (Serving/preview isolados permanecem hipótese — Fase 7.)
 
 ### Active
 
@@ -49,9 +50,9 @@ A partir de um template cadastrado uma vez, um usuário gera uma nova landing pa
 
 <!-- Hipóteses do milestone v2.0. Escopo travado pelas decisões D1-A/D2/D3/D4/D6 (ver Key Decisions). -->
 
-- [ ] **PRJ-01** Ingestão de template tipo projeto: upload do `dist/` **pré-buildado** (ZIP) de um projeto Lovable/Vite (sem build server-side no v2.0)
-- [ ] **PRJ-02** Validação + scan no upload: estrutura (`index.html`/assets), rejeição de path traversal e tamanho excessivo, aviso de credenciais embutidas e meta Lovable
-- [ ] **PRJ-03** Discriminador `kind` (LIQUID|VITE_SPA) em Template/LandingPage + coexistência no catálogo/pastas/tags com badge de tipo
+- [x] **PRJ-01** Ingestão de template tipo projeto: upload do `dist/` **pré-buildado** (ZIP) de um projeto Lovable/Vite (sem build server-side no v2.0) — *validado na Fase 6*
+- [x] **PRJ-02** Validação + scan no upload: estrutura (`index.html`/assets), rejeição de path traversal e tamanho excessivo, aviso de credenciais embutidas e meta Lovable — *validado na Fase 6*
+- [x] **PRJ-03** Discriminador `kind` (LIQUID|VITE_SPA) em Template/LandingPage + coexistência no catálogo/pastas/tags com badge de tipo — *validado na Fase 6*
 - [ ] **PRJ-04** Serving do `dist/` do tenant a partir de **origem isolada** do dashboard (não compartilha cookies de sessão)
 - [ ] **PRJ-05** Preview via `<iframe>` cross-origin com `sandbox="allow-scripts"` (sem `allow-same-origin`) + CSP `frame-ancestors`
 - [ ] **PRJ-06** Isolamento cross-tenant do `dist/` servido/armazenado (chaves não-enumeráveis, escopo por workspace)
@@ -59,7 +60,7 @@ A partir de um template cadastrado uma vez, um usuário gera uma nova landing pa
 - [ ] **PRJ-08** Injeção de brand CSS vars no serve/preview/export (a "editabilidade grátis": cor/logo via `--primary` etc., sem rebuild)
 - [ ] **PRJ-09** Export como ZIP da árvore `dist/` (branch por `kind`; sem CSP `script-src none` para VITE_SPA)
 - [ ] **PRJ-10** Editar (rota/tema) e duplicar LPs VITE_SPA, reaproveitando catálogo/pastas/tags
-- [ ] **PRJ-11** Separação estrita de tipo: VITE_SPA nunca entra no caminho de render LIQUID e vice-versa
+- [x] **PRJ-11** Separação estrita de tipo: VITE_SPA nunca entra no caminho de render LIQUID e vice-versa — *validado na Fase 6*
 - [ ] **PRJ-12** Aceitação v2.0: `renova-turismo` cadastrado, LP gerada por rota, prevista em origem isolada, tematizada e exportada — coexistindo com o template Liquid Grécia
 
 ### Out of Scope
@@ -128,4 +129,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-18 — Milestone v2.0: decisões D1-A/D2/D3/D4/D6 travadas + requisitos PRJ-01..12 + roadmap (Fases 6-8)*
+*Last updated: 2026-06-19 — Fase 6 completa: PRJ-01/02/03/11 validados (ingestão VITE_SPA + discriminador kind + coexistência). Próximo: Fase 7 (serving/preview isolados).*
