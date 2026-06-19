@@ -80,13 +80,25 @@ function injectCsp(html: string): string {
 function extractS3ImageUrls(html: string, s3BaseUrl: string): string[] {
   const found = new Set<string>();
 
-  // Pattern 1: <img src="https://...">
-  const imgSrcPattern = /src="(https?:\/\/[^"]+)"/g;
+  // Pattern 1: src="https://..." or src='https://...' (both quote styles — IN-03)
+  const imgSrcPattern = /src=(["'])(https?:\/\/[^"']+)\1/g;
   let match: RegExpExecArray | null;
   while ((match = imgSrcPattern.exec(html)) !== null) {
-    const url = match[1];
+    const url = match[2];
     if (url.startsWith(s3BaseUrl)) {
       found.add(url);
+    }
+  }
+
+  // Pattern 1b: srcset="url1 1x, url2 2x" (comma-separated candidates with
+  // optional descriptors — IN-03). Extract each URL, ignore the descriptor.
+  const srcsetPattern = /srcset=(["'])([^"']+)\1/g;
+  while ((match = srcsetPattern.exec(html)) !== null) {
+    for (const candidate of match[2].split(",")) {
+      const url = candidate.trim().split(/\s+/)[0];
+      if (url && url.startsWith(s3BaseUrl)) {
+        found.add(url);
+      }
     }
   }
 
@@ -175,6 +187,19 @@ export async function GET(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
+    // 3b. Type-boundary: VITE_SPA LPs are valid records but cannot be exported
+    // through the LIQUID render path. Return a clear 409 instead of letting the
+    // renderLp() type-boundary guard throw and surface as an opaque 500 (WR-02).
+    if ((lp.kind ?? "LIQUID") === "VITE_SPA") {
+      return NextResponse.json(
+        {
+          error:
+            "VITE_SPA landing pages cannot be exported via this endpoint. Use the project-template serving flow.",
+        },
+        { status: 409 }
+      );
+    }
+
     // 4. Render LP HTML (preview == export guarantee — same renderLp() as preview RSC page)
     const html = await withTenantDb(
       { workspaceId: lp.workspaceId },
@@ -253,7 +278,10 @@ export async function GET(
     const webStream = Readable.toWeb(archive as unknown as Readable);
 
     // 11. Generate slugified filename (D-11)
-    const slug = slugify(lp.name, { lower: true, strict: true });
+    // Fall back to a default when the name has no transliterable characters
+    // (e.g. non-Latin script), otherwise the slug — and filename — collapses to
+    // empty, yielding a bare ".zip" Content-Disposition (IN-04).
+    const slug = slugify(lp.name, { lower: true, strict: true }) || "landing-page";
 
     // 12. Return streaming ZIP response
     return new NextResponse(webStream as ReadableStream, {
