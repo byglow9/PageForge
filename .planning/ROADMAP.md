@@ -22,7 +22,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 ### Milestone v2.0 — Suporte a LPs do Lovable
 
-- [ ] **Phase 6: Project-Template Ingestion + Type Coexistence** - Cadastrar um projeto Lovable como template VITE_SPA via upload do `dist/` pré-buildado (validado + escaneado + isolado por workspace), coexistindo com templates LIQUID no catálogo. (sem serving ainda)
+- [x] **Phase 6: Project-Template Ingestion + Type Coexistence** - Cadastrar um projeto Lovable como template VITE_SPA via upload do `dist/` pré-buildado (validado + escaneado + isolado por workspace), coexistindo com templates LIQUID no catálogo. (sem serving ainda) (completed 2026-06-19 — PRJ-01/02/03/11; human UAT approved)
 - [ ] **Phase 7: Isolated Serving + Sandboxed Preview** - Servir e pré-visualizar o `dist/` do tenant em origem isolada do dashboard, com iframe sandbox e isolamento cross-tenant — a decisão de origem não-retrofitável (D4).
 - [ ] **Phase 8: LP Generation, Brand Theming, Export & v2.0 Acceptance** - Gerar LPs de templates VITE_SPA (rota de entrada + tema por brand CSS vars), exportar ZIP do `dist/`, e provar o fluxo completo com `renova-turismo` coexistindo com o Liquid Grécia.
 
@@ -217,6 +217,6 @@ v1.0 (Fases 1-5) concluído. v2.0 (Fases 6-8) é o milestone ativo.
 | 3. Template Authoring + Brand Config | 4/4 | Complete   | 2026-06-08 |
 | 4. LP Generation, Assets, Preview & Export | 4/4 | Complete   | 2026-06-17 |
 | 5. Catalog & Grécia Acceptance | 6/6 | Complete   | 2026-06-17 |
-| 6. Project-Template Ingestion + Type Coexistence | 0/? | Not started | — |
+| 6. Project-Template Ingestion + Type Coexistence | 2/2 | Complete   | 2026-06-19 |
 | 7. Isolated Serving + Sandboxed Preview | 0/? | Not started | — |
 | 8. LP Generation, Brand Theming, Export & v2.0 Acceptance | 0/? | Not started | — |
