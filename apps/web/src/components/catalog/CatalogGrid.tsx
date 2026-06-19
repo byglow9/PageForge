@@ -38,6 +38,7 @@ export interface CatalogLp {
   templateId: string | null;
   schemaVersion: number;
   folderId: string | null;
+  kind: string;
   createdAt: Date;
   updatedAt: Date;
 }
