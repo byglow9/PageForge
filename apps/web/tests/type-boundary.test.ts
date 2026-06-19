@@ -11,6 +11,7 @@
  */
 import { describe, it, expect } from "vitest";
 import { renderLp } from "@/lib/lps/render";
+import { assertViteSpaKind } from "@/lib/serve/serve-vite-spa";
 
 describe("type boundary (V2-11)", () => {
   it("throws when kind=VITE_SPA is passed to renderLp", async () => {
@@ -34,5 +35,25 @@ describe("type boundary (V2-11)", () => {
     // returns an empty/malformed string is caught (IN-05).
     expect(typeof html).toBe("string");
     expect(html).toContain("Test");
+  });
+});
+
+/**
+ * Type boundary tests — serve path (D-08, PRJ-11)
+ *
+ * These tests assert the reciprocal guard placed in lib/serve/serve-vite-spa.ts:
+ * - LIQUID templates are rejected before entering the VITE_SPA serve path
+ * - VITE_SPA templates are unaffected by the guard
+ *
+ * assertViteSpaKind is a pure synchronous function — no db mock needed.
+ * Use .toThrow() / .not.toThrow() (synchronous), NOT .rejects.toThrow() (async).
+ */
+describe("type boundary (V2-11) — serve path", () => {
+  it("throws when kind=LIQUID is passed to assertViteSpaKind", () => {
+    expect(() => assertViteSpaKind("LIQUID")).toThrow("Type boundary violation");
+  });
+
+  it("does NOT throw when kind=VITE_SPA is passed to assertViteSpaKind", () => {
+    expect(() => assertViteSpaKind("VITE_SPA")).not.toThrow();
   });
 });
