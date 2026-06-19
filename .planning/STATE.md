@@ -21,7 +21,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-01)
 
 **Core value:** A partir de um template cadastrado uma vez, um usuário gera uma nova landing page completa e fiel ao layout apenas preenchendo um formulário — sem tocar em código.
-**Current focus:** Phase 06 — project-template-ingestion-type-coexistence
+**Current focus:** Phase 07 — isolated-serving-+-sandboxed-preview
 
 ## Current Position
 
