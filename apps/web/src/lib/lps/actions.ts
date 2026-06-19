@@ -185,7 +185,10 @@ export async function generateLpAction(
 
       // Step 6: Render LP server-side (D-04 brand globals resolved live)
       // Note: renderLp is from lib/lps/render.ts (no "use server") — safe import
-      await renderLp({ markupSnapshot, values: renderValues }, db);
+      await renderLp(
+        { markupSnapshot, values: renderValues, kind: template.kind ?? "LIQUID" },
+        db
+      );
 
       // Step 7: Create LP record
       const lp = await db.lp.create({
