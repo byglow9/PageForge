@@ -174,7 +174,12 @@ Plans:
   3. O upload é escaneado por credenciais embutidas (JWT Supabase, `sk_live_`, chaves AWS) e por meta/scripts Lovable (`*.lovable.app`); achados são **avisados** ao usuário antes de concluir (D6).
   4. O `dist/` é armazenado sob prefixo S3 tenant-scoped não-enumerável (`workspaces/{wId}/project-templates/{templateId}/dist/`); o catálogo, pastas e tags operam para ambos os kinds, com um **badge de tipo** distinguindo VITE_SPA de LIQUID.
   5. Separação estrita de tipo (V2-11): passar um template VITE_SPA ao caminho de render LIQUID (ou vice-versa) **falha explicitamente** — coberto por teste de fronteira.
-**Plans**: TBD (via /gsd-plan-phase)
+**Plans**: 2 plans
+
+Plans:
+**Wave 1**
+- [x] 06-01-PLAN.md — Kind discriminator: Prisma migration (LIQUID|VITE_SPA) + renderLp() type guard + catalog UI badges
+- [x] 06-02-PLAN.md — VITE_SPA ingestion: ZIP validation + secret scan + S3 upload + server action + upload UI + V2-11 type-boundary test
 
 ### Phase 7: Isolated Serving + Sandboxed Preview
 **Goal**: Servir e pré-visualizar o `dist/` de projetos a partir de uma **origem isolada** do dashboard, com sandbox de iframe e isolamento cross-tenant — a decisão de origem que não pode ser refeita depois.
@@ -188,7 +193,15 @@ Plans:
   3. Verificado por teste: dentro do iframe de preview, `document.cookie` **não** expõe o cookie de sessão do PageForge.
   4. As chaves/URLs de serving são não-enumeráveis e escopadas por workspace; um usuário do workspace A **não** acessa o `dist/` do workspace B — teste cross-tenant retorna 403/404.
   5. O SPA carrega na origem isolada com assets de base relativa resolvidos e **fallback de roteamento** configurado (qualquer rota → `index.html`), sem 404 de asset ou de rota.
-**Plans**: TBD (via /gsd-plan-phase)
+**Plans**: 3 plans
+
+Plans:
+**Wave 1**
+- [ ] 07-01-PLAN.md — Serve libs: lib/serve/token.ts (HMAC-SHA256 mint/verify + createTokenUtils factory) + lib/serve/serve-vite-spa.ts (assertViteSpaKind D-08 + resolveServePath SPA fallback + getContentType MIME helper)
+
+**Wave 2** *(parallel — both blocked on Wave 1 completion)*
+- [ ] 07-02-PLAN.md — Isolated serving: proxy.ts (host detection *.serve.* → rewrite) + app/serve/[tplId]/[[...path]]/route.ts (token validation + S3 stream + SPA fallback + security headers)
+- [ ] 07-03-PLAN.md — Preview page + isolation tests: /w/[slug]/project-templates/[id]/preview/page.tsx (sandboxed iframe, mintServeToken server-side) + type-boundary.test.ts extension (assertViteSpaKind D-08) + SC3 human-verify checkpoint
 
 ### Phase 8: LP Generation, Brand Theming, Export & v2.0 Acceptance
 **Goal**: Gerar LPs a partir de templates VITE_SPA (seleção de rota de entrada + tema de marca via CSS vars), exportá-las como ZIP do `dist/`, e provar o fluxo completo com o projeto `renova-turismo` coexistindo com o template Liquid Grécia.
@@ -218,5 +231,5 @@ v1.0 (Fases 1-5) concluído. v2.0 (Fases 6-8) é o milestone ativo.
 | 4. LP Generation, Assets, Preview & Export | 4/4 | Complete   | 2026-06-17 |
 | 5. Catalog & Grécia Acceptance | 6/6 | Complete   | 2026-06-17 |
 | 6. Project-Template Ingestion + Type Coexistence | 2/2 | Complete   | 2026-06-19 |
-| 7. Isolated Serving + Sandboxed Preview | 0/? | Not started | — |
+| 7. Isolated Serving + Sandboxed Preview | 0/3 | Not started | — |
 | 8. LP Generation, Brand Theming, Export & v2.0 Acceptance | 0/? | Not started | — |
