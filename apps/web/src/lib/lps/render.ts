@@ -40,9 +40,19 @@ import type { TenantClient } from "@/lib/db/tenant-db";
  * @returns The rendered HTML string.
  */
 export async function renderLp(
-  lp: { markupSnapshot: string; values: Record<string, unknown> },
+  lp: { markupSnapshot: string; values: Record<string, unknown>; kind: string },
   db: TenantClient
 ): Promise<string> {
+  // Type boundary guard (T-06-01, PRJ-11): VITE_SPA templates must never enter the LIQUID render path.
+  // Any kind value other than "LIQUID" is rejected here — the CHECK constraint at the DB level
+  // (migration 0006) guarantees only "LIQUID" or "VITE_SPA" can be stored, but we guard
+  // explicitly here so a corrupt DB value cannot bypass this boundary.
+  if (lp.kind === "VITE_SPA") {
+    throw new Error(
+      "Type boundary violation: VITE_SPA templates cannot be rendered via the LIQUID render path. Use the VITE_SPA serve path instead."
+    );
+  }
+
   // D-04: Fetch live brand config — brand values are never stored on the LP itself
   const brand = await db.brandConfig.findFirst();
 

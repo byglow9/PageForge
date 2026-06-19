@@ -255,6 +255,7 @@ export async function listTemplatesAction(
       name: string;
       schemaVersion: number;
       schema: unknown;
+      kind: string;
       createdAt: Date;
       updatedAt: Date;
     }>
@@ -273,6 +274,7 @@ export async function listTemplatesAction(
           name: t.name,
           schemaVersion: t.schemaVersion,
           schema: t.schema,
+          kind: t.kind,
           createdAt: t.createdAt,
           updatedAt: t.updatedAt,
         })),

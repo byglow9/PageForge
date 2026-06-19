@@ -183,6 +183,7 @@ export async function GET(
           {
             markupSnapshot: lp.markupSnapshot,
             values: lp.values as Record<string, unknown>,
+            kind: lp.kind ?? "LIQUID",
           },
           db
         )

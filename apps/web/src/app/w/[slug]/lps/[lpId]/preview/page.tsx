@@ -47,6 +47,7 @@ export default async function LpPreviewPage({ params }: LpPreviewPageProps) {
         {
           markupSnapshot: lp.markupSnapshot,
           values: lp.values as Record<string, unknown>,
+          kind: lp.kind ?? "LIQUID",
         },
         db
       )
