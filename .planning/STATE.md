@@ -4,8 +4,8 @@ milestone: v2.0
 milestone_name: Suporte a LPs do Lovable
 status: executing
 stopped_at: Phase 7 context gathered
-last_updated: "2026-06-19T18:29:48.278Z"
-last_activity: 2026-06-19 -- Phase 07 planning complete
+last_updated: "2026-06-19T18:32:11.659Z"
+last_activity: 2026-06-19 -- Phase 07 execution started
 progress:
   total_phases: 8
   completed_phases: 6
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-01)
 
 **Core value:** A partir de um template cadastrado uma vez, um usuário gera uma nova landing page completa e fiel ao layout apenas preenchendo um formulário — sem tocar em código.
-**Current focus:** Phase 07 — isolated-serving-+-sandboxed-preview
+**Current focus:** Phase 07 — isolated-serving-sandboxed-preview
 
 ## Current Position
 
-Phase: 7
-Plan: Not started
-Status: Ready to execute
-Last activity: 2026-06-19 -- Phase 07 planning complete
+Phase: 07 (isolated-serving-sandboxed-preview) — EXECUTING
+Plan: 1 of 3
+Status: Executing Phase 07
+Last activity: 2026-06-19 -- Phase 07 execution started
 
 ## Performance Metrics
 
