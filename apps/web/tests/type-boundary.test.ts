@@ -26,11 +26,13 @@ describe("type boundary (V2-11)", () => {
   it("does NOT throw when kind=LIQUID is passed to renderLp", async () => {
     // renderLp requires a live db for brand config — mock brandConfig.findFirst
     const mockDb = { brandConfig: { findFirst: async () => null } } as any;
-    await expect(
-      renderLp(
-        { markupSnapshot: "{{ title:text }}", values: { title: "Test" }, kind: "LIQUID" },
-        mockDb
-      )
-    ).resolves.toBeTruthy();
+    const html = await renderLp(
+      { markupSnapshot: "{{ title:text }}", values: { title: "Test" }, kind: "LIQUID" },
+      mockDb
+    );
+    // Assert on rendered content, not just truthiness, so a regression that
+    // returns an empty/malformed string is caught (IN-05).
+    expect(typeof html).toBe("string");
+    expect(html).toContain("Test");
   });
 });
