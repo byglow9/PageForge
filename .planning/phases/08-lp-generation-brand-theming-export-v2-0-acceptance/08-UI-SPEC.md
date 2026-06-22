@@ -53,6 +53,8 @@ Exceptions:
 
 ## Typography
 
+Declared type scale — exactly 4 sizes:
+
 | Role | Size | Weight | Line Height |
 |------|------|--------|-------------|
 | Body | 14px (`text-sm`) | 400 regular | 1.5 |
@@ -67,6 +69,7 @@ Notes:
 - Card title uses `text-base font-semibold text-gray-900` — existing `LpCatalogCard` `CardTitle` pattern.
 - Metadata text (dates, schema version) uses `text-sm text-gray-500` or `text-sm text-gray-400`.
 - Font family: Space Grotesk (`--font-display`) from `globals.css @theme`.
+- Badge text size is a shadcn component-internal default (not a declared scale size) and is excluded from the type scale. Do not add an explicit `text-xs` class to `<Badge>` elements — let the component apply its own internal sizing.
 
 **Pre-populated from:** existing page shells and `LpCatalogCard`. Weight collapse to 2 weights applied per checker dimension 4 rule.
 
@@ -190,7 +193,7 @@ Mirrors the existing `project-templates/[id]/preview/page.tsx` layout exactly. R
 <div class="px-8 py-6 space-y-4">
   <div class="flex items-center justify-between">
     <h1 class="text-2xl font-semibold text-gray-900">{lp.name}</h1>
-    <Badge variant="outline" class="text-xs">Vite SPA</Badge>
+    <Badge variant="outline">Vite SPA</Badge>
   </div>
 
   <!-- Entry route label (informational) -->
@@ -256,7 +259,7 @@ Mirrors the existing `project-templates/[id]/preview/page.tsx` layout exactly. R
 |-------|--------|
 | Loading | Iframe renders blank until serve origin responds (no explicit loading state in RSC shell; browser handles iframe load) |
 | Loaded | Iframe displays the SPA with brand `--primary` injected |
-| Error (serve origin unreachable) | Full-page fallback: "Preview failed to load. Try refreshing." + Refresh button + Back to catalog link (same pattern as `project-templates/[id]/preview`) |
+| Error (serve origin unreachable) | Full-page fallback: "Preview failed to load. Try refreshing." + "Refresh preview" button + Back to catalog link (same pattern as `project-templates/[id]/preview`) |
 
 ### Export ZIP — VITE_SPA
 
@@ -297,7 +300,7 @@ Mirrors the existing `project-templates/[id]/preview/page.tsx` layout exactly. R
 | Error toast (edit) | "Failed to save. Try again." |
 | Error toast (export) | "Export failed. Try again." |
 | Preview error fallback | "Preview failed to load. Try refreshing." |
-| Preview error refresh button | "Refresh" |
+| Preview error refresh button | "Refresh preview" |
 | Preview error back button | "Back to catalog" |
 | Kind badge label | "Vite SPA" |
 | Delete LP confirmation title | "Delete landing page?" |
