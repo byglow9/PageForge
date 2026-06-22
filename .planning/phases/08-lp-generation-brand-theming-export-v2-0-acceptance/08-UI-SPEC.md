@@ -1,10 +1,11 @@
 ---
 phase: 8
 slug: lp-generation-brand-theming-export-v2-0-acceptance
-status: draft
+status: approved
 shadcn_initialized: true
 preset: base-nova / neutral / cssVariables
 created: 2026-06-22
+reviewed_at: 2026-06-22
 ---
 
 # Phase 8 — UI Design Contract
