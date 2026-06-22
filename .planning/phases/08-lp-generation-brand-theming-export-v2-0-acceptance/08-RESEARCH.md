@@ -710,9 +710,10 @@ ALTER TABLE "landing_page"
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Brand injection in serve route: prisma direct vs BrandConfig cache**
+   - **RESOLVED:** Fetch per request (no caching). The serve route already does a DB lookup for the template; adding one more `findFirst` on a single-row `BrandConfig` is negligible.
    - What we know: The serve route has `workspaceId` from the HMAC token. `prisma` is available (used for template lookup already in the serve route).
    - What's unclear: Should the brand config be cached per-request in the serve route, or fetched per request? For most workspaces this is a simple `findFirst` on a single row — likely fast enough without caching.
    - Recommendation: Fetch per request. The serve route already does a DB lookup for the template; adding one more for brand config is negligible.

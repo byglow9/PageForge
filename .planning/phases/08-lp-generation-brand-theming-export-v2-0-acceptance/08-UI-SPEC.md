@@ -120,7 +120,7 @@ All components are already installed (shadcn base-nova). No new packages require
 
 ### New component: `ViteSpaLpForm`
 
-Location: `apps/web/src/app/w/[slug]/lps/components/ViteSpaLpForm.tsx`
+Location: `apps/web/src/components/lps/ViteSpaLpForm.tsx`
 
 A minimal client component for VITE_SPA LP generation and editing. It shares the same page-wrapper pattern as `LpForm` but is structurally simpler: only two fields (name + optional entry route), plus a submit button.
 
@@ -241,7 +241,7 @@ Mirrors the existing `project-templates/[id]/preview/page.tsx` layout exactly. R
 |-------|--------|
 | Idle | Name input autofocused (primary focal point), entry route empty, "Generate landing page" button enabled |
 | Submitting | Button shows "Generating…" with `disabled`, spinner via `Loader2` icon if needed |
-| Success | Toast: "Landing page created." + redirect to `/w/{slug}/lps` |
+| Success | Toast: "Landing page created." + redirect to `/w/{slug}/lps/{id}/preview` |
 | Error (action fails) | Toast: "Failed to generate. Try again." Button re-enables |
 | Validation: name empty | Input border highlights, no inline error text (native browser required validation) |
 
