@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Suporte a LPs do Lovable
 status: executing
-stopped_at: Phase 8 context gathered
-last_updated: "2026-06-22T14:16:20.431Z"
+stopped_at: Phase 8 UI-SPEC approved
+last_updated: "2026-06-22T17:31:58.435Z"
 last_activity: 2026-06-22 -- Phase 07 execution started
 progress:
   total_phases: 8
@@ -113,6 +113,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-22T14:16:20.424Z
-Stopped at: Phase 8 context gathered
-Resume file: .planning/phases/08-lp-generation-brand-theming-export-v2-0-acceptance/08-CONTEXT.md
+Last session: 2026-06-22T17:31:58.419Z
+Stopped at: Phase 8 UI-SPEC approved
+Resume file: .planning/phases/08-lp-generation-brand-theming-export-v2-0-acceptance/08-UI-SPEC.md
