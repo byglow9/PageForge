@@ -4,8 +4,8 @@ milestone: v2.0
 milestone_name: Suporte a LPs do Lovable
 status: executing
 stopped_at: Phase 8 UI-SPEC approved
-last_updated: "2026-06-22T18:08:40.000Z"
-last_activity: 2026-06-22 -- Phase 08 planning complete
+last_updated: "2026-06-22T18:17:11.469Z"
+last_activity: 2026-06-22 -- Phase 08 execution started
 progress:
   total_phases: 8
   completed_phases: 7
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-01)
 
 **Core value:** A partir de um template cadastrado uma vez, um usuário gera uma nova landing page completa e fiel ao layout apenas preenchendo um formulário — sem tocar em código.
-**Current focus:** Phase 07 — Isolated Serving + Sandboxed Preview
+**Current focus:** Phase 08 — lp-generation-brand-theming-export-v2-0-acceptance
 
 ## Current Position
 
-Phase: 07 (Isolated Serving + Sandboxed Preview) — EXECUTING
-Plan: 1 of 3
-Status: Ready to execute
-Last activity: 2026-06-22 -- Phase 08 planning complete
+Phase: 08 (lp-generation-brand-theming-export-v2-0-acceptance) — EXECUTING
+Plan: 1 of 5
+Status: Executing Phase 08
+Last activity: 2026-06-22 -- Phase 08 execution started
 
 ## Performance Metrics
 
