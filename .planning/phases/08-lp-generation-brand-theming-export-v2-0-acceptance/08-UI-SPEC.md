@@ -56,17 +56,19 @@ Exceptions:
 | Role | Size | Weight | Line Height |
 |------|------|--------|-------------|
 | Body | 14px (`text-sm`) | 400 regular | 1.5 |
-| Label | 14px (`text-sm`) | 500 medium | 1.4 |
+| Label | 14px (`text-sm`) | 400 regular | 1.4 |
 | Heading | 24px (`text-2xl`) | 600 semibold | 1.2 |
 | Display | 20px (`text-xl`) | 600 semibold | 1.2 |
 
 Notes:
+- Two weights only: 400 (regular / `font-normal`) and 600 (semibold / `font-semibold`). Weight 500 (medium / `font-medium`) is not used in this phase.
+- Body and Label share the same size and weight. Visual distinction between them is achieved via color: Body uses `text-gray-900`; Label uses `text-gray-500` for secondary/hint text.
 - Page title uses `text-2xl font-semibold text-gray-900` — existing pattern from `NewLpFromTemplatePage` (`"Generate Landing Page"` heading) and LP edit page.
 - Card title uses `text-base font-semibold text-gray-900` — existing `LpCatalogCard` `CardTitle` pattern.
 - Metadata text (dates, schema version) uses `text-sm text-gray-500` or `text-sm text-gray-400`.
 - Font family: Space Grotesk (`--font-display`) from `globals.css @theme`.
 
-**Pre-populated from:** existing page shells and `LpCatalogCard`.
+**Pre-populated from:** existing page shells and `LpCatalogCard`. Weight collapse to 2 weights applied per checker dimension 4 rule.
 
 ---
 
@@ -87,7 +89,7 @@ Accent reserved for:
 
 Additional color notes:
 - `text-red-600 focus:text-red-600 focus:bg-red-50` — "Delete landing page" DropdownMenuItem (existing pattern from `LpCatalogCard`)
-- `text-gray-400` / `text-gray-500` — metadata, secondary labels, placeholder text
+- `text-gray-400` / `text-gray-500` — metadata, secondary labels, placeholder text, hint text under fields (distinguishes Label role from Body without a third weight)
 - `text-gray-700` — body-level interactive labels (Preview/Edit inline links)
 - Badge variants: `secondary` (gray) for folder and tag chips; `outline` for `VITE_SPA` kind discriminator badge (existing `LpCatalogCard` pattern)
 
@@ -118,16 +120,18 @@ Location: `apps/web/src/app/w/[slug]/lps/components/ViteSpaLpForm.tsx`
 
 A minimal client component for VITE_SPA LP generation and editing. It shares the same page-wrapper pattern as `LpForm` but is structurally simpler: only two fields (name + optional entry route), plus a submit button.
 
+**Primary focal point (generation mode):** The "Landing page name" input receives `autoFocus` on mount, establishing it as the entry point. The "Generate landing page" CTA is the visual anchor at the bottom of the form — it is the only accent-colored element on the page. Tab order: name → entryRoute → submit.
+
 **Generation mode layout:**
 ```
 <div class="px-8 py-6">
   <h1 class="text-2xl font-semibold text-gray-900 mb-6">Generate Landing Page</h1>
 
   <form class="space-y-6 max-w-lg">
-    <!-- LP Name -->
+    <!-- LP Name (autofocused — primary focal point) -->
     <div class="space-y-2">
       <Label for="name">Landing page name</Label>
-      <Input id="name" placeholder="e.g. Grécia — Outubro 2026" required />
+      <Input id="name" placeholder="e.g. Grécia — Outubro 2026" required autoFocus />
     </div>
 
     <!-- Entry Route (optional) -->
@@ -140,7 +144,7 @@ A minimal client component for VITE_SPA LP generation and editing. It shares the
       </p>
     </div>
 
-    <!-- Submit -->
+    <!-- Submit (visual anchor — only accent element on page) -->
     <Button type="submit" disabled={isPending}>
       {isPending ? "Generating…" : "Generate landing page"}
     </Button>
@@ -211,6 +215,18 @@ Mirrors the existing `project-templates/[id]/preview/page.tsx` layout exactly. R
 </div>
 ```
 
+### Accessibility: kebab menu icon-only triggers
+
+`DropdownMenuTrigger` elements that contain only an icon (no visible text) must include `aria-label="LP actions"`. This is an inherited pattern from `LpCatalogCard` — all VITE_SPA LP card kebab triggers follow the same rule. Example:
+
+```tsx
+<DropdownMenuTrigger asChild>
+  <Button variant="ghost" size="icon" aria-label="LP actions">
+    <MoreHorizontal className="h-4 w-4" />
+  </Button>
+</DropdownMenuTrigger>
+```
+
 ---
 
 ## States and Interactions
@@ -219,7 +235,7 @@ Mirrors the existing `project-templates/[id]/preview/page.tsx` layout exactly. R
 
 | State | Visual |
 |-------|--------|
-| Idle | Name input focused (autofocus), entry route empty, "Generate landing page" button enabled |
+| Idle | Name input autofocused (primary focal point), entry route empty, "Generate landing page" button enabled |
 | Submitting | Button shows "Generating…" with `disabled`, spinner via `Loader2` icon if needed |
 | Success | Toast: "Landing page created." + redirect to `/w/{slug}/lps` |
 | Error (action fails) | Toast: "Failed to generate. Try again." Button re-enables |
@@ -266,7 +282,7 @@ Mirrors the existing `project-templates/[id]/preview/page.tsx` layout exactly. R
 | Page title (edit, VITE_SPA) | "Edit Landing Page" |
 | Name field label | "Landing page name" |
 | Name field placeholder | "e.g. Grécia — Outubro 2026" |
-| Entry route field label | "Entry route" + suffix "(optional)" in muted weight |
+| Entry route field label | "Entry route" + suffix "(optional)" in muted color (`text-gray-400`) |
 | Entry route placeholder | "e.g. /grecia" |
 | Entry route hint (generation) | "Leave blank for single-page projects (defaults to /). For multi-route projects, type the path you want to link to (e.g. /grecia)." |
 | Entry route hint (edit) | "Leave blank for the root page (/). The preview will reload with the updated route after saving." |
@@ -298,6 +314,8 @@ Mirrors the existing `project-templates/[id]/preview/page.tsx` layout exactly. R
 | Error toast (delete) | "Failed to delete. Try again." |
 
 **Source:** Pre-populated from existing `LpCatalogCard`, `NewLpFromTemplatePage`, and project-template preview patterns. Entries for generation/edit forms are new for Phase 8.
+
+Note: The "(optional)" suffix on the entry route label uses `text-gray-400 font-normal` (weight 400) — consistent with the 2-weight rule. It is distinguished from the main label text via color only.
 
 Empty states: The LP catalog empty state is pre-existing (Phase 5) and unchanged. The VITE_SPA generation page never shows an empty state — it always has a template context. No new empty states are introduced in Phase 8.
 
