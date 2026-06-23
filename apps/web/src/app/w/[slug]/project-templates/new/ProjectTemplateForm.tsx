@@ -14,6 +14,8 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -63,6 +65,13 @@ export function ProjectTemplateForm({ slug }: ProjectTemplateFormProps) {
 
   return (
     <div className="max-w-lg mx-auto p-6 space-y-6">
+      <Link
+        href={`/w/${slug}/templates`}
+        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+        Back to templates
+      </Link>
       <h1 className="text-2xl font-semibold">New Project Template</h1>
 
       <form onSubmit={handleSubmit} encType="multipart/form-data" className="space-y-4">

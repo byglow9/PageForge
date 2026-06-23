@@ -35,12 +35,20 @@ export default async function TemplatesPage({ params }: TemplatesPageProps) {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold text-gray-900">Templates</h1>
         {canCreate && (
-          <Link
-            href={`/w/${slug}/templates/new`}
-            className="inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
-          >
-            Create Template
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              href={`/w/${slug}/project-templates/new`}
+              className="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50 transition-colors"
+            >
+              New Project Template (ZIP)
+            </Link>
+            <Link
+              href={`/w/${slug}/templates/new`}
+              className="inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
+            >
+              Create Template
+            </Link>
+          </div>
         )}
       </div>
 
@@ -54,12 +62,20 @@ export default async function TemplatesPage({ params }: TemplatesPageProps) {
             Create your first template to start building landing pages.
           </p>
           {canCreate && (
-            <Link
-              href={`/w/${slug}/templates/new`}
-              className="inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
-            >
-              Create Template
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link
+                href={`/w/${slug}/templates/new`}
+                className="inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
+              >
+                Create Template
+              </Link>
+              <Link
+                href={`/w/${slug}/project-templates/new`}
+                className="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50 transition-colors"
+              >
+                New Project Template (ZIP)
+              </Link>
+            </div>
           )}
         </div>
       ) : (

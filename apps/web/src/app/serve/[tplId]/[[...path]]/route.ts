@@ -45,7 +45,26 @@ import {
   getContentType,
 } from "@/lib/serve/serve-vite-spa";
 import { prisma } from "@/lib/db/prisma";
+import type { Prisma } from "@/generated/prisma/client";
 import { buildBrandStyleTag, injectBrandStyle } from "@/lib/brand/theme";
+
+// -----------------------------------------------------------------------
+// servingRead — cross-workspace read for the isolated serving layer.
+//
+// The serving handler must read `template` / `brand_config` across workspaces
+// (asset requests carry no session; authorization is the HMAC token + UUID).
+// Phase 02 enabled FORCE RLS, so the app role cannot read those rows unless a
+// context flag is set. Migration 0009 adds a SELECT policy gated on
+// `app.serving = 'on'`. We set it transaction-locally (SET LOCAL semantics via
+// set_config(..., true)) so the relaxation never leaks to other queries on the
+// pooled connection.
+// -----------------------------------------------------------------------
+function servingRead<T>(fn: (tx: Prisma.TransactionClient) => Promise<T>): Promise<T> {
+  return prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT set_config('app.serving', 'on', true)`;
+    return fn(tx);
+  });
+}
 
 // -----------------------------------------------------------------------
 // S3 client singleton — module-level, initialized once per cold start
@@ -117,10 +136,12 @@ export async function GET(
       // Asset request — no token required
       // Derive workspaceId from DB using unscoped prisma lookup (tplId is UUID = non-enumerable)
       // Safe: only reveals that the template exists; no data leak beyond confirming existence
-      const template = await prisma.template.findUnique({
-        where: { id: tplId },
-        select: { workspaceId: true, kind: true },
-      });
+      const template = await servingRead((tx) =>
+        tx.template.findUnique({
+          where: { id: tplId },
+          select: { workspaceId: true, kind: true },
+        })
+      );
 
       if (!template) {
         // Template doesn't exist — return 404 for assets
@@ -172,10 +193,12 @@ export async function GET(
 
     // Step 4 (HTML request path): Fetch template to enforce type guard
     // workspaceId comes from HMAC token claims — trusted server-side value
-    const template = await prisma.template.findUnique({
-      where: { id: tplId },
-      select: { kind: true, workspaceId: true },
-    });
+    const template = await servingRead((tx) =>
+      tx.template.findUnique({
+        where: { id: tplId },
+        select: { kind: true, workspaceId: true },
+      })
+    );
 
     if (!template || template.workspaceId !== workspaceId) {
       // Template not found or workspaceId mismatch (extra cross-tenant guard)
@@ -213,9 +236,11 @@ export async function GET(
 
       // D-04: brand theme is live — read BrandConfig at render time (not snapshotted).
       // workspaceId is trusted: it comes exclusively from verified HMAC claims (T-08-03-02).
-      const brand = await prisma.brandConfig.findFirst({
-        where: { workspaceId },
-      });
+      const brand = await servingRead((tx) =>
+        tx.brandConfig.findFirst({
+          where: { workspaceId },
+        })
+      );
 
       // D-05: inject only --primary as HSL triplet (T-08-03-01: hex validated by SaveBrandConfigSchema).
       const styleTag = buildBrandStyleTag(brand?.primaryColor);

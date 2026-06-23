@@ -87,12 +87,24 @@ export function TemplateCard({ template, slug }: TemplateCardProps) {
           <p className="text-sm text-gray-500">{fieldSummary}</p>
         </CardContent>
         <CardFooter className="flex items-center justify-between gap-2">
-          <Link
-            href={`/w/${slug}/templates/${template.id}/edit`}
-            className="inline-flex items-center justify-center rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-          >
-            Edit Template
-          </Link>
+          <div className="flex items-center gap-2">
+            {/* Preview — only VITE_SPA templates have the isolated sandboxed preview route */}
+            {template.kind === "VITE_SPA" ? (
+              <Link
+                href={`/w/${slug}/project-templates/${template.id}/preview`}
+                className="inline-flex items-center justify-center rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                Preview
+              </Link>
+            ) : (
+              <Link
+                href={`/w/${slug}/templates/${template.id}/edit`}
+                className="inline-flex items-center justify-center rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                Edit Template
+              </Link>
+            )}
+          </div>
           {/* Kebab menu */}
           <div className="relative">
             <button

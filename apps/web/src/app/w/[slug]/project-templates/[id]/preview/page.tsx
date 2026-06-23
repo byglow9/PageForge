@@ -49,7 +49,7 @@ export default async function PreviewPage({ params }: PreviewPageProps) {
     );
 
     if (!template) {
-      redirect(`/w/${slug}/project-templates`);
+      redirect(`/w/${slug}/templates`);
     }
 
     // Mint the serve token server-side. The token is scoped to {workspaceId, templateId}
@@ -89,7 +89,7 @@ export default async function PreviewPage({ params }: PreviewPageProps) {
 
         <div className="flex justify-end">
           <a
-            href={`/w/${slug}/project-templates`}
+            href={`/w/${slug}/templates`}
             className="inline-flex items-center justify-center rounded-md border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
           >
             Back to templates
@@ -122,7 +122,7 @@ export default async function PreviewPage({ params }: PreviewPageProps) {
             Refresh
           </a>
           <a
-            href={`/w/${slug}/project-templates`}
+            href={`/w/${slug}/templates`}
             className="inline-flex items-center justify-center rounded-md border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
           >
             Back to templates
