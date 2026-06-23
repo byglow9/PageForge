@@ -27,7 +27,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { generateViteSpaLpAction, updateLpAction } from "@/lib/lps/actions";
-import { GenerateViteSpaLpSchema } from "@/lib/lps/schema";
+import {
+  GenerateViteSpaLpSchema,
+  EditViteSpaLpSchema,
+} from "@/lib/lps/schema";
 
 /**
  * Raw form field values before Zod transforms.
@@ -78,8 +81,13 @@ export function ViteSpaLpForm({
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<ViteSpaFormValues>({
+    // Edit mode never submits templateId, so it must NOT use the generate schema
+    // (which requires templateId) — otherwise the resolver fails silently and the
+    // submit handler never runs.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(GenerateViteSpaLpSchema) as any,
+    resolver: zodResolver(
+      mode === "generate" ? GenerateViteSpaLpSchema : EditViteSpaLpSchema
+    ) as any,
     defaultValues: {
       templateId: templateId ?? "",
       name: mode === "edit" ? (lpName ?? "") : (initialLpName ?? ""),

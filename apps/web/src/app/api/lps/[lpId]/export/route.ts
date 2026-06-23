@@ -184,25 +184,35 @@ export async function GET(
 
     const { lpId } = await params;
 
-    // 2. Fetch LP (no workspace filter yet — we need lp.workspaceId for the IDOR check)
-    const lp = await prisma.landingPage.findUnique({ where: { id: lpId } });
-    if (!lp) {
+    // 2 + 3. Resolve the LP *within the requesting user's workspace context* (T-04-04-02).
+    // landing_page has FORCE RLS (policy: workspaceId = current_setting('app.current_workspace_id')),
+    // so a raw findUnique with no workspace context returns null for EVERY row. We therefore look
+    // the LP up scoped to each workspace the user belongs to (the member table is not RLS-bound).
+    // This collapses the IDOR check into the lookup: a hit means the user is a member of the owning
+    // workspace; a miss is reported as 404 without revealing cross-tenant existence (T-04-04-02).
+    const memberships = await prisma.member.findMany({
+      where: { userId: session.user.id },
+      select: { organizationId: true },
+    });
+
+    let resolvedLp: Awaited<
+      ReturnType<typeof prisma.landingPage.findUnique>
+    > = null;
+    for (const { organizationId } of memberships) {
+      const found = await prisma.$transaction(async (tx) => {
+        await tx.$executeRaw`SELECT set_config('app.current_workspace_id', ${organizationId}, true)`;
+        return tx.landingPage.findUnique({ where: { id: lpId } });
+      });
+      if (found) {
+        resolvedLp = found;
+        break;
+      }
+    }
+    if (!resolvedLp) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
-
-    // 3. IDOR check: verify session user is a member of the LP's workspace (T-04-04-02)
-    // Uses the authoritative better-auth member table (mirrors getWorkspaceContext in guards.ts).
-    const membership = await prisma.member.findUnique({
-      where: {
-        organizationId_userId: {
-          organizationId: lp.workspaceId,
-          userId: session.user.id,
-        },
-      },
-    });
-    if (!membership) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
+    // const binding preserves non-null narrowing inside the closures below.
+    const lp = resolvedLp;
 
     // 3b. VITE_SPA export branch (D-10, D-11, D-12):
     // Stream the full dist/ tree from S3 as a ZIP with a tematized index.html.
@@ -216,9 +226,12 @@ export async function GET(
         );
       }
 
-      // Fetch brand config for CSS var injection (D-11)
-      const brand = await prisma.brandConfig.findFirst({
-        where: { workspaceId: lp.workspaceId },
+      // Fetch brand config for CSS var injection (D-11). brand_config also has FORCE RLS,
+      // so the read must run inside a workspace-scoped transaction (D-13/D-14).
+      const workspaceId = lp.workspaceId;
+      const brand = await prisma.$transaction(async (tx) => {
+        await tx.$executeRaw`SELECT set_config('app.current_workspace_id', ${workspaceId}, true)`;
+        return tx.brandConfig.findFirst({ where: { workspaceId } });
       });
 
       // ListObjectsV2 paginado — prefix: workspaces/{wId}/project-templates/{tplId}/dist/

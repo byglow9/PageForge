@@ -99,8 +99,14 @@ export type UpdateLpInput = z.infer<typeof UpdateLpSchema>;
  * workspaceId is never in the payload — derived from server session (T-04-01-05).
  */
 export const GenerateViteSpaLpSchema = z.object({
-  /** ID of the source VITE_SPA template. */
-  templateId: z.string().cuid("Invalid template ID"),
+  /**
+   * ID of the source VITE_SPA template.
+   * VITE_SPA templates are created via project-template ingestion with an
+   * explicit crypto.randomUUID() id (so the DB row id == S3 key prefix), so
+   * this is a UUID — NOT a cuid like LIQUID templates. Using .cuid() here made
+   * RHF's client-side resolver reject the UUID and silently block submit.
+   */
+  templateId: z.string().uuid("Invalid template ID"),
 
   /** User-provided LP name (D-11). */
   name: z
@@ -127,3 +133,40 @@ export const GenerateViteSpaLpSchema = z.object({
 });
 
 export type GenerateViteSpaLpInput = z.infer<typeof GenerateViteSpaLpSchema>;
+
+// -----------------------------------------------------------------------
+// EditViteSpaLpSchema
+// -----------------------------------------------------------------------
+
+/**
+ * Client-side RHF resolver schema for EDITING a VITE_SPA landing page.
+ *
+ * Edit mode never submits templateId (the LP already references its template),
+ * so requiring it — as GenerateViteSpaLpSchema does — made the edit form's
+ * resolver fail silently on an empty templateId and block "Save changes".
+ * Here templateId is optional; only name + entryRoute are validated.
+ * The actual persistence still goes through UpdateLpSchema in updateLpAction.
+ */
+export const EditViteSpaLpSchema = z.object({
+  /** Optional in edit mode — kept only to match the form's field shape. */
+  templateId: z.string().optional(),
+
+  /** User-provided LP name (D-11). */
+  name: z
+    .string()
+    .min(1, "Landing page name is required")
+    .max(128, "Landing page name must be 128 characters or less")
+    .trim(),
+
+  /** SPA sub-route; empty → null (root). Same normalization as generate. */
+  entryRoute: z
+    .string()
+    .max(128, "Entry route must be 128 characters or less")
+    .optional()
+    .or(z.literal(""))
+    .transform((v) => (v ? (v.startsWith("/") ? v : "/" + v) : null))
+    .nullable()
+    .default(null),
+});
+
+export type EditViteSpaLpInput = z.infer<typeof EditViteSpaLpSchema>;
