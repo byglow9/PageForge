@@ -80,7 +80,7 @@ export default async function TemplatesPage({ params }: TemplatesPageProps) {
         </div>
       ) : (
         /* Template card grid */
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {templates.map((template) => (
             <TemplateCard
               key={template.id}

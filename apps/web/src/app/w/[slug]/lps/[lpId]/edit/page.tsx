@@ -16,6 +16,8 @@
  * - db.lp.findById and db.template.findById both filter by workspaceId (T-04-02-04).
  */
 import { redirect } from "next/navigation";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { parse } from "pageforge-engine";
 import { z } from "zod";
 import { requireWorkspaceRole } from "@/lib/workspaces/guards";
@@ -49,6 +51,13 @@ export default async function EditLpPage({ params }: EditLpPageProps) {
   if (lp.kind === "VITE_SPA") {
     return (
       <div className="px-8 py-6">
+        <Link
+          href={`/w/${slug}/lps`}
+          className="mb-4 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900"
+        >
+          <ArrowLeft className="size-4" />
+          Back to landing pages
+        </Link>
         <h1 className="text-2xl font-semibold text-gray-900 mb-6">
           Edit Landing Page
         </h1>
@@ -104,6 +113,13 @@ export default async function EditLpPage({ params }: EditLpPageProps) {
 
   return (
     <div className="px-8 py-6">
+      <Link
+        href={`/w/${slug}/lps`}
+        className="mb-4 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900"
+      >
+        <ArrowLeft className="size-4" />
+        Back to landing pages
+      </Link>
       <h1 className="text-2xl font-semibold text-gray-900 mb-6">
         Edit Landing Page
       </h1>

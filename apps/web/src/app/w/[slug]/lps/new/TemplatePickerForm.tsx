@@ -83,6 +83,7 @@ export function TemplatePickerForm({ slug, templates }: TemplatePickerFormProps)
                 <SelectTrigger
                   id="template-select"
                   aria-label="Select a template"
+                  className="w-full"
                 >
                   <SelectValue placeholder="Select a template…">
                     {(value: string | null) => {
@@ -94,7 +95,10 @@ export function TemplatePickerForm({ slug, templates }: TemplatePickerFormProps)
                     }}
                   </SelectValue>
                 </SelectTrigger>
-                <SelectContent>
+                {/* alignItemWithTrigger={false}: open as a standard dropdown BELOW
+                    the field instead of overlaying the selected item on top of the
+                    trigger/label (which looked like the list bled into the form). */}
+                <SelectContent alignItemWithTrigger={false}>
                   {templates.map((template) => (
                     <SelectItem key={template.id} value={template.id}>
                       {template.name} (schema v{template.schemaVersion})
