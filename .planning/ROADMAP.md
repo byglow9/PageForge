@@ -215,7 +215,21 @@ Plans:
   3. O export gera um ZIP da árvore `dist/` (branch por `kind` na rota de export existente); a CSP estrita `script-src 'none'` do export LIQUID **não** é aplicada ao VITE_SPA (tem runtime JS próprio).
   4. O usuário pode reabrir/editar (rota, tema) e **duplicar** uma LP VITE_SPA; catálogo/pastas/tags permanecem inalterados para ambos os kinds.
   5. **Aceitação v2.0**: o `dist/` do `renova-turismo` é cadastrado, LP gerada por rota, pré-visualizada em origem isolada, tematizada por marca e exportada — tudo **coexistindo** com o template Liquid Grécia (caminho v1 intacto e verificado).
-**Plans**: TBD (via /gsd-plan-phase)
+**Plans**: 5 plans
+
+Plans:
+**Wave 1**
+- [ ] 08-01-PLAN.md — [BLOCKING] Migration entry_route + Prisma schema entryRoute + TenantLpHelpers + GenerateViteSpaLpSchema + lib/brand/theme.ts (hexToHslTriplet + buildBrandStyleTag + injectBrandStyle)
+
+**Wave 2** *(parallel — both blocked on Wave 1 completion)*
+- [ ] 08-02-PLAN.md — Geração VITE_SPA: generateViteSpaLpAction + branch VITE_SPA em generate/update/duplicate/getLp + ViteSpaLpForm component + branch na página new/[templateId]
+- [ ] 08-03-PLAN.md — Brand theming + preview: injeção de brand <style> no serve handler (isHtmlRequest) + branch VITE_SPA na LP preview page (iframe sandboxed com entryRoute)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 08-04-PLAN.md — Export ZIP VITE_SPA (ListObjectsV2 + archiver + index.html tematizado + sem CSP) + branch VITE_SPA na LP edit page (ViteSpaLpForm pré-preenchido)
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [ ] 08-05-PLAN.md — Aceitação v2.0: UAT renova-turismo (generate→preview→export→edit→duplicate) + verificação de coexistência com Grécia LIQUID (checkpoint humano)
 
 ## Progress
 
@@ -232,4 +246,4 @@ v1.0 (Fases 1-5) concluído. v2.0 (Fases 6-8) é o milestone ativo.
 | 5. Catalog & Grécia Acceptance | 6/6 | Complete   | 2026-06-17 |
 | 6. Project-Template Ingestion + Type Coexistence | 2/2 | Complete   | 2026-06-19 |
 | 7. Isolated Serving + Sandboxed Preview | 0/3 | Not started | — |
-| 8. LP Generation, Brand Theming, Export & v2.0 Acceptance | 0/? | Not started | — |
+| 8. LP Generation, Brand Theming, Export & v2.0 Acceptance | 0/5 | Not started | — |
