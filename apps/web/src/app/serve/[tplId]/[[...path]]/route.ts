@@ -45,6 +45,7 @@ import {
   getContentType,
 } from "@/lib/serve/serve-vite-spa";
 import { prisma } from "@/lib/db/prisma";
+import { buildBrandStyleTag, injectBrandStyle } from "@/lib/brand/theme";
 
 // -----------------------------------------------------------------------
 // S3 client singleton — module-level, initialized once per cold start
@@ -206,12 +207,23 @@ export async function GET(
         })
       );
 
-      // T-07-02-07: transformToWebStream() called exactly once — stream is consumed once
-      const webStream = s3Response.Body!.transformToWebStream();
+      // T-08-03-05: index.html path uses transformToString() — stream consumed exactly once.
+      // Assets use transformToWebStream() (earlier branch). Never call both on the same body.
+      const html = await s3Response.Body!.transformToString();
 
-      // Step 9: Return streaming response with security headers
+      // D-04: brand theme is live — read BrandConfig at render time (not snapshotted).
+      // workspaceId is trusted: it comes exclusively from verified HMAC claims (T-08-03-02).
+      const brand = await prisma.brandConfig.findFirst({
+        where: { workspaceId },
+      });
+
+      // D-05: inject only --primary as HSL triplet (T-08-03-01: hex validated by SaveBrandConfigSchema).
+      const styleTag = buildBrandStyleTag(brand?.primaryColor);
+      const themedHtml = injectBrandStyle(html, styleTag);
+
+      // Step 9: Return themed HTML response with security headers
       // frame-ancestors as HTTP header (NOT meta tag — Pitfall 6 / T-07-02-08)
-      return new NextResponse(webStream, {
+      return new NextResponse(themedHtml, {
         headers: buildSecurityHeaders(contentType),
       });
     } catch (s3Err) {
