@@ -226,7 +226,7 @@ Plans:
 - [x] 08-03-PLAN.md — Brand theming + preview: injeção de brand <style> no serve handler (isHtmlRequest) + branch VITE_SPA na LP preview page (iframe sandboxed com entryRoute)
 
 **Wave 3** *(blocked on Wave 2 completion)*
-- [ ] 08-04-PLAN.md — Export ZIP VITE_SPA (ListObjectsV2 + archiver + index.html tematizado + sem CSP) + branch VITE_SPA na LP edit page (ViteSpaLpForm pré-preenchido)
+- [x] 08-04-PLAN.md — Export ZIP VITE_SPA (ListObjectsV2 + archiver + index.html tematizado + sem CSP) + branch VITE_SPA na LP edit page (ViteSpaLpForm pré-preenchido)
 
 **Wave 4** *(blocked on Wave 3 completion)*
 - [ ] 08-05-PLAN.md — Aceitação v2.0: UAT renova-turismo (generate→preview→export→edit→duplicate) + verificação de coexistência com Grécia LIQUID (checkpoint humano)
@@ -246,4 +246,4 @@ v1.0 (Fases 1-5) concluído. v2.0 (Fases 6-8) é o milestone ativo.
 | 5. Catalog & Grécia Acceptance | 6/6 | Complete   | 2026-06-17 |
 | 6. Project-Template Ingestion + Type Coexistence | 2/2 | Complete   | 2026-06-19 |
 | 7. Isolated Serving + Sandboxed Preview | 0/3 | Not started | — |
-| 8. LP Generation, Brand Theming, Export & v2.0 Acceptance | 3/5 | In Progress|  |
+| 8. LP Generation, Brand Theming, Export & v2.0 Acceptance | 4/5 | In Progress|  |
