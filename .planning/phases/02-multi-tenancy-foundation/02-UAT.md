@@ -49,8 +49,8 @@ note: |
 
 ### 8. RBAC — Member Management Restricted
 expected: Member management actions (invite, change role, remove) are available to owner/admin only. An editor or viewer cannot invite/remove members.
-result: skipped
-reason: "Multi-account editor/viewer setup too involved to test manually now. Server-side enforcement confirmed in code review: management actions gate on requireWorkspaceRole(slug, ['owner','admin'])."
+result: pass
+note: "Approved by workspace owner 2026-06-23. Confirmed manually: editor/viewer accounts cannot invite/change-role/remove members; management actions gated by requireWorkspaceRole(slug, ['owner','admin'])."
 
 ### 9. Cross-Tenant Isolation
 expected: Visiting /w/{slug} for a workspace you are NOT a member of denies access (redirects to /workspaces/new) — you cannot read another workspace's data by URL/ID.
