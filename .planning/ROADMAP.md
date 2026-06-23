@@ -219,7 +219,7 @@ Plans:
 
 Plans:
 **Wave 1**
-- [ ] 08-01-PLAN.md — [BLOCKING] Migration entry_route + Prisma schema entryRoute + TenantLpHelpers + GenerateViteSpaLpSchema + lib/brand/theme.ts (hexToHslTriplet + buildBrandStyleTag + injectBrandStyle)
+- [x] 08-01-PLAN.md — [BLOCKING] Migration entry_route + Prisma schema entryRoute + TenantLpHelpers + GenerateViteSpaLpSchema + lib/brand/theme.ts (hexToHslTriplet + buildBrandStyleTag + injectBrandStyle)
 
 **Wave 2** *(parallel — both blocked on Wave 1 completion)*
 - [ ] 08-02-PLAN.md — Geração VITE_SPA: generateViteSpaLpAction + branch VITE_SPA em generate/update/duplicate/getLp + ViteSpaLpForm component + branch na página new/[templateId]
