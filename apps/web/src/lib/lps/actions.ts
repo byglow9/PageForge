@@ -334,6 +334,8 @@ export async function updateLpAction(
     values?: Record<string, unknown>;
     markupSnapshot?: string;
     schemaVersion?: number;
+    /** VITE_SPA only: SPA sub-route; '' or undefined = no change; null = clear to root */
+    entryRoute?: string | null;
   }
 ): Promise<ActionResult<{ id: string }>> {
   // Gate
