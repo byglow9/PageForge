@@ -21,6 +21,7 @@ import { z } from "zod";
 import { requireWorkspaceRole } from "@/lib/workspaces/guards";
 import { withTenantDb } from "@/lib/db/tenant-db";
 import { LpForm } from "@/components/lps/LpForm";
+import { ViteSpaLpForm } from "@/components/lps/ViteSpaLpForm";
 import type { MetadataOverlay } from "@/lib/templates/metadata";
 
 interface EditLpPageProps {
@@ -42,8 +43,29 @@ export default async function EditLpPage({ params }: EditLpPageProps) {
     redirect(`/w/${slug}/lps`);
   }
 
+  // Branch VITE_SPA — return early before parse(lp.markupSnapshot) (T-08-04-05 / Pitfall 4):
+  // markupSnapshot is a sentinel empty string for VITE_SPA LPs. Parsing it would crash or
+  // redirect, so the branch MUST appear before any call to parse().
+  if (lp.kind === "VITE_SPA") {
+    return (
+      <div className="px-8 py-6">
+        <h1 className="text-2xl font-semibold text-gray-900 mb-6">
+          Edit Landing Page
+        </h1>
+        <ViteSpaLpForm
+          slug={slug}
+          mode="edit"
+          lpId={lp.id}
+          lpName={lp.name}
+          initialEntryRoute={lp.entryRoute ?? ""}
+        />
+      </div>
+    );
+  }
+
   // Re-parse schema from markupSnapshot (the LP's stored snapshot, not live template)
   // Only { parse } imported — never render (Pitfall 1 prevention)
+  // Only reached for kind=LIQUID — VITE_SPA branch above returns early.
   let parsedSchema;
   try {
     parsedSchema = parse(lp.markupSnapshot);
