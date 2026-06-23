@@ -34,7 +34,8 @@
 import { revalidatePath } from "next/cache";
 import { requireWorkspaceRole, requireWorkspace } from "@/lib/workspaces/guards";
 import { withTenantDb } from "@/lib/db/tenant-db";
-import { GenerateLpSchema, UpdateLpSchema } from "./schema";
+import { GenerateLpSchema, UpdateLpSchema, GenerateViteSpaLpSchema } from "./schema";
+import type { GenerateViteSpaLpInput } from "./schema";
 import { renderLp } from "./render";
 import type { ActionResult } from "@/lib/workspaces/actions";
 import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
@@ -173,14 +174,23 @@ export async function generateLpAction(
         return { ok: false, error: "Template not found in this workspace." };
       }
 
-      // VITE_SPA templates are not a valid source for the LiquidJS generate flow.
-      // Reject up front with a clear message instead of letting the type-boundary
-      // guard in renderLp() throw and surface as a generic 500 (WR-03).
+      // VITE_SPA branch — no LiquidJS rendering, no markup snapshot, no LpAssets.
+      // Sentinel values: markupSnapshot: "", schemaVersion: 0, values: {}.
+      // entryRoute defaults to null (root '/') — use generateViteSpaLpAction for
+      // user-specified routes. This branch handles VITE_SPA templates that happen
+      // to land in generateLpAction (e.g. via direct API calls or future integrations).
       if ((template.kind ?? "LIQUID") === "VITE_SPA") {
-        return {
-          ok: false,
-          error: "This template type cannot generate LiquidJS landing pages.",
-        };
+        const viteLp = await db.lp.create({
+          templateId,
+          name,
+          markupSnapshot: "",
+          schemaVersion: 0,
+          values: {},
+          kind: "VITE_SPA",
+          entryRoute: null,
+        });
+        revalidatePath(`/w/${slug}/lps`);
+        return { ok: true, data: { id: viteLp.id } };
       }
 
       // Step 4: Snapshot markup + schemaVersion (D-06)
@@ -237,6 +247,75 @@ export async function generateLpAction(
 }
 
 // -----------------------------------------------------------------------
+// generateViteSpaLpAction
+// -----------------------------------------------------------------------
+
+/**
+ * Generate a new VITE_SPA landing page from a VITE_SPA template.
+ *
+ * VITE_SPA LPs differ from LIQUID LPs:
+ * - No markup snapshot — the SPA dist/ is served as-is from the template reference.
+ * - No schema-driven values — sentinel values ({}, "", 0) are stored.
+ * - entryRoute: null means root '/'; a path (e.g. '/grecia') maps to a SPA sub-route (D-01, D-07).
+ *
+ * Security (T-08-02-01, T-08-02-03):
+ * - workspaceId derived from session via requireWorkspaceRole — never from client.
+ * - templateId resolved through TenantTemplateHelpers (workspaceId-scoped).
+ * - entryRoute validated and normalized by GenerateViteSpaLpSchema (T-08-02-02).
+ */
+export async function generateViteSpaLpAction(
+  slug: string,
+  input: GenerateViteSpaLpInput
+): Promise<ActionResult<{ id: string }>> {
+  // Gate: owner/admin/editor only (T-08-02-01)
+  const ctx = await requireWorkspaceRole(slug, ["owner", "admin", "editor"]);
+
+  // Validate input — entryRoute normalization handled by Zod (T-08-02-02)
+  const parsed = GenerateViteSpaLpSchema.safeParse(input);
+  if (!parsed.success) {
+    const fieldErrors: Record<string, string[]> = {};
+    for (const issue of parsed.error.issues) {
+      const field = issue.path[0] as string;
+      fieldErrors[field] = fieldErrors[field] ?? [];
+      fieldErrors[field].push(issue.message);
+    }
+    return { ok: false, error: "Validation failed", fieldErrors };
+  }
+
+  const { templateId, name, entryRoute } = parsed.data;
+
+  try {
+    return await withTenantDb({ workspaceId: ctx.workspaceId }, async (db) => {
+      // Fetch template — workspaceId scoped (T-08-02-03)
+      const template = await db.template.findById(templateId);
+      if (!template) {
+        return { ok: false, error: "Template not found in this workspace." };
+      }
+
+      if (template.kind !== "VITE_SPA") {
+        return { ok: false, error: "This action only generates VITE_SPA landing pages." };
+      }
+
+      // Create LP with sentinel values (D-07, D-08)
+      const lp = await db.lp.create({
+        templateId,
+        name,
+        markupSnapshot: "",
+        schemaVersion: 0,
+        values: {},
+        kind: "VITE_SPA",
+        entryRoute: entryRoute ?? null,
+      });
+
+      revalidatePath(`/w/${slug}/lps`);
+      return { ok: true, data: { id: lp.id } };
+    });
+  } catch {
+    return { ok: false, error: "Failed to generate landing page. Please try again." };
+  }
+}
+
+// -----------------------------------------------------------------------
 // updateLpAction
 // -----------------------------------------------------------------------
 
@@ -255,6 +334,8 @@ export async function updateLpAction(
     values?: Record<string, unknown>;
     markupSnapshot?: string;
     schemaVersion?: number;
+    /** VITE_SPA only: SPA sub-route; '' or undefined = no change; null = clear to root */
+    entryRoute?: string | null;
   }
 ): Promise<ActionResult<{ id: string }>> {
   // Gate
@@ -272,13 +353,24 @@ export async function updateLpAction(
     return { ok: false, error: "Validation failed", fieldErrors };
   }
 
-  const { id, name, values, markupSnapshot, schemaVersion } = parsed.data;
+  const { id, name, values, markupSnapshot, schemaVersion, entryRoute } = parsed.data;
 
   try {
     return await withTenantDb({ workspaceId: ctx.workspaceId }, async (db) => {
       const existing = await db.lp.findById(id);
       if (!existing) {
         return { ok: false, error: "Landing page not found in this workspace." };
+      }
+
+      // VITE_SPA branch — only name and entryRoute are editable; no markup/values changes.
+      if (existing.kind === "VITE_SPA") {
+        const updated = await db.lp.update(id, {
+          ...(name !== undefined ? { name } : {}),
+          ...(entryRoute !== undefined ? { entryRoute } : {}),
+        });
+        revalidatePath(`/w/${slug}/lps/${id}/preview`);
+        revalidatePath(`/w/${slug}/lps`);
+        return { ok: true, data: { id: updated.id } };
       }
 
       const updated = await db.lp.update(id, {
@@ -318,6 +410,21 @@ export async function duplicateLpAction(
       const origin = await db.lp.findById(lpId);
       if (!origin) {
         return { ok: false, error: "Landing page not found in this workspace." };
+      }
+
+      // VITE_SPA branch — copy only templateId, entryRoute, kind; sentinel values; no LpAssets.
+      if (origin.kind === "VITE_SPA") {
+        const viteCopy = await db.lp.create({
+          templateId: origin.templateId ?? undefined,
+          name: `Copy of ${origin.name}`,
+          markupSnapshot: "",
+          schemaVersion: 0,
+          values: {},
+          kind: "VITE_SPA",
+          entryRoute: origin.entryRoute ?? null,
+        });
+        revalidatePath(`/w/${slug}/lps`);
+        return { ok: true, data: { id: viteCopy.id } };
       }
 
       // D-12: Full independent copy — name prefixed with "Copy of"
@@ -455,6 +562,8 @@ export async function getLpAction(
     schemaVersion: number;
     values: Record<string, unknown>;
     templateId: string | null;
+    kind: string;
+    entryRoute: string | null;
   }>
 > {
   const ctx = await requireWorkspace(slug);
@@ -475,6 +584,8 @@ export async function getLpAction(
           schemaVersion: lp.schemaVersion,
           values: lp.values as Record<string, unknown>,
           templateId: lp.templateId,
+          kind: lp.kind,
+          entryRoute: lp.entryRoute ?? null,
         },
       };
     });

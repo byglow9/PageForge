@@ -257,6 +257,7 @@ model LandingPage {
   values         Json                      // LP field values (jsonb)
   folderId       String?                   // D-01: nullable; null = root catalog
   kind           String   @default("LIQUID") // "LIQUID" | "VITE_SPA" — enforced by CHECK in migration
+  entryRoute     String?                   // VITE_SPA only: SPA sub-route (e.g. '/grecia'); null = root '/' or LIQUID (D-08)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 

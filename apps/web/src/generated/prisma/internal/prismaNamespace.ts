@@ -1973,6 +1973,7 @@ export const LandingPageScalarFieldEnum = {
   values: 'values',
   folderId: 'folderId',
   kind: 'kind',
+  entryRoute: 'entryRoute',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

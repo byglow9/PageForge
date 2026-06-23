@@ -15,6 +15,7 @@ import { ParsedSchemaValidator } from "@/lib/templates/parsed-schema-validator";
 import { requireWorkspaceRole } from "@/lib/workspaces/guards";
 import { withTenantDb } from "@/lib/db/tenant-db";
 import { LpForm } from "@/components/lps/LpForm";
+import { ViteSpaLpForm } from "@/components/lps/ViteSpaLpForm";
 import type { MetadataOverlay } from "@/lib/templates/metadata";
 
 interface NewLpFromTemplatePage {
@@ -40,6 +41,25 @@ export default async function NewLpFromTemplatePage({
   // Template not found or cross-workspace → redirect back to picker
   if (!template) {
     redirect(`/w/${slug}/lps/new`);
+  }
+
+  // VITE_SPA branch — skip LiquidJS schema parsing; render ViteSpaLpForm instead.
+  // D-07: LP references the template (no dist/ copy); D-01: entryRoute defaults to '/'.
+  if (template.kind === "VITE_SPA") {
+    return (
+      <div className="px-8 py-6">
+        <h1 className="text-2xl font-semibold text-gray-900 mb-6">
+          Generate Landing Page
+        </h1>
+        <ViteSpaLpForm
+          slug={slug}
+          mode="generate"
+          templateId={template.id}
+          templateName={template.name}
+          initialLpName={lpName ?? ""}
+        />
+      </div>
+    );
   }
 
   // Validate DB JSON before passing to client (never cast DB JSON directly)

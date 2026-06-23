@@ -147,6 +147,7 @@ export interface TenantLpHelpers {
     schemaVersion: number;
     values: Prisma.InputJsonValue;
     kind?: string;
+    entryRoute?: string | null; // VITE_SPA only: SPA sub-route (e.g. '/grecia'); null = root '/' (D-08)
   }) => Promise<LandingPage>;
   /** Find a landing page by ID. Returns null if the row does not exist OR belongs to a different workspace. */
   findById: (id: string) => Promise<LandingPage | null>;
@@ -163,6 +164,7 @@ export interface TenantLpHelpers {
       markupSnapshot?: string;
       schemaVersion?: number;
       folderId?: string | null;
+      entryRoute?: string | null; // VITE_SPA only: SPA sub-route (e.g. '/grecia'); null = root '/' (D-08)
     }
   ) => Promise<LandingPage>;
   /** Delete a landing page. Returns null if not found or belongs to a different workspace. */
@@ -430,6 +432,7 @@ export async function withTenantDb<T>(
           return tx.landingPage.create({
             data: {
               ...data,
+              entryRoute: data.entryRoute ?? null, // VITE_SPA: null = root '/'; LIQUID: always null
               workspaceId, // injected from server context, never from client (T-04-01-05)
             },
           });
@@ -453,12 +456,17 @@ export async function withTenantDb<T>(
         },
 
         update: async (id: string, data) => {
+          const { entryRoute, ...rest } = data;
           return tx.landingPage.update({
             where: {
               id,
               workspaceId, // app-level isolation: prevents cross-workspace update
             },
-            data,
+            data: {
+              ...rest,
+              // entryRoute: only included when explicitly provided (undefined = no change; null = clear)
+              ...(entryRoute !== undefined ? { entryRoute } : {}),
+            },
           });
         },
 
