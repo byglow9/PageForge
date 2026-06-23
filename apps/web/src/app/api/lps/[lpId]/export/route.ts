@@ -28,10 +28,27 @@ import { headers } from "next/headers";
 import { Readable } from "node:stream";
 import { ZipArchive } from "archiver";
 import slugify from "slugify";
+import { GetObjectCommand, ListObjectsV2Command, S3Client } from "@aws-sdk/client-s3";
 import { auth } from "@/lib/auth/auth";
 import { prisma } from "@/lib/db/prisma";
 import { withTenantDb } from "@/lib/db/tenant-db";
 import { renderLp } from "@/lib/lps/render";
+import { buildBrandStyleTag, injectBrandStyle } from "@/lib/brand/theme";
+
+// -----------------------------------------------------------------------
+// S3 client singleton — module-level, initialized once per cold start
+// Do NOT import from project-templates/actions.ts or lps/actions.ts —
+// those are "use server" modules; the route handler must own its singleton.
+// -----------------------------------------------------------------------
+const s3Client = new S3Client({
+  region: process.env.S3_REGION ?? "us-east-1",
+  endpoint: process.env.S3_ENDPOINT,
+  forcePathStyle: process.env.S3_FORCE_PATH_STYLE === "true",
+  credentials: {
+    accessKeyId: process.env.S3_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,
+  },
+});
 
 // -----------------------------------------------------------------------
 // CSP injection (D-10)
@@ -187,17 +204,86 @@ export async function GET(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // 3b. Type-boundary: VITE_SPA LPs are valid records but cannot be exported
-    // through the LIQUID render path. Return a clear 409 instead of letting the
-    // renderLp() type-boundary guard throw and surface as an opaque 500 (WR-02).
+    // 3b. VITE_SPA export branch (D-10, D-11, D-12):
+    // Stream the full dist/ tree from S3 as a ZIP with a tematized index.html.
+    // CSP injection is intentionally OMITTED — VITE_SPA has its own runtime JS
+    // and `script-src 'none'` would break the SPA bundle (D-12).
     if ((lp.kind ?? "LIQUID") === "VITE_SPA") {
-      return NextResponse.json(
-        {
-          error:
-            "VITE_SPA landing pages cannot be exported via this endpoint. Use the project-template serving flow.",
-        },
-        { status: 409 }
+      if (!lp.templateId) {
+        return NextResponse.json(
+          { error: "VITE_SPA LP has no template reference." },
+          { status: 400 }
+        );
+      }
+
+      // Fetch brand config for CSS var injection (D-11)
+      const brand = await prisma.brandConfig.findFirst({
+        where: { workspaceId: lp.workspaceId },
+      });
+
+      // ListObjectsV2 paginado — prefix: workspaces/{wId}/project-templates/{tplId}/dist/
+      // ContinuationToken loop handles buckets with > 1000 keys (T-08-04-03)
+      const prefix = `workspaces/${lp.workspaceId}/project-templates/${lp.templateId}/dist/`;
+      let continuationToken: string | undefined;
+      const s3Keys: string[] = [];
+      do {
+        const listResult = await s3Client.send(
+          new ListObjectsV2Command({
+            Bucket: process.env.S3_BUCKET!,
+            Prefix: prefix,
+            ContinuationToken: continuationToken,
+          })
+        );
+        for (const obj of listResult.Contents ?? []) {
+          if (obj.Key) s3Keys.push(obj.Key);
+        }
+        continuationToken = listResult.NextContinuationToken;
+      } while (continuationToken);
+
+      // Build ZIP: index.html gets brand injection; all other assets stream directly
+      const viteSpaArchive = new ZipArchive({ zlib: { level: 9 } });
+
+      for (const s3Key of s3Keys) {
+        const relativePath = s3Key.slice(prefix.length); // e.g. 'index.html', 'assets/main.abc.js'
+        const s3Obj = await s3Client.send(
+          new GetObjectCommand({ Bucket: process.env.S3_BUCKET!, Key: s3Key })
+        );
+
+        if (relativePath === "index.html") {
+          // transformToString() + brand injection (D-11)
+          // T-08-04-02: primaryColor validated as hex — no CSS injection vector
+          const html = await s3Obj.Body!.transformToString();
+          const styleTag = buildBrandStyleTag(brand?.primaryColor);
+          const themedHtml = injectBrandStyle(html, styleTag);
+          viteSpaArchive.append(Buffer.from(themedHtml, "utf-8"), {
+            name: "index.html",
+          });
+        } else {
+          // Stream non-HTML assets directly to archiver without loading into memory (T-08-04-03)
+          // Cast to Node.js ReadableStream type — AWS SDK returns a compatible but typed differently stream
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const webStream = s3Obj.Body!.transformToWebStream() as any;
+          const nodeStream = Readable.fromWeb(webStream);
+          viteSpaArchive.append(nodeStream, { name: relativePath });
+        }
+      }
+
+      viteSpaArchive.finalize();
+
+      // Bridge Node.js Readable → Web ReadableStream (same pattern as LIQUID path)
+      const viteSpaWebStream = Readable.toWeb(
+        viteSpaArchive as unknown as Readable
       );
+      const viteSpaSlug =
+        slugify(lp.name, { lower: true, strict: true }) || "landing-page";
+
+      return new NextResponse(viteSpaWebStream as ReadableStream, {
+        headers: {
+          "Content-Type": "application/zip",
+          "Content-Disposition": `attachment; filename="${viteSpaSlug}.zip"`,
+        },
+      });
+      // NOTE: injectCsp() is NOT called for VITE_SPA (D-12)
     }
 
     // 4. Render LP HTML (preview == export guarantee — same renderLp() as preview RSC page)
