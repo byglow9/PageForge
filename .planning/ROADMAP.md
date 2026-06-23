@@ -222,7 +222,7 @@ Plans:
 - [x] 08-01-PLAN.md — [BLOCKING] Migration entry_route + Prisma schema entryRoute + TenantLpHelpers + GenerateViteSpaLpSchema + lib/brand/theme.ts (hexToHslTriplet + buildBrandStyleTag + injectBrandStyle)
 
 **Wave 2** *(parallel — both blocked on Wave 1 completion)*
-- [ ] 08-02-PLAN.md — Geração VITE_SPA: generateViteSpaLpAction + branch VITE_SPA em generate/update/duplicate/getLp + ViteSpaLpForm component + branch na página new/[templateId]
+- [x] 08-02-PLAN.md — Geração VITE_SPA: generateViteSpaLpAction + branch VITE_SPA em generate/update/duplicate/getLp + ViteSpaLpForm component + branch na página new/[templateId]
 - [ ] 08-03-PLAN.md — Brand theming + preview: injeção de brand <style> no serve handler (isHtmlRequest) + branch VITE_SPA na LP preview page (iframe sandboxed com entryRoute)
 
 **Wave 3** *(blocked on Wave 2 completion)*
@@ -246,4 +246,4 @@ v1.0 (Fases 1-5) concluído. v2.0 (Fases 6-8) é o milestone ativo.
 | 5. Catalog & Grécia Acceptance | 6/6 | Complete   | 2026-06-17 |
 | 6. Project-Template Ingestion + Type Coexistence | 2/2 | Complete   | 2026-06-19 |
 | 7. Isolated Serving + Sandboxed Preview | 0/3 | Not started | — |
-| 8. LP Generation, Brand Theming, Export & v2.0 Acceptance | 0/5 | Not started | — |
+| 8. LP Generation, Brand Theming, Export & v2.0 Acceptance | 2/5 | In Progress|  |
