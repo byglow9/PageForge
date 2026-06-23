@@ -48,6 +48,7 @@ export type LandingPageMinAggregateOutputType = {
   schemaVersion: number | null
   folderId: string | null
   kind: string | null
+  entryRoute: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -61,6 +62,7 @@ export type LandingPageMaxAggregateOutputType = {
   schemaVersion: number | null
   folderId: string | null
   kind: string | null
+  entryRoute: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -75,6 +77,7 @@ export type LandingPageCountAggregateOutputType = {
   values: number
   folderId: number
   kind: number
+  entryRoute: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -98,6 +101,7 @@ export type LandingPageMinAggregateInputType = {
   schemaVersion?: true
   folderId?: true
   kind?: true
+  entryRoute?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -111,6 +115,7 @@ export type LandingPageMaxAggregateInputType = {
   schemaVersion?: true
   folderId?: true
   kind?: true
+  entryRoute?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -125,6 +130,7 @@ export type LandingPageCountAggregateInputType = {
   values?: true
   folderId?: true
   kind?: true
+  entryRoute?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -226,6 +232,7 @@ export type LandingPageGroupByOutputType = {
   values: runtime.JsonValue
   folderId: string | null
   kind: string
+  entryRoute: string | null
   createdAt: Date
   updatedAt: Date
   _count: LandingPageCountAggregateOutputType | null
@@ -263,6 +270,7 @@ export type LandingPageWhereInput = {
   values?: Prisma.JsonFilter<"LandingPage">
   folderId?: Prisma.StringNullableFilter<"LandingPage"> | string | null
   kind?: Prisma.StringFilter<"LandingPage"> | string
+  entryRoute?: Prisma.StringNullableFilter<"LandingPage"> | string | null
   createdAt?: Prisma.DateTimeFilter<"LandingPage"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"LandingPage"> | Date | string
   workspace?: Prisma.XOR<Prisma.WorkspaceScalarRelationFilter, Prisma.WorkspaceWhereInput>
@@ -281,6 +289,7 @@ export type LandingPageOrderByWithRelationInput = {
   values?: Prisma.SortOrder
   folderId?: Prisma.SortOrderInput | Prisma.SortOrder
   kind?: Prisma.SortOrder
+  entryRoute?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   workspace?: Prisma.WorkspaceOrderByWithRelationInput
@@ -302,6 +311,7 @@ export type LandingPageWhereUniqueInput = Prisma.AtLeast<{
   values?: Prisma.JsonFilter<"LandingPage">
   folderId?: Prisma.StringNullableFilter<"LandingPage"> | string | null
   kind?: Prisma.StringFilter<"LandingPage"> | string
+  entryRoute?: Prisma.StringNullableFilter<"LandingPage"> | string | null
   createdAt?: Prisma.DateTimeFilter<"LandingPage"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"LandingPage"> | Date | string
   workspace?: Prisma.XOR<Prisma.WorkspaceScalarRelationFilter, Prisma.WorkspaceWhereInput>
@@ -320,6 +330,7 @@ export type LandingPageOrderByWithAggregationInput = {
   values?: Prisma.SortOrder
   folderId?: Prisma.SortOrderInput | Prisma.SortOrder
   kind?: Prisma.SortOrder
+  entryRoute?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.LandingPageCountOrderByAggregateInput
@@ -342,6 +353,7 @@ export type LandingPageScalarWhereWithAggregatesInput = {
   values?: Prisma.JsonWithAggregatesFilter<"LandingPage">
   folderId?: Prisma.StringNullableWithAggregatesFilter<"LandingPage"> | string | null
   kind?: Prisma.StringWithAggregatesFilter<"LandingPage"> | string
+  entryRoute?: Prisma.StringNullableWithAggregatesFilter<"LandingPage"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"LandingPage"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"LandingPage"> | Date | string
 }
@@ -354,6 +366,7 @@ export type LandingPageCreateInput = {
   schemaVersion: number
   values: Prisma.JsonNullValueInput | runtime.InputJsonValue
   kind?: string
+  entryRoute?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspace: Prisma.WorkspaceCreateNestedOneWithoutLandingPagesInput
@@ -372,6 +385,7 @@ export type LandingPageUncheckedCreateInput = {
   values: Prisma.JsonNullValueInput | runtime.InputJsonValue
   folderId?: string | null
   kind?: string
+  entryRoute?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   assets?: Prisma.LpAssetUncheckedCreateNestedManyWithoutLandingPageInput
@@ -386,6 +400,7 @@ export type LandingPageUpdateInput = {
   schemaVersion?: Prisma.IntFieldUpdateOperationsInput | number
   values?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   kind?: Prisma.StringFieldUpdateOperationsInput | string
+  entryRoute?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutLandingPagesNestedInput
@@ -404,6 +419,7 @@ export type LandingPageUncheckedUpdateInput = {
   values?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   folderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   kind?: Prisma.StringFieldUpdateOperationsInput | string
+  entryRoute?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assets?: Prisma.LpAssetUncheckedUpdateManyWithoutLandingPageNestedInput
@@ -420,6 +436,7 @@ export type LandingPageCreateManyInput = {
   values: Prisma.JsonNullValueInput | runtime.InputJsonValue
   folderId?: string | null
   kind?: string
+  entryRoute?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -432,6 +449,7 @@ export type LandingPageUpdateManyMutationInput = {
   schemaVersion?: Prisma.IntFieldUpdateOperationsInput | number
   values?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   kind?: Prisma.StringFieldUpdateOperationsInput | string
+  entryRoute?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -446,6 +464,7 @@ export type LandingPageUncheckedUpdateManyInput = {
   values?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   folderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   kind?: Prisma.StringFieldUpdateOperationsInput | string
+  entryRoute?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -470,6 +489,7 @@ export type LandingPageCountOrderByAggregateInput = {
   values?: Prisma.SortOrder
   folderId?: Prisma.SortOrder
   kind?: Prisma.SortOrder
+  entryRoute?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -487,6 +507,7 @@ export type LandingPageMaxOrderByAggregateInput = {
   schemaVersion?: Prisma.SortOrder
   folderId?: Prisma.SortOrder
   kind?: Prisma.SortOrder
+  entryRoute?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -500,6 +521,7 @@ export type LandingPageMinOrderByAggregateInput = {
   schemaVersion?: Prisma.SortOrder
   folderId?: Prisma.SortOrder
   kind?: Prisma.SortOrder
+  entryRoute?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -633,6 +655,7 @@ export type LandingPageCreateWithoutWorkspaceInput = {
   schemaVersion: number
   values: Prisma.JsonNullValueInput | runtime.InputJsonValue
   kind?: string
+  entryRoute?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   assets?: Prisma.LpAssetCreateNestedManyWithoutLandingPageInput
@@ -649,6 +672,7 @@ export type LandingPageUncheckedCreateWithoutWorkspaceInput = {
   values: Prisma.JsonNullValueInput | runtime.InputJsonValue
   folderId?: string | null
   kind?: string
+  entryRoute?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   assets?: Prisma.LpAssetUncheckedCreateNestedManyWithoutLandingPageInput
@@ -694,6 +718,7 @@ export type LandingPageScalarWhereInput = {
   values?: Prisma.JsonFilter<"LandingPage">
   folderId?: Prisma.StringNullableFilter<"LandingPage"> | string | null
   kind?: Prisma.StringFilter<"LandingPage"> | string
+  entryRoute?: Prisma.StringNullableFilter<"LandingPage"> | string | null
   createdAt?: Prisma.DateTimeFilter<"LandingPage"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"LandingPage"> | Date | string
 }
@@ -706,6 +731,7 @@ export type LandingPageCreateWithoutAssetsInput = {
   schemaVersion: number
   values: Prisma.JsonNullValueInput | runtime.InputJsonValue
   kind?: string
+  entryRoute?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspace: Prisma.WorkspaceCreateNestedOneWithoutLandingPagesInput
@@ -723,6 +749,7 @@ export type LandingPageUncheckedCreateWithoutAssetsInput = {
   values: Prisma.JsonNullValueInput | runtime.InputJsonValue
   folderId?: string | null
   kind?: string
+  entryRoute?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tags?: Prisma.LpTagUncheckedCreateNestedManyWithoutLandingPageInput
@@ -752,6 +779,7 @@ export type LandingPageUpdateWithoutAssetsInput = {
   schemaVersion?: Prisma.IntFieldUpdateOperationsInput | number
   values?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   kind?: Prisma.StringFieldUpdateOperationsInput | string
+  entryRoute?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutLandingPagesNestedInput
@@ -769,6 +797,7 @@ export type LandingPageUncheckedUpdateWithoutAssetsInput = {
   values?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   folderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   kind?: Prisma.StringFieldUpdateOperationsInput | string
+  entryRoute?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tags?: Prisma.LpTagUncheckedUpdateManyWithoutLandingPageNestedInput
@@ -782,6 +811,7 @@ export type LandingPageCreateWithoutFolderInput = {
   schemaVersion: number
   values: Prisma.JsonNullValueInput | runtime.InputJsonValue
   kind?: string
+  entryRoute?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspace: Prisma.WorkspaceCreateNestedOneWithoutLandingPagesInput
@@ -798,6 +828,7 @@ export type LandingPageUncheckedCreateWithoutFolderInput = {
   schemaVersion: number
   values: Prisma.JsonNullValueInput | runtime.InputJsonValue
   kind?: string
+  entryRoute?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   assets?: Prisma.LpAssetUncheckedCreateNestedManyWithoutLandingPageInput
@@ -838,6 +869,7 @@ export type LandingPageCreateWithoutTagsInput = {
   schemaVersion: number
   values: Prisma.JsonNullValueInput | runtime.InputJsonValue
   kind?: string
+  entryRoute?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspace: Prisma.WorkspaceCreateNestedOneWithoutLandingPagesInput
@@ -855,6 +887,7 @@ export type LandingPageUncheckedCreateWithoutTagsInput = {
   values: Prisma.JsonNullValueInput | runtime.InputJsonValue
   folderId?: string | null
   kind?: string
+  entryRoute?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   assets?: Prisma.LpAssetUncheckedCreateNestedManyWithoutLandingPageInput
@@ -884,6 +917,7 @@ export type LandingPageUpdateWithoutTagsInput = {
   schemaVersion?: Prisma.IntFieldUpdateOperationsInput | number
   values?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   kind?: Prisma.StringFieldUpdateOperationsInput | string
+  entryRoute?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutLandingPagesNestedInput
@@ -901,6 +935,7 @@ export type LandingPageUncheckedUpdateWithoutTagsInput = {
   values?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   folderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   kind?: Prisma.StringFieldUpdateOperationsInput | string
+  entryRoute?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assets?: Prisma.LpAssetUncheckedUpdateManyWithoutLandingPageNestedInput
@@ -915,6 +950,7 @@ export type LandingPageCreateManyWorkspaceInput = {
   values: Prisma.JsonNullValueInput | runtime.InputJsonValue
   folderId?: string | null
   kind?: string
+  entryRoute?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -927,6 +963,7 @@ export type LandingPageUpdateWithoutWorkspaceInput = {
   schemaVersion?: Prisma.IntFieldUpdateOperationsInput | number
   values?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   kind?: Prisma.StringFieldUpdateOperationsInput | string
+  entryRoute?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assets?: Prisma.LpAssetUpdateManyWithoutLandingPageNestedInput
@@ -943,6 +980,7 @@ export type LandingPageUncheckedUpdateWithoutWorkspaceInput = {
   values?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   folderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   kind?: Prisma.StringFieldUpdateOperationsInput | string
+  entryRoute?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assets?: Prisma.LpAssetUncheckedUpdateManyWithoutLandingPageNestedInput
@@ -958,6 +996,7 @@ export type LandingPageUncheckedUpdateManyWithoutWorkspaceInput = {
   values?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   folderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   kind?: Prisma.StringFieldUpdateOperationsInput | string
+  entryRoute?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -971,6 +1010,7 @@ export type LandingPageCreateManyFolderInput = {
   schemaVersion: number
   values: Prisma.JsonNullValueInput | runtime.InputJsonValue
   kind?: string
+  entryRoute?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -983,6 +1023,7 @@ export type LandingPageUpdateWithoutFolderInput = {
   schemaVersion?: Prisma.IntFieldUpdateOperationsInput | number
   values?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   kind?: Prisma.StringFieldUpdateOperationsInput | string
+  entryRoute?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutLandingPagesNestedInput
@@ -999,6 +1040,7 @@ export type LandingPageUncheckedUpdateWithoutFolderInput = {
   schemaVersion?: Prisma.IntFieldUpdateOperationsInput | number
   values?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   kind?: Prisma.StringFieldUpdateOperationsInput | string
+  entryRoute?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assets?: Prisma.LpAssetUncheckedUpdateManyWithoutLandingPageNestedInput
@@ -1014,6 +1056,7 @@ export type LandingPageUncheckedUpdateManyWithoutFolderInput = {
   schemaVersion?: Prisma.IntFieldUpdateOperationsInput | number
   values?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   kind?: Prisma.StringFieldUpdateOperationsInput | string
+  entryRoute?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1068,6 +1111,7 @@ export type LandingPageSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   values?: boolean
   folderId?: boolean
   kind?: boolean
+  entryRoute?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
@@ -1087,6 +1131,7 @@ export type LandingPageSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   values?: boolean
   folderId?: boolean
   kind?: boolean
+  entryRoute?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
@@ -1103,6 +1148,7 @@ export type LandingPageSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   values?: boolean
   folderId?: boolean
   kind?: boolean
+  entryRoute?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
@@ -1119,11 +1165,12 @@ export type LandingPageSelectScalar = {
   values?: boolean
   folderId?: boolean
   kind?: boolean
+  entryRoute?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type LandingPageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "templateId" | "name" | "markupSnapshot" | "schemaVersion" | "values" | "folderId" | "kind" | "createdAt" | "updatedAt", ExtArgs["result"]["landingPage"]>
+export type LandingPageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "templateId" | "name" | "markupSnapshot" | "schemaVersion" | "values" | "folderId" | "kind" | "entryRoute" | "createdAt" | "updatedAt", ExtArgs["result"]["landingPage"]>
 export type LandingPageInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   assets?: boolean | Prisma.LandingPage$assetsArgs<ExtArgs>
@@ -1158,6 +1205,7 @@ export type $LandingPagePayload<ExtArgs extends runtime.Types.Extensions.Interna
     values: runtime.JsonValue
     folderId: string | null
     kind: string
+    entryRoute: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["landingPage"]>
@@ -1596,6 +1644,7 @@ export interface LandingPageFieldRefs {
   readonly values: Prisma.FieldRef<"LandingPage", 'Json'>
   readonly folderId: Prisma.FieldRef<"LandingPage", 'String'>
   readonly kind: Prisma.FieldRef<"LandingPage", 'String'>
+  readonly entryRoute: Prisma.FieldRef<"LandingPage", 'String'>
   readonly createdAt: Prisma.FieldRef<"LandingPage", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"LandingPage", 'DateTime'>
 }
