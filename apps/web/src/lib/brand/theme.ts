@@ -1,7 +1,7 @@
 /**
  * Brand theme utilities — server-only pure module.
  *
- * Provides three functions for injecting workspace brand colors into
+ * Provides four functions for injecting workspace brand colors into
  * VITE_SPA landing page HTML:
  *
  * - hexToHslTriplet: converts a #RRGGBB hex color to the shadcn HSL triplet
@@ -14,10 +14,15 @@
  * - injectBrandStyle: inserts the style tag before </head> in generated LP HTML,
  *   with a prepend fallback if </head> is absent.
  *
+ * - buildBrandStyleTagForLp: resolves the effective brand color with LP override
+ *   taking precedence over workspace color (Phase 9).
+ *
  * Security:
  * - T-08-01-01: primaryColor is validated as /^#[0-9a-fA-F]{6}$/ in BrandConfig
  *   before reaching this module — the resulting triplet contains only digits,
  *   '%', and spaces (no CSS injection vector).
+ * - T-09-01-03: primaryColorOverride validated as /^#[0-9a-fA-F]{6}$/ by
+ *   SaveViteSpaOverridesSchema before reaching this module.
  * - No "use server" directive — this is a pure utility module, not a Server Action.
  * - No external imports — intentionally dependency-free for testability.
  */
@@ -128,4 +133,30 @@ export function injectBrandStyle(html: string, styleTag: string): string {
 
   // Fallback: no </head> found — prepend style tag
   return `${styleTag}\n${html}`;
+}
+
+// -----------------------------------------------------------------------
+// buildBrandStyleTagForLp
+// -----------------------------------------------------------------------
+
+/**
+ * Returns a <style> tag setting --primary. LP color (primaryColorOverride) takes
+ * precedence over workspace brand color. Returns '' when both are absent/null.
+ *
+ * Used by the serve route and export route (Plan 02) to inject the effective brand
+ * color into the VITE_SPA index.html, giving per-LP color overrides priority over
+ * the workspace-level brand color configured in Brand Settings.
+ *
+ * Logic: return buildBrandStyleTag(primaryColorOverride ?? workspacePrimaryColor)
+ *
+ * Security:
+ * - primaryColorOverride is validated as #RRGGBB by SaveViteSpaOverridesSchema
+ *   before being stored — no CSS injection vector.
+ * - workspacePrimaryColor is validated as #RRGGBB by SaveBrandConfigSchema.
+ */
+export function buildBrandStyleTagForLp(
+  primaryColorOverride: string | null | undefined,
+  workspacePrimaryColor: string | null | undefined
+): string {
+  return buildBrandStyleTag(primaryColorOverride ?? workspacePrimaryColor);
 }
