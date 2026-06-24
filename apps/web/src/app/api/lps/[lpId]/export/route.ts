@@ -33,7 +33,9 @@ import { auth } from "@/lib/auth/auth";
 import { prisma } from "@/lib/db/prisma";
 import { withTenantDb } from "@/lib/db/tenant-db";
 import { renderLp } from "@/lib/lps/render";
-import { buildBrandStyleTag, injectBrandStyle } from "@/lib/brand/theme";
+import { buildBrandStyleTagForLp, injectBrandStyle } from "@/lib/brand/theme";
+import { buildOverrideInjection, injectOverrides } from "@/lib/overrides/apply-shim";
+import type { ViteSpaValues } from "@/lib/lps/schema";
 
 // -----------------------------------------------------------------------
 // S3 client singleton — module-level, initialized once per cold start
@@ -265,10 +267,16 @@ export async function GET(
         if (relativePath === "index.html") {
           // transformToString() + brand injection (D-11)
           // T-08-04-02: primaryColor validated as hex — no CSS injection vector
+          // Phase 9: LP color override takes precedence over workspace color (buildBrandStyleTagForLp).
           const html = await s3Obj.Body!.transformToString();
-          const styleTag = buildBrandStyleTag(brand?.primaryColor);
+          const lpValues = lp.values as ViteSpaValues | null;
+          const styleTag = buildBrandStyleTagForLp(lpValues?.primaryColorOverride, brand?.primaryColor);
           const themedHtml = injectBrandStyle(html, styleTag);
-          viteSpaArchive.append(Buffer.from(themedHtml, "utf-8"), {
+          // Phase 9: Inject override sentinel JSON + apply shim (preview == export guarantee).
+          // buildOverrideInjection guards the B2 sentinel-{} case — safe for override-free LPs.
+          const injection = buildOverrideInjection(lpValues);
+          const finalHtml = injectOverrides(themedHtml, injection);
+          viteSpaArchive.append(Buffer.from(finalHtml, "utf-8"), {
             name: "index.html",
           });
         } else {

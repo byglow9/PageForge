@@ -46,7 +46,9 @@ import {
 } from "@/lib/serve/serve-vite-spa";
 import { prisma } from "@/lib/db/prisma";
 import type { Prisma } from "@/generated/prisma/client";
-import { buildBrandStyleTag, injectBrandStyle } from "@/lib/brand/theme";
+import { buildBrandStyleTagForLp, injectBrandStyle } from "@/lib/brand/theme";
+import { buildOverrideInjection, injectOverrides } from "@/lib/overrides/apply-shim";
+import type { ViteSpaValues } from "@/lib/lps/schema";
 
 // -----------------------------------------------------------------------
 // servingRead — cross-workspace read for the isolated serving layer.
@@ -242,13 +244,32 @@ export async function GET(
         })
       );
 
+      // Phase 9: Look up the LP for this template to inject overrides + per-LP color.
+      // NOTE: tplId may have multiple LPs (e.g. /grecia, /turquia). findFirst by createdAt asc
+      // is deterministic; multi-LP disambiguation via postMessage lpId arrives in Phase 10.
+      const lp = await servingRead((tx) =>
+        tx.landingPage.findFirst({
+          where: { templateId: tplId, workspaceId },
+          select: { values: true },
+          orderBy: { createdAt: "asc" },
+        })
+      );
+
       // D-05: inject only --primary as HSL triplet (T-08-03-01: hex validated by SaveBrandConfigSchema).
-      const styleTag = buildBrandStyleTag(brand?.primaryColor);
+      // Phase 9: LP color override takes precedence over workspace color (buildBrandStyleTagForLp).
+      const lpValues = lp?.values as ViteSpaValues | null;
+      const styleTag = buildBrandStyleTagForLp(lpValues?.primaryColorOverride, brand?.primaryColor);
       const themedHtml = injectBrandStyle(html, styleTag);
+
+      // Phase 9: Inject override sentinel JSON + apply shim before </head>.
+      // buildOverrideInjection internally guards the B2 sentinel-{} case — passing lpValues
+      // that is {} (cast to ViteSpaValues) is safe — it returns an empty injection.
+      const injection = buildOverrideInjection(lpValues);
+      const finalHtml = injectOverrides(themedHtml, injection);
 
       // Step 9: Return themed HTML response with security headers
       // frame-ancestors as HTTP header (NOT meta tag — Pitfall 6 / T-07-02-08)
-      return new NextResponse(themedHtml, {
+      return new NextResponse(finalHtml, {
         headers: buildSecurityHeaders(contentType),
       });
     } catch (s3Err) {
