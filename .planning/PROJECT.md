@@ -53,15 +53,15 @@ A partir de um template cadastrado uma vez, um usuário gera uma nova landing pa
 - [x] **PRJ-01** Ingestão de template tipo projeto: upload do `dist/` **pré-buildado** (ZIP) de um projeto Lovable/Vite (sem build server-side no v2.0) — *validado na Fase 6*
 - [x] **PRJ-02** Validação + scan no upload: estrutura (`index.html`/assets), rejeição de path traversal e tamanho excessivo, aviso de credenciais embutidas e meta Lovable — *validado na Fase 6*
 - [x] **PRJ-03** Discriminador `kind` (LIQUID|VITE_SPA) em Template/LandingPage + coexistência no catálogo/pastas/tags com badge de tipo — *validado na Fase 6*
-- [ ] **PRJ-04** Serving do `dist/` do tenant a partir de **origem isolada** do dashboard (não compartilha cookies de sessão)
-- [ ] **PRJ-05** Preview via `<iframe>` cross-origin com `sandbox="allow-scripts"` (sem `allow-same-origin`) + CSP `frame-ancestors`
-- [ ] **PRJ-06** Isolamento cross-tenant do `dist/` servido/armazenado (chaves não-enumeráveis, escopo por workspace)
-- [ ] **PRJ-07** Geração de LP a partir de template VITE_SPA, com seleção de rota de entrada para projetos multi-rota
-- [ ] **PRJ-08** Injeção de brand CSS vars no serve/preview/export (a "editabilidade grátis": cor/logo via `--primary` etc., sem rebuild)
-- [ ] **PRJ-09** Export como ZIP da árvore `dist/` (branch por `kind`; sem CSP `script-src none` para VITE_SPA)
-- [ ] **PRJ-10** Editar (rota/tema) e duplicar LPs VITE_SPA, reaproveitando catálogo/pastas/tags
+- [x] **PRJ-04** Serving do `dist/` do tenant a partir de **origem isolada** do dashboard (não compartilha cookies de sessão) — *validado na Fase 7*
+- [x] **PRJ-05** Preview via `<iframe>` cross-origin + CSP `frame-ancestors` — *validado na Fase 7 (modelo de isolamento revisado: `allow-scripts allow-same-origin` + subdomínio cross-origin + cookies host-only, ver 08-SECURITY AR-08-08)*
+- [x] **PRJ-06** Isolamento cross-tenant do `dist/` servido/armazenado (chaves não-enumeráveis, escopo por workspace) — *validado na Fase 7*
+- [x] **PRJ-07** Geração de LP a partir de template VITE_SPA, com seleção de rota de entrada para projetos multi-rota — *validado na Fase 8*
+- [x] **PRJ-08** Injeção de brand CSS vars no serve/preview/export (a "editabilidade grátis": cor/logo via `--primary` etc., sem rebuild) — *validado na Fase 8*
+- [x] **PRJ-09** Export como ZIP da árvore `dist/` (branch por `kind`; sem CSP `script-src none` para VITE_SPA) — *validado na Fase 8*
+- [x] **PRJ-10** Editar (rota/tema) e duplicar LPs VITE_SPA, reaproveitando catálogo/pastas/tags — *validado na Fase 8*
 - [x] **PRJ-11** Separação estrita de tipo: VITE_SPA nunca entra no caminho de render LIQUID e vice-versa — *validado na Fase 6*
-- [ ] **PRJ-12** Aceitação v2.0: `renova-turismo` cadastrado, LP gerada por rota, prevista em origem isolada, tematizada e exportada — coexistindo com o template Liquid Grécia
+- [x] **PRJ-12** Aceitação v2.0: `renova-turismo` cadastrado, LP gerada por rota, prevista em origem isolada, tematizada e exportada — coexistindo com o template Liquid Grécia — *validado na Fase 8 (UAT Blocos A–E; Bloco B confirmado ao vivo 2026-06-24)*
 
 ### Out of Scope
 
@@ -129,4 +129,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-19 — Fase 6 completa: PRJ-01/02/03/11 validados (ingestão VITE_SPA + discriminador kind + coexistência). Próximo: Fase 7 (serving/preview isolados).*
+*Last updated: 2026-06-24 — Milestone v2.0 completo: PRJ-01..12 validados (Fases 6-8). Auditoria tech_debt reconciliada (08-UAT Bloco B confirmado ao vivo). Pronto para arquivar v2.0; próximo milestone: editor visual de conteúdo VITE_SPA.*

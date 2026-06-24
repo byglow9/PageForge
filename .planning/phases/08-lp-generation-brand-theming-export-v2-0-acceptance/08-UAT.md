@@ -8,12 +8,14 @@ source:
   - 08-03-SUMMARY.md
   - 08-04-SUMMARY.md
 started: "2026-06-23T18:03:23Z"
-updated: "2026-06-23T19:30:00Z"
+updated: "2026-06-24T00:00:00Z"
 ---
 
 ## Current Test
 
-[testing complete — 6/6 pass, 3 issues found & fixed in-session]
+[Bloco B reaberto em 2026-06-24 — PASS original era falso positivo (bug
+vite-spa-preview-blank). Fix aplicado; aguardando verificação humana ao vivo
+após restart do dev server.]
 
 ## Tests
 
@@ -51,7 +53,29 @@ expected: |
       (HSL da cor do BrandConfig) antes de </head>.
   B3. Cor primária aplicada visualmente (botões/links em hsl(var(--primary))).
 result: pass
-note: "Iframe carrega SPA na rota /grecia; sandbox isolado confirmado (SecurityError em document.cookie). Brand --primary baking verificado no ZIP (Bloco C)."
+reopened_date: "2026-06-24"
+reopened_reason: |
+  O PASS original de 2026-06-23 era um FALSO POSITIVO. A "nota" interpretou o
+  `SecurityError em document.cookie` como prova de isolamento — na verdade era o
+  bug `vite-spa-preview-blank`: o iframe usava sandbox="allow-scripts" (origem
+  opaca), que (a) bloqueava por CORS o entry ESM do Vite (<script type="module"
+  crossorigin>) e (b) fazia o cliente Supabase lançar SecurityError ao acessar
+  localStorage no boot. Resultado real: a SPA NUNCA montava — preview totalmente
+  branco. B1 nunca foi de fato satisfeito.
+fix: |
+  apps/web/src/app/w/[slug]/lps/[lpId]/preview/page.tsx — iframe sandbox
+  "allow-scripts" → "allow-scripts allow-same-origin". Isolamento preservado pelo
+  subdomínio de serve cross-origin + cookies de sessão host-only + CSP
+  frame-ancestors (ver 08-SECURITY.md T-08-03-03 revisado + AR-08-08).
+status: verified-live
+verified_live: "2026-06-24 — Confirmado pelo usuário em sessão: preview da renova-turismo (rota Grécia) renderiza corretamente (SPA monta, não mais tela branca). Bloco B satisfeito."
+verify_steps: |
+  1. Reiniciar o dev server (mudança de iframe é server-rendered; reload do RSC).
+  2. Abrir /w/test/lps/{lpId}/preview da LP VITE_SPA (renova-turismo Grécia).
+  3. ESPERADO: a SPA renderiza (página Grécia visível), NÃO mais tela branca.
+  4. ESPERADO: console do iframe sem erro de CORS no /assets/index-*.js e sem
+     SecurityError de localStorage.
+  5. ESPERADO: brand --primary aplicado (B2/B3).
 
 ### 3. Bloco C — Export ZIP tematizado
 expected: |
