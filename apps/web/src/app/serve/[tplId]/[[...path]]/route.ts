@@ -48,7 +48,7 @@ import { prisma } from "@/lib/db/prisma";
 import type { Prisma } from "@/generated/prisma/client";
 import { buildBrandStyleTagForLp, injectBrandStyle } from "@/lib/brand/theme";
 import { buildOverrideInjection, injectOverrides } from "@/lib/overrides/apply-shim";
-import type { ViteSpaValues } from "@/lib/lps/schema";
+import { ViteSpaValuesSchema } from "@/lib/lps/schema";
 
 // -----------------------------------------------------------------------
 // servingRead — cross-workspace read for the isolated serving layer.
@@ -245,25 +245,37 @@ export async function GET(
       );
 
       // Phase 9: Look up the LP for this template to inject overrides + per-LP color.
-      // NOTE: tplId may have multiple LPs (e.g. /grecia, /turquia). findFirst by createdAt asc
-      // is deterministic; multi-LP disambiguation via postMessage lpId arrives in Phase 10.
-      const lp = await servingRead((tx) =>
-        tx.landingPage.findFirst({
+      // CR-01: a template may back multiple LPs (e.g. /grecia, /turquia). The previous
+      // findFirst(createdAt asc) silently picked the OLDEST LP, so the preview could show
+      // LP-A's overrides while the export of LP-B contained LP-B's — breaking the
+      // preview == export guarantee. Until per-LP preview disambiguation arrives in
+      // Phase 10 (via postMessage lpId), we FAIL SAFE: when more than one LP matches,
+      // render the SPA with NO overrides and NO per-LP color (honest preview), rather
+      // than misleadingly applying one arbitrary LP's overrides. When exactly one LP
+      // matches, the preview is unambiguous and we keep the full Phase 9 behavior.
+      const lps = await servingRead((tx) =>
+        tx.landingPage.findMany({
           where: { templateId: tplId, workspaceId },
           select: { values: true },
           orderBy: { createdAt: "asc" },
         })
       );
+      const lp = lps.length === 1 ? lps[0] : null;
 
       // D-05: inject only --primary as HSL triplet (T-08-03-01: hex validated by SaveBrandConfigSchema).
       // Phase 9: LP color override takes precedence over workspace color (buildBrandStyleTagForLp).
-      const lpValues = lp?.values as ViteSpaValues | null;
-      const styleTag = buildBrandStyleTagForLp(lpValues?.primaryColorOverride, brand?.primaryColor);
+      // WR-06: parse lp.values through ViteSpaValuesSchema at the injection boundary instead
+      // of an unchecked `as ViteSpaValues` cast. A corrupt/malformed row (or the multi-LP
+      // fail-safe lp === null above) degrades to "no overrides / workspace color" rather
+      // than emitting invalid CSS (NaN triplet) or a misleading preview.
+      const parsedValues = ViteSpaValuesSchema.safeParse(lp?.values);
+      const lpValues = parsedValues.success ? parsedValues.data : { overrides: [] };
+      const styleTag = buildBrandStyleTagForLp(lpValues.primaryColorOverride, brand?.primaryColor);
       const themedHtml = injectBrandStyle(html, styleTag);
 
       // Phase 9: Inject override sentinel JSON + apply shim before </head>.
-      // buildOverrideInjection internally guards the B2 sentinel-{} case — passing lpValues
-      // that is {} (cast to ViteSpaValues) is safe — it returns an empty injection.
+      // lpValues is parsed/defaulted to { overrides: [] } (WR-06), so buildOverrideInjection
+      // returns an empty injection when there are no overrides.
       const injection = buildOverrideInjection(lpValues);
       const finalHtml = injectOverrides(themedHtml, injection);
 
