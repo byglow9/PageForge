@@ -35,7 +35,7 @@ import { withTenantDb } from "@/lib/db/tenant-db";
 import { renderLp } from "@/lib/lps/render";
 import { buildBrandStyleTagForLp, injectBrandStyle } from "@/lib/brand/theme";
 import { buildOverrideInjection, injectOverrides } from "@/lib/overrides/apply-shim";
-import type { ViteSpaValues } from "@/lib/lps/schema";
+import { ViteSpaValuesSchema } from "@/lib/lps/schema";
 
 // -----------------------------------------------------------------------
 // S3 client singleton — module-level, initialized once per cold start
@@ -269,11 +269,17 @@ export async function GET(
           // T-08-04-02: primaryColor validated as hex — no CSS injection vector
           // Phase 9: LP color override takes precedence over workspace color (buildBrandStyleTagForLp).
           const html = await s3Obj.Body!.transformToString();
-          const lpValues = lp.values as ViteSpaValues | null;
-          const styleTag = buildBrandStyleTagForLp(lpValues?.primaryColorOverride, brand?.primaryColor);
+          // WR-06: parse lp.values through ViteSpaValuesSchema at the injection boundary
+          // instead of an unchecked `as ViteSpaValues` cast. A corrupt/malformed row
+          // degrades to "no overrides / workspace color" rather than reaching
+          // hexToHslTriplet with a non-hex value (NaN triplet).
+          const parsedValues = ViteSpaValuesSchema.safeParse(lp.values);
+          const lpValues = parsedValues.success ? parsedValues.data : { overrides: [] };
+          const styleTag = buildBrandStyleTagForLp(lpValues.primaryColorOverride, brand?.primaryColor);
           const themedHtml = injectBrandStyle(html, styleTag);
           // Phase 9: Inject override sentinel JSON + apply shim (preview == export guarantee).
-          // buildOverrideInjection guards the B2 sentinel-{} case — safe for override-free LPs.
+          // lpValues is parsed/defaulted to { overrides: [] } (WR-06), so the injection is
+          // empty for override-free LPs.
           const injection = buildOverrideInjection(lpValues);
           const finalHtml = injectOverrides(themedHtml, injection);
           viteSpaArchive.append(Buffer.from(finalHtml, "utf-8"), {
