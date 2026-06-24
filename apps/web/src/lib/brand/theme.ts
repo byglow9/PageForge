@@ -120,8 +120,11 @@ export function buildBrandStyleTag(primaryColor: string | null | undefined): str
 export function injectBrandStyle(html: string, styleTag: string): string {
   if (!styleTag) return html;
 
-  const headCloseTag = "</head>";
-  const idx = html.indexOf(headCloseTag);
+  // IN-04: case-insensitive </head> search (Vite output is lowercase, but a
+  // </HEAD> variant must not fall through to the prepend fallback, which would
+  // place the brand <style> outside <head>). Slice on the ORIGINAL html so the
+  // document's casing is preserved.
+  const idx = html.toLowerCase().indexOf("</head>");
   if (idx !== -1) {
     return (
       html.slice(0, idx) +
