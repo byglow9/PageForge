@@ -4,7 +4,7 @@
 
 - ✅ **v1.0 MVP** — Fases 1–5 (shipped 2026-06-17)
 - ✅ **v2.0 Suporte a LPs do Lovable** — Fases 6–8 (shipped 2026-06-24)
-- 📋 **v2.1 (próximo)** — Editor visual de conteúdo para LPs VITE_SPA (a definir via `/gsd-new-milestone`)
+- 🚧 **v2.1 Editor visual de conteúdo VITE_SPA** — Fases 9–12 (em planejamento)
 
 Detalhes completos das fases arquivadas: `milestones/v2.0-ROADMAP.md`.
 
@@ -34,9 +34,22 @@ Adiciona o tipo de template **VITE_SPA** (projeto React/Vite do Lovable via `dis
 
 </details>
 
-### 📋 v2.1 (próximo milestone)
+### 🚧 v2.1 Editor visual de conteúdo VITE_SPA (Fases 9–12)
 
-- [ ] Editor visual de conteúdo para LPs VITE_SPA (override em runtime) — textos, imagens, links e cor por LP. Design aprovado; planejar via `/gsd-new-milestone`.
+Override em runtime: edições de conteúdo viram overrides `{path→valor}` por LP, reaplicados após o React montar no serve e no export. Detalhes do design: `~/.claude/plans/centralizar-horizontalmente-o-conte-do-bright-valley.md`.
+
+- [ ] **Fase 9: Modelo de overrides + runtime de aplicação** — schema de overrides em `LandingPage.values`; shim de apply (texto + cor por LP); serve e export injetam overrides JSON + shim. Verificável "semeando" overrides via action, sem UI.
+  - Requisitos: OVR-01, OVR-02, OVR-03, EDIT-06
+  - Sucesso: (1) override de texto semeado aparece na preview após mount; (2) override de cor por LP sobrescreve o brand do workspace; (3) export ZIP contém os mesmos overrides (preview==export); (4) overrides escopados por LP (não vazam entre LPs).
+- [ ] **Fase 10: Editor visual in-iframe (texto)** — injeção de modo edição autorizada; click-to-select + edição inline de texto; `postMessage` → Server Action de save; descartar edição.
+  - Requisitos: EDIT-01, EDIT-02, EDIT-03, EDIT-07
+  - Sucesso: (1) owner/admin/editor entra em modo edição na preview; (2) clicar num texto seleciona com destaque; (3) editar inline + salvar persiste e reflete; (4) cancelar descarta sem persistir.
+- [ ] **Fase 11: Imagens + links** — troca de imagem (upload S3 presigned / URL) e edição de `href` em âncoras, com validação de URL.
+  - Requisitos: EDIT-04, EDIT-05
+  - Sucesso: (1) trocar imagem por upload reflete na preview e no export; (2) trocar imagem por URL válida funciona; (3) editar `href` de um `<a>` persiste; (4) URLs inválidas/`javascript:` rejeitadas.
+- [ ] **Fase 12: Hardening + aceitação** — `MutationObserver` re-apply (sem loop), detecção de drift por hash, sanitização server-side, isolamento por LP/cross-tenant, fidelidade preview==export.
+  - Requisitos: OVR-04, OVR-05, SEC-01, SEC-02, SEC-03
+  - Sucesso: (1) overrides sobrevivem a re-render do React; (2) drift (template alterado) ignora override em vez de aplicar errado; (3) modo edição bloqueado p/ viewer e ausente no host público/export; (4) valores sanitizados (sem XSS); (5) LP de outro workspace inacessível (cross-tenant).
 
 ## Progress
 
@@ -50,3 +63,7 @@ Adiciona o tipo de template **VITE_SPA** (projeto React/Vite do Lovable via `dis
 | 6. Project-Template Ingestion + Type Coexistence | v2.0 | 2/2 | Complete | 2026-06-19 |
 | 7. Isolated Serving + Sandboxed Preview | v2.0 | 3/3 | Complete | 2026-06-23 |
 | 8. LP Generation, Brand Theming, Export & v2.0 Acceptance | v2.0 | 5/5 | Complete | 2026-06-24 |
+| 9. Modelo de overrides + runtime de aplicação | v2.1 | 0/? | Not started | — |
+| 10. Editor visual in-iframe (texto) | v2.1 | 0/? | Not started | — |
+| 11. Imagens + links | v2.1 | 0/? | Not started | — |
+| 12. Hardening + aceitação | v2.1 | 0/? | Not started | — |
