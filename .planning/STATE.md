@@ -2,11 +2,11 @@
 gsd_state_version: 1.0
 milestone: v2.1
 milestone_name: Editor visual de conteúdo VITE_SPA
-status: planning
-last_updated: "2026-06-24T15:10:05.393Z"
+status: roadmapped
+last_updated: "2026-06-24T00:00:00.000Z"
 last_activity: 2026-06-24
 progress:
-  total_phases: 0
+  total_phases: 4
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -20,14 +20,19 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-24)
 
 **Core value:** A partir de um template cadastrado uma vez, um usuário gera uma nova landing page completa e fiel ao layout apenas preenchendo um formulário — sem tocar em código.
-**Current focus:** v2.0 arquivado. Próximo milestone (v2.1): editor visual de conteúdo para LPs VITE_SPA — design aprovado em `~/.claude/plans/centralizar-horizontalmente-o-conte-do-bright-valley.md`. Iniciar via /gsd-new-milestone.
+**Current focus:** v2.1 — Editor visual de conteúdo para LPs VITE_SPA (override em runtime). Roadmap criado (Fases 9–12). Próximo passo: `/gsd-plan-phase 9`.
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: Phase 9 (not started — roadmap created, planning next)
 Plan: —
-Status: Defining requirements
-Last activity: 2026-06-24 — Milestone v2.1 started
+Status: Roadmap created — ready to plan Phase 9
+Last activity: 2026-06-24 — Roadmap v2.1 created (Fases 9–12, 15 requisitos mapeados)
+
+```
+[Phase 9 ] [ 10 ] [ 11 ] [ 12 ]
+[░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░]  0% complete
+```
 
 ## Performance Metrics
 
@@ -73,6 +78,10 @@ Recent decisions affecting current work:
 - [Phase ?]: Shell padding via page-wrapper not shared main
 - [Phase ?]: ImageUploadField hydration via useEffect on field.value without calling onChange — stored value remains RHF source of truth
 - [Phase ?]: Base UI SelectValue children render function maps template ID to human-readable name in trigger
+- [v2.1 design]: Override em runtime é a única abordagem que funciona em SPA já compilado — conteúdo está no JS bundle, não nos templates. Shim de apply injetado no serve/export após React montar.
+- [v2.1 design]: Overrides `{path, originalHash, type, value}` armazenados em `LandingPage.values` (jsonb ocioso para VITE_SPA) — sem nova migração.
+- [v2.1 design]: Limitações declaradas — botões com handler JS (não `<a href>`) e conteúdo vindo do Supabase em runtime não são editáveis por override de DOM.
+- [v2.1 design]: postMessage entre iframe (serve cross-origin) e dashboard usa allowlist de origem — necessário porque SPA é cross-origin.
 
 ### Pending Todos
 
@@ -122,9 +131,9 @@ Items acknowledged and carried forward from previous milestone close:
 ## Session Continuity
 
 Last session: 2026-06-24T00:00:00.000Z
-Stopped at: Phase 8 complete — milestone v2.0 ready to archive
+Stopped at: Roadmap v2.1 created (Fases 9–12) — 15/15 requisitos mapeados
 Resume file: None
 
 ## Operator Next Steps
 
-- Start the next milestone with /gsd-new-milestone
+- Plan Phase 9: `/gsd-plan-phase 9`

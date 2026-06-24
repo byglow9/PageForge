@@ -36,20 +36,63 @@ Adiciona o tipo de template **VITE_SPA** (projeto React/Vite do Lovable via `dis
 
 ### 🚧 v2.1 Editor visual de conteúdo VITE_SPA (Fases 9–12)
 
-Override em runtime: edições de conteúdo viram overrides `{path→valor}` por LP, reaplicados após o React montar no serve e no export. Detalhes do design: `~/.claude/plans/centralizar-horizontalmente-o-conte-do-bright-valley.md`.
+Override em runtime: edições de conteúdo (texto, imagem, link, cor) viram overrides `{path, originalHash, type, value}` por LP, reaplicados após o React montar no serve e no export. Abordagem de runtime é a única que funciona em SPA já compilado (conteúdo está no JS bundle, não nos templates). Limitações declaradas: botões com ação via handler JS (não `<a href>`) e conteúdo vindo do Supabase em runtime não são editáveis por override de DOM. Design completo: `~/.claude/plans/centralizar-horizontalmente-o-conte-do-bright-valley.md`.
 
-- [ ] **Fase 9: Modelo de overrides + runtime de aplicação** — schema de overrides em `LandingPage.values`; shim de apply (texto + cor por LP); serve e export injetam overrides JSON + shim. Verificável "semeando" overrides via action, sem UI.
-  - Requisitos: OVR-01, OVR-02, OVR-03, EDIT-06
-  - Sucesso: (1) override de texto semeado aparece na preview após mount; (2) override de cor por LP sobrescreve o brand do workspace; (3) export ZIP contém os mesmos overrides (preview==export); (4) overrides escopados por LP (não vazam entre LPs).
-- [ ] **Fase 10: Editor visual in-iframe (texto)** — injeção de modo edição autorizada; click-to-select + edição inline de texto; `postMessage` → Server Action de save; descartar edição.
-  - Requisitos: EDIT-01, EDIT-02, EDIT-03, EDIT-07
-  - Sucesso: (1) owner/admin/editor entra em modo edição na preview; (2) clicar num texto seleciona com destaque; (3) editar inline + salvar persiste e reflete; (4) cancelar descarta sem persistir.
-- [ ] **Fase 11: Imagens + links** — troca de imagem (upload S3 presigned / URL) e edição de `href` em âncoras, com validação de URL.
-  - Requisitos: EDIT-04, EDIT-05
-  - Sucesso: (1) trocar imagem por upload reflete na preview e no export; (2) trocar imagem por URL válida funciona; (3) editar `href` de um `<a>` persiste; (4) URLs inválidas/`javascript:` rejeitadas.
-- [ ] **Fase 12: Hardening + aceitação** — `MutationObserver` re-apply (sem loop), detecção de drift por hash, sanitização server-side, isolamento por LP/cross-tenant, fidelidade preview==export.
-  - Requisitos: OVR-04, OVR-05, SEC-01, SEC-02, SEC-03
-  - Sucesso: (1) overrides sobrevivem a re-render do React; (2) drift (template alterado) ignora override em vez de aplicar errado; (3) modo edição bloqueado p/ viewer e ausente no host público/export; (4) valores sanitizados (sem XSS); (5) LP de outro workspace inacessível (cross-tenant).
+- [ ] **Phase 9: Modelo de overrides + runtime de aplicação** — Schema de overrides em `LandingPage.values`; shim de apply (texto + cor por LP) injetado no serve e no export; verificável semeando overrides via `updateLpAction`, sem UI de editor.
+- [ ] **Phase 10: Editor visual in-iframe (texto)** — Injeção de modo edição autorizada (owner/admin/editor); click-to-select + edição inline de texto; `postMessage` → Server Action de save; descartar edição.
+- [ ] **Phase 11: Imagens + links** — Troca de imagem (upload S3 presigned / URL) e edição de `href` em âncoras, com validação de URL.
+- [ ] **Phase 12: Hardening + aceitação** — `MutationObserver` re-apply sem loop; detecção de drift por `originalHash`; sanitização server-side; isolamento por LP e cross-tenant; fidelidade preview==export; aceitação v2.1.
+
+## Phase Details
+
+### Phase 9: Modelo de overrides + runtime de aplicação
+**Goal**: Estabelecer o modelo de dados de overrides por LP e o runtime de reaplicação no serve/export — sem UI de editor. Overrides `{path, originalHash, type, value}` armazenados em `LandingPage.values` (reutilizando o campo `jsonb` ocioso para VITE_SPA, sem migração); shim de apply de texto e cor injetado no `index.html` no serve route e no export route (branch VITE_SPA). Verificável semeando overrides via `updateLpAction`.
+**Depends on**: Phase 8
+**Requirements**: OVR-01, OVR-02, OVR-03, EDIT-06
+**Success Criteria** (what must be TRUE):
+  1. Um override de texto semeado (via `updateLpAction`, sem UI) aparece refletido na preview após o SPA montar — o shim aplicou o valor ao nó correto por path.
+  2. Um override de cor por LP sobrescreve a cor do workspace (Brand Settings) na preview — a cor da LP tem precedência sobre o brand do workspace.
+  3. O export ZIP contém os mesmos overrides aplicados que a preview (preview == export); o HTML exportado não depende do serve ao ser aberto offline.
+  4. Overrides de LP A não aparecem em LP B do mesmo workspace; LP de workspace diferente não acessa os overrides (isolamento cross-tenant verificado por teste).
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 10: Editor visual in-iframe (texto)
+**Goal**: Habilitar a edição visual inline de textos dentro da preview da LP VITE_SPA (que roda em iframe cross-origin), com controle de acesso por papel, feedback visual de seleção, persistência via Server Action e descarte de edição não salva.
+**Depends on**: Phase 9
+**Requirements**: EDIT-01, EDIT-02, EDIT-03, EDIT-07
+**Success Criteria** (what must be TRUE):
+  1. Um usuário com papel owner, admin ou editor vê o botão/controle de "modo edição" na preview da LP VITE_SPA e pode ativá-lo; um viewer não vê o controle e não consegue ativar o modo edição.
+  2. No modo edição ativo, clicar em um elemento de texto da LP o seleciona com destaque visual claro — o elemento está pronto para edição.
+  3. Após editar o texto de um elemento selecionado e salvar, a mudança persiste (override gravado via Server Action) e a preview reflete o novo texto após re-mount do SPA.
+  4. Cancelar/descartar uma edição antes de salvar não persiste nenhum valor — o conteúdo original é restaurado e nenhum override parcial é gravado.
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 11: Imagens + links
+**Goal**: Completar a cobertura de tipos de elemento editáveis: trocar imagens (via upload S3 presigned ou URL externa) e editar o destino (`href`) de links/botões âncora, com validação de URL no servidor antes de persistir o override.
+**Depends on**: Phase 10
+**Requirements**: EDIT-04, EDIT-05
+**Success Criteria** (what must be TRUE):
+  1. O usuário pode selecionar uma imagem da LP, fazer upload de uma nova via S3 presigned (reutilizando o mecanismo existente), e a nova imagem aparece na preview e no export ZIP — o override de imagem persiste e é reaplicado.
+  2. O usuário pode selecionar uma imagem da LP e substituí-la por uma URL externa válida (http/https); a imagem substituta aparece corretamente na preview e no export.
+  3. O usuário pode selecionar um `<a>` da LP, editar seu `href` e salvar; o novo destino persiste (override de link) e o link abre para o endereço correto na preview e no export.
+  4. Tentar salvar uma URL de imagem ou `href` contendo `javascript:`, protocolo não-http(s) ou URL malformada é rejeitado com erro — nenhum override inválido é persistido.
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 12: Hardening + aceitação
+**Goal**: Tornar o editor resiliente e seguro para uso em produção: overrides sobrevivem a re-renders do React via `MutationObserver`, drift detectado por `originalHash` (template alterado ignora override em vez de aplicar errado), valores sanitizados server-side, modo edição isolado por papel e ausente no host público/export, isolamento cross-tenant verificado — culminando na aceitação v2.1 end-to-end.
+**Depends on**: Phase 11
+**Requirements**: OVR-04, OVR-05, SEC-01, SEC-02, SEC-03
+**Success Criteria** (what must be TRUE):
+  1. Overrides de texto, imagem e link sobrevivem a re-renders do React (o `MutationObserver` re-aplica após cada mutação do DOM) sem entrar em loop de reaplicação infinita.
+  2. Quando o template VITE_SPA é atualizado e o nó original não corresponde mais ao `originalHash` salvo, o override é ignorado silenciosamente em vez de ser aplicado no nó errado — nenhum conteúdo incorreto aparece na preview/export.
+  3. O modo edição está disponível apenas para owner/admin/editor no contexto autenticado do dashboard; viewers e visitantes do host público (serve cross-origin) não veem nenhum controle de edição; o HTML exportado não contém código do editor.
+  4. Valores de override sanitizados no servidor: texto extraído via `textContent` (sem HTML arbitrário), URLs de imagem/`href` validadas por allowlist de protocolo http(s)/S3 — `javascript:` e protocolos não-permitidos são rejeitados antes de persistir.
+  5. **Aceitação v2.1**: um usuário edita texto, imagem e link de uma LP `renova-turismo` via editor visual, exporta o ZIP e verifica que o HTML exportado reflete todas as edições — preview == export, sem regressão no fluxo LIQUID (Grécia).
+**Plans**: TBD
+**UI hint**: yes
 
 ## Progress
 
