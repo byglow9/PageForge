@@ -54,7 +54,10 @@ Override em runtime: edições de conteúdo (texto, imagem, link, cor) viram ove
   2. Um override de cor por LP sobrescreve a cor do workspace (Brand Settings) na preview — a cor da LP tem precedência sobre o brand do workspace.
   3. O export ZIP contém os mesmos overrides aplicados que a preview (preview == export); o HTML exportado não depende do serve ao ser aberto offline.
   4. Overrides de LP A não aparecem em LP B do mesmo workspace; LP de workspace diferente não acessa os overrides (isolamento cross-tenant verificado por teste).
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 09-01-PLAN.md — Override schema (PfOverride/ViteSpaValues), updateLpAction VITE_SPA extension, buildBrandStyleTagForLp
+- [ ] 09-02-PLAN.md — Apply shim module + injection into serve route and export route
 **UI hint**: yes
 
 ### Phase 10: Editor visual in-iframe (texto)
