@@ -57,7 +57,7 @@ Override em runtime: edições de conteúdo (texto, imagem, link, cor) viram ove
 **Plans**: 2 plans
 Plans:
 - [x] 09-01-PLAN.md — Override schema (PfOverride/ViteSpaValues), updateLpAction VITE_SPA extension, buildBrandStyleTagForLp
-- [ ] 09-02-PLAN.md — Apply shim module + injection into serve route and export route
+- [x] 09-02-PLAN.md — Apply shim module + injection into serve route and export route
 **UI hint**: yes
 
 ### Phase 10: Editor visual in-iframe (texto)
