@@ -34,8 +34,8 @@
 import { revalidatePath } from "next/cache";
 import { requireWorkspaceRole, requireWorkspace } from "@/lib/workspaces/guards";
 import { withTenantDb } from "@/lib/db/tenant-db";
-import { GenerateLpSchema, UpdateLpSchema, GenerateViteSpaLpSchema } from "./schema";
-import type { GenerateViteSpaLpInput } from "./schema";
+import { GenerateLpSchema, UpdateLpSchema, GenerateViteSpaLpSchema, SaveViteSpaOverridesSchema } from "./schema";
+import type { GenerateViteSpaLpInput, PfOverride, ViteSpaValues } from "./schema";
 import { renderLp } from "./render";
 import type { ActionResult } from "@/lib/workspaces/actions";
 import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
@@ -336,6 +336,18 @@ export async function updateLpAction(
     schemaVersion?: number;
     /** VITE_SPA only: SPA sub-route; '' or undefined = no change; null = clear to root */
     entryRoute?: string | null;
+    /**
+     * VITE_SPA only: Override entries to persist into LandingPage.values.
+     * Read from raw input — NOT from UpdateLpSchema parsed output (W1: z.object strips unknown keys).
+     * Validated separately via SaveViteSpaOverridesSchema inside the VITE_SPA branch.
+     */
+    overrides?: PfOverride[];
+    /**
+     * VITE_SPA only: Per-LP primary color (#RRGGBB). Takes precedence over workspace brand color.
+     * Read from raw input — NOT from UpdateLpSchema parsed output (W1 warning).
+     * Validated as hex via SaveViteSpaOverridesSchema before DB write (T-09-01-03).
+     */
+    primaryColorOverride?: string;
   }
 ): Promise<ActionResult<{ id: string }>> {
   // Gate
@@ -362,11 +374,47 @@ export async function updateLpAction(
         return { ok: false, error: "Landing page not found in this workspace." };
       }
 
-      // VITE_SPA branch — only name and entryRoute are editable; no markup/values changes.
+      // VITE_SPA branch — name, entryRoute, and override payload are editable.
+      // Override fields (overrides, primaryColorOverride) are read from the RAW input
+      // (not parsed.data) because UpdateLpSchema.safeParse strips unknown keys (W1).
       if (existing.kind === "VITE_SPA") {
+        // Check if an override payload is present in the raw input (W1 — read from input, not parsed.data)
+        const hasOverridePayload =
+          input.overrides !== undefined || input.primaryColorOverride !== undefined;
+
+        let valuesUpdate: object | undefined;
+
+        if (hasOverridePayload) {
+          // Validate the override payload server-side (T-09-01-01, T-09-01-03)
+          const overridesParsed = SaveViteSpaOverridesSchema.safeParse({
+            id: input.id,
+            overrides: input.overrides,
+            primaryColorOverride: input.primaryColorOverride,
+          });
+
+          if (!overridesParsed.success) {
+            const fieldErrors: Record<string, string[]> = {};
+            for (const issue of overridesParsed.error.issues) {
+              const field = issue.path[0] as string;
+              fieldErrors[field] = fieldErrors[field] ?? [];
+              fieldErrors[field].push(issue.message);
+            }
+            return { ok: false, error: "Validation failed", fieldErrors };
+          }
+
+          // Merge with existing values — do not overwrite fields absent from payload
+          const existingValues = (existing.values as ViteSpaValues | null) ?? ({} as ViteSpaValues);
+          valuesUpdate = {
+            overrides: overridesParsed.data.overrides ?? existingValues.overrides ?? [],
+            primaryColorOverride:
+              overridesParsed.data.primaryColorOverride ?? existingValues.primaryColorOverride,
+          };
+        }
+
         const updated = await db.lp.update(id, {
           ...(name !== undefined ? { name } : {}),
           ...(entryRoute !== undefined ? { entryRoute } : {}),
+          ...(valuesUpdate !== undefined ? { values: valuesUpdate } : {}),
         });
         revalidatePath(`/w/${slug}/lps/${id}/preview`);
         revalidatePath(`/w/${slug}/lps`);
