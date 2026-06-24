@@ -8,18 +8,17 @@ PageForge é uma plataforma SaaS multi-tenant onde agências e times de marketin
 
 A partir de um template cadastrado uma vez, um usuário gera uma nova landing page completa e fiel ao layout apenas preenchendo um formulário — sem tocar em código.
 
-## Current Milestone: v2.0 Suporte a LPs do Lovable (templates de projeto React)
+## Current Milestone: v2.1 Editor visual de conteúdo para LPs VITE_SPA
 
-**Goal:** Permitir cadastrar uma LP exportada do Lovable (pasta de projeto React/Vite multi-arquivo) e suportá-la no PageForge — gerar, organizar, pré-visualizar e exportar — coexistindo com o engine de template HTML+tokens (LiquidJS) atual.
+**Goal:** Permitir editar o conteúdo (textos, imagens, links e cor) de LPs geradas de templates VITE_SPA via um editor visual, sem rebuild — preenchendo a lacuna que hoje só permite editar nome/rota (item antes diferido em Out of Scope da v2.0).
 
-**Target features (a refinar nos requisitos):**
-- Ingestão de uma **pasta de projeto** React/Vite (não só uma string HTML+tokens)
-- Pipeline para transformar o projeto em algo servível/exportável (provável: build → output estático)
-- Modelo de **segurança** para aceitar/processar código de terceiros (reabre o vetor que a v1 evitou de propósito)
-- Coexistência de **dois tipos de template** (Liquid+tokens vs projeto Lovable) no catálogo, preview e export
-- Definir se/como a edição via formulário/tokens se aplica a esse formato (conteúdo Lovable hoje é hardcoded nos componentes)
+**Target features (Fases A–D do design aprovado):**
+- **A** — Modelo de overrides `{path→valor}` em `LandingPage.values` + shim de reaplicação no serve/export (texto + cor por LP)
+- **B** — Editor visual in-iframe: click-to-select, edição inline, `postMessage` → Server Action de save (o SPA é servido cross-origin, então o editor roda DENTRO do iframe)
+- **C** — Imagens (upload S3 / URL) + links (`href` de âncoras)
+- **D** — Hardening: `MutationObserver` re-apply (React re-renderiza), detecção de drift por hash do conteúdo original, sanitização server-side, isolamento por LP e cross-tenant
 
-**Key context / tensão:** v1.0 escolheu LiquidJS **sem execução de JS** + export HTML estático por segurança (SSTI/XSS) e fidelidade preview==export. Suportar projetos React de terceiros muda o modelo de confiança e exige build/sandbox — principal decisão de arquitetura do milestone. Referência concreta: `renova-turismo-jornada-main/` na raiz do repo.
+**Key context / tensão:** Conteúdo do SPA está compilado dentro do JS — não há "costura de tokens" como no LIQUID. Por isso a abordagem é **override em runtime** (única que funciona em SPA já compilado, incl. a Renova Grécia já cadastrada): edições viram overrides salvos por LP e um runtime injetado reaplica após o React montar, no serve e no export (preview==export). **Limitações declaradas:** botões com ação via handler JS (não `<a href>`) e conteúdo vindo do Supabase em runtime não são editáveis por override de DOM. Design completo: `~/.claude/plans/centralizar-horizontalmente-o-conte-do-bright-valley.md`.
 
 ## Requirements
 
@@ -129,4 +128,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-24 — Milestone v2.0 completo: PRJ-01..12 validados (Fases 6-8). Auditoria tech_debt reconciliada (08-UAT Bloco B confirmado ao vivo). Pronto para arquivar v2.0; próximo milestone: editor visual de conteúdo VITE_SPA.*
+*Last updated: 2026-06-24 — Milestone v2.0 arquivado (tag v2.0). Iniciado v2.1: editor visual de conteúdo para LPs VITE_SPA (override em runtime, Fases A–D). Definindo requisitos.*

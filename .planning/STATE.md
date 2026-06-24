@@ -1,17 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.0
-milestone_name: Suporte a LPs do Lovable
-status: Awaiting next milestone
-stopped_at: Phase 8 complete — milestone v2.0 ready to archive
-last_updated: "2026-06-24T15:02:22.780Z"
-last_activity: 2026-06-24 — Milestone v2.0 completed and archived
+milestone: v2.1
+milestone_name: Editor visual de conteúdo VITE_SPA
+status: planning
+last_updated: "2026-06-24T15:10:05.393Z"
+last_activity: 2026-06-24
 progress:
-  total_phases: 8
-  completed_phases: 8
-  total_plans: 35
-  completed_plans: 35
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -25,10 +24,10 @@ See: .planning/PROJECT.md (updated 2026-06-24)
 
 ## Current Position
 
-Phase: v2.0 arquivado (Fases 6–8) — planejando v2.1
+Phase: Not started (defining requirements)
 Plan: —
-Status: Awaiting next milestone
-Last activity: 2026-06-24 — Milestone v2.0 completed and archived
+Status: Defining requirements
+Last activity: 2026-06-24 — Milestone v2.1 started
 
 ## Performance Metrics
 
