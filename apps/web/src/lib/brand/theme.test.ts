@@ -7,9 +7,10 @@
  * - injectBrandStyle: HTML injection helper with </head> and fallback paths
  * - GenerateViteSpaLpSchema: Zod schema behavior including entryRoute normalization
  * - UpdateLpSchema: entryRoute extension behavior
+ * - buildBrandStyleTagForLp: per-LP color precedence over workspace brand color
  */
 import { describe, it, expect } from "vitest";
-import { hexToHslTriplet, buildBrandStyleTag, injectBrandStyle } from "./theme";
+import { hexToHslTriplet, buildBrandStyleTag, injectBrandStyle, buildBrandStyleTagForLp } from "./theme";
 import { GenerateViteSpaLpSchema, UpdateLpSchema } from "@/lib/lps/schema";
 
 // -----------------------------------------------------------------------
@@ -150,5 +151,39 @@ describe("UpdateLpSchema — entryRoute", () => {
       id: "cm1234567890abcdefghi",
     });
     expect(result.entryRoute).toBeUndefined();
+  });
+});
+
+// -----------------------------------------------------------------------
+// buildBrandStyleTagForLp
+// -----------------------------------------------------------------------
+
+describe("buildBrandStyleTagForLp", () => {
+  it("returns LP color style tag when lpColor is set — LP color takes precedence over workspace", () => {
+    expect(buildBrandStyleTagForLp("#ff0000", "#0000ff")).toBe(
+      buildBrandStyleTag("#ff0000")
+    );
+  });
+
+  it("falls back to workspace color when lpColor is undefined", () => {
+    expect(buildBrandStyleTagForLp(undefined, "#0000ff")).toBe(
+      buildBrandStyleTag("#0000ff")
+    );
+  });
+
+  it("falls back to workspace color when lpColor is null", () => {
+    expect(buildBrandStyleTagForLp(null, "#0000ff")).toBe(
+      buildBrandStyleTag("#0000ff")
+    );
+  });
+
+  it("returns '' when both lpColor and workspaceColor are absent/null", () => {
+    expect(buildBrandStyleTagForLp(undefined, null)).toBe("");
+  });
+
+  it("returns LP color style tag even when workspaceColor is null", () => {
+    expect(buildBrandStyleTagForLp("#ff0000", null)).toBe(
+      buildBrandStyleTag("#ff0000")
+    );
   });
 });
