@@ -47,7 +47,7 @@ export default async function NewLpFromTemplatePage({
   // D-07: LP references the template (no dist/ copy); D-01: entryRoute defaults to '/'.
   if (template.kind === "VITE_SPA") {
     return (
-      <div className="px-8 py-6">
+      <div className="mx-auto max-w-2xl px-8 py-6">
         <h1 className="text-2xl font-semibold text-gray-900 mb-6">
           Generate Landing Page
         </h1>
@@ -80,7 +80,7 @@ export default async function NewLpFromTemplatePage({
   );
 
   return (
-    <div className="px-8 py-6">
+    <div className="mx-auto max-w-2xl px-8 py-6">
       <h1 className="text-2xl font-semibold text-gray-900 mb-6">
         Generate Landing Page
       </h1>
