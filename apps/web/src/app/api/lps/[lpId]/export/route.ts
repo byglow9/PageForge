@@ -340,6 +340,10 @@ export async function GET(
 
     const assets: AssetEntry[] = [];
     const urlToFilename = new Map<string, string>();
+    // WR-05: track used basenames so two distinct S3 URLs that share a basename
+    // (e.g. image.jpg under different folders) do not collide on assets/{filename}
+    // and silently overwrite each other in the ZIP.
+    const usedFilenames = new Set<string>();
 
     for (const url of imageUrls) {
       try {
@@ -356,8 +360,14 @@ export async function GET(
 
         // Derive filename from the last URL path segment
         const urlObj = new URL(url);
-        const filename =
-          urlObj.pathname.split("/").at(-1) ?? `asset-${assets.length}`;
+        let filename =
+          urlObj.pathname.split("/").at(-1) || `asset-${assets.length}`;
+
+        // WR-05: ensure uniqueness — prefix with the asset index on collision
+        if (usedFilenames.has(filename)) {
+          filename = `${assets.length}-${filename}`;
+        }
+        usedFilenames.add(filename);
 
         assets.push({ url, buffer, filename });
         urlToFilename.set(url, filename);
