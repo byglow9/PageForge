@@ -56,7 +56,7 @@ Override em runtime: edições de conteúdo (texto, imagem, link, cor) viram ove
   4. Overrides de LP A não aparecem em LP B do mesmo workspace; LP de workspace diferente não acessa os overrides (isolamento cross-tenant verificado por teste).
 **Plans**: 2 plans
 Plans:
-- [ ] 09-01-PLAN.md — Override schema (PfOverride/ViteSpaValues), updateLpAction VITE_SPA extension, buildBrandStyleTagForLp
+- [x] 09-01-PLAN.md — Override schema (PfOverride/ViteSpaValues), updateLpAction VITE_SPA extension, buildBrandStyleTagForLp
 - [ ] 09-02-PLAN.md — Apply shim module + injection into serve route and export route
 **UI hint**: yes
 
