@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Suporte a LPs do Lovable
-status: milestone_complete
+status: Awaiting next milestone
 stopped_at: Phase 8 complete — milestone v2.0 ready to archive
-last_updated: "2026-06-24T00:00:00.000Z"
-last_activity: 2026-06-24
+last_updated: "2026-06-24T15:02:22.780Z"
+last_activity: 2026-06-24 — Milestone v2.0 completed and archived
 progress:
   total_phases: 8
   completed_phases: 8
@@ -18,17 +18,17 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-06-01)
+See: .planning/PROJECT.md (updated 2026-06-24)
 
 **Core value:** A partir de um template cadastrado uma vez, um usuário gera uma nova landing page completa e fiel ao layout apenas preenchendo um formulário — sem tocar em código.
-**Current focus:** Milestone v2.0 complete — ready for /gsd-complete-milestone
+**Current focus:** v2.0 arquivado. Próximo milestone (v2.1): editor visual de conteúdo para LPs VITE_SPA — design aprovado em `~/.claude/plans/centralizar-horizontalmente-o-conte-do-bright-valley.md`. Iniciar via /gsd-new-milestone.
 
 ## Current Position
 
-Phase: 08 (lp-generation-brand-theming-export-v2-0-acceptance) — COMPLETE
-Plan: 5 of 5 — all complete
-Status: Milestone v2.0 complete (UAT 6/6 pass, security verified)
-Last activity: 2026-06-24
+Phase: v2.0 arquivado (Fases 6–8) — planejando v2.1
+Plan: —
+Status: Awaiting next milestone
+Last activity: 2026-06-24 — Milestone v2.0 completed and archived
 
 ## Performance Metrics
 
@@ -112,10 +112,20 @@ Items acknowledged and carried forward from previous milestone close:
 
 | Category | Item | Status | Deferred At |
 |----------|------|--------|-------------|
-| *(none)* | | | |
+| quick_task | 260603-ju4-fix-phase-2-workspace-creation-rls-bug-a | done (commit 9cd3826) — SUMMARY.md ausente na pasta | 2026-06-24 (v2.0 close) |
+| quick_task | 260608-d6s-homepage-basic-front | done (commit 7723f8c) — SUMMARY.md ausente | 2026-06-24 (v2.0 close) |
+| quick_task | 260608-dbk-style-auth-pages | done (commit c651e39) — SUMMARY.md ausente | 2026-06-24 (v2.0 close) |
+| quick_task | 260608-ly0-style-members-page | done (commit 7dae599) — SUMMARY.md ausente | 2026-06-24 (v2.0 close) |
+| quick_task | 260617-jzg-estilizar-fluxo-de-convite-phase-02-invi | done (commit d5b4247) — SUMMARY.md ausente | 2026-06-24 (v2.0 close) |
+
+> Nota: os 5 quick tasks acima foram **concluídos e commitados** (ver "Quick Tasks Completed"); o scanner `audit-open` os marca como "missing" apenas porque as pastas em `.planning/quick/` não têm `SUMMARY.md`. Lacuna de artefato, não trabalho pendente.
 
 ## Session Continuity
 
 Last session: 2026-06-24T00:00:00.000Z
 Stopped at: Phase 8 complete — milestone v2.0 ready to archive
 Resume file: None
+
+## Operator Next Steps
+
+- Start the next milestone with /gsd-new-milestone
