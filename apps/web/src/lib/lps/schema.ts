@@ -170,3 +170,111 @@ export const EditViteSpaLpSchema = z.object({
 });
 
 export type EditViteSpaLpInput = z.infer<typeof EditViteSpaLpSchema>;
+
+// -----------------------------------------------------------------------
+// PfOverrideSchema
+// -----------------------------------------------------------------------
+
+/**
+ * Data model for a single runtime override entry.
+ *
+ * Stored inside LandingPage.values.overrides[] (jsonb — no migration required).
+ * The shim in Plan 02 reads these entries after React mounts and applies them
+ * to the DOM via textContent (text) or CSS var override (color).
+ *
+ * Fields:
+ * - path: deterministic node path from the SPA root (e.g. '/0/2/1/0'). Used by
+ *   the shim to locate the exact DOM node to override.
+ * - originalHash: hash of the original node content. Stored for Phase 12 drift
+ *   detection; NOT checked or enforced in this phase.
+ * - type: override type enum. 'text' and 'color' are applied by the Phase 9 shim;
+ *   'image' and 'href' are reserved for Phase 11 (enum already extensible).
+ * - value: the override value (text: raw string applied via textContent; color:
+ *   #RRGGBB hex validated separately; image/href: reserved).
+ *
+ * Security: value is applied via textContent only — no innerHTML vector.
+ * Color values are further validated as #RRGGBB by the hex regex before DB write.
+ */
+export const PfOverrideSchema = z.object({
+  /** Deterministic child-index path from root (e.g. '/0/2/1'). */
+  path: z.string().min(1, "Override path must not be empty"),
+  /** Hash of original node content (stored for Phase 12 drift detection). */
+  originalHash: z.string().min(1, "Original hash must not be empty"),
+  /** Override type. 'text' and 'color' are applied by Phase 9 shim. */
+  type: z.enum(["text", "color", "image", "href"]),
+  /** Override value (plain string — applied via textContent, never innerHTML). */
+  value: z.string(),
+});
+
+export type PfOverride = z.infer<typeof PfOverrideSchema>;
+
+// -----------------------------------------------------------------------
+// ViteSpaValuesSchema
+// -----------------------------------------------------------------------
+
+/**
+ * Full shape of LandingPage.values for VITE_SPA LPs.
+ *
+ * The jsonb field was previously unused (sentinel {}) for VITE_SPA LPs.
+ * Phase 9 reuses it as-is to store overrides + optional per-LP brand color.
+ * No DB migration is needed.
+ *
+ * IMPORTANT: Plan 02 reads raw lp.values WITHOUT parsing through this schema,
+ * so the runtime guard in the shim injection code must NOT assume that
+ * overrides exists (the sentinel {} case yields {} not { overrides: [] }).
+ * Parse through this schema only when you control the write path.
+ *
+ * Fields:
+ * - overrides: array of PfOverride entries; defaults to [] when parsing {} (sentinel case).
+ * - primaryColorOverride: optional per-LP brand color that takes precedence over the
+ *   workspace brand color in buildBrandStyleTagForLp.
+ */
+export const ViteSpaValuesSchema = z.object({
+  /** Ordered list of content overrides applied by the shim after React mounts. */
+  overrides: z.array(PfOverrideSchema).default([]),
+  /**
+   * Per-LP primary color override (#RRGGBB). Takes precedence over workspace
+   * brand color when set. Absent = fall back to workspace color.
+   */
+  primaryColorOverride: z
+    .string()
+    .regex(/^#[0-9a-fA-F]{6}$/, "Must be a #RRGGBB hex color")
+    .optional(),
+});
+
+export type ViteSpaValues = z.infer<typeof ViteSpaValuesSchema>;
+
+// -----------------------------------------------------------------------
+// SaveViteSpaOverridesSchema
+// -----------------------------------------------------------------------
+
+/**
+ * Payload accepted by updateLpAction for writing VITE_SPA overrides.
+ *
+ * This is the server-side validation gate (T-09-01-01): all fields are
+ * validated here before any DB write. Absent optional fields mean
+ * "do not touch existing value" — the action merges with the existing
+ * LandingPage.values row rather than replacing the whole object.
+ *
+ * Fields:
+ * - id: CUID of the LP to update (verified via withTenantDb — cross-tenant
+ *   LP IDs return null/404 per T-09-01-02).
+ * - overrides: optional array of PfOverride entries. Absent = preserve existing.
+ * - primaryColorOverride: optional hex color. Absent = preserve existing.
+ */
+export const SaveViteSpaOverridesSchema = z.object({
+  /** CUID of the landing page to update (T-09-01-02: scoped via withTenantDb). */
+  id: z.string().cuid("Invalid LP ID"),
+  /** New overrides list; absent = do not overwrite existing overrides. */
+  overrides: z.array(PfOverrideSchema).optional(),
+  /**
+   * New per-LP primary color (#RRGGBB); absent = do not overwrite existing.
+   * T-09-01-03: hex regex prevents CSS injection.
+   */
+  primaryColorOverride: z
+    .string()
+    .regex(/^#[0-9a-fA-F]{6}$/, "Must be a #RRGGBB hex color")
+    .optional(),
+});
+
+export type SaveViteSpaOverridesInput = z.infer<typeof SaveViteSpaOverridesSchema>;
