@@ -104,6 +104,7 @@ None yet.
 | (fast) | Nome da conta + Log out no rodapé da sidebar do workspace shell | 2026-06-17 | 4419d49 | (gsd-fast) |
 | (fast) | Esconder nav Templates/Brand Settings para viewer (via can()) | 2026-06-17 | 281e39f | (gsd-fast) |
 | (fast) | Bloquear viewer (redirect) das rotas /templates e /brand via requireWorkspaceRole | 2026-06-17 | 1484303 | (gsd-fast) |
+| (fast) | Fix: serverActions.bodySizeLimit=50mb no next.config (upload de project-template ZIP estourava limite default de 1MB → HTTP 413) | 2026-06-24 | 090efe4 | (gsd-fast) |
 
 ## Deferred Items
 
