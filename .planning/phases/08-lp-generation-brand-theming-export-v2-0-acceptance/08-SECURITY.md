@@ -23,7 +23,7 @@ created: 2026-06-23
 | Server Action → banco | `workspaceId` derivado exclusivamente da sessão via `requireWorkspaceRole` | workspace scope |
 | BrandConfig.primaryColor → hexToHslTriplet/CSS | cor salva por owner/admin, validada `/^#[0-9a-fA-F]{6}$/` antes de persistir | hex color → CSS var |
 | Serve origin → index.html (HMAC claims) | `workspaceId`/`templateId` vêm das claims HMAC verificadas (`SERVE_TOKEN_SECRET`, exp 30min), não de sessão/URL | tenant scope via token |
-| iframe sandbox (preview VITE_SPA) | `sandbox="allow-scripts"` sem `allow-same-origin` → origem opaca | isolamento de origem |
+| iframe sandbox (preview VITE_SPA) | `sandbox="allow-scripts allow-same-origin"` → iframe assume a origem real do **subdomínio de serve cross-origin** (`{tplId}.serve.localhost` / `serve.{SERVE_DOMAIN}`); isolamento vem do cross-origin + cookies host-only + CSP `frame-ancestors`, não da origem opaca (revisado, ver T-08-03-03) | isolamento de origem |
 | Export route → S3 dist/ prefix | prefix de `lp.workspaceId` + `lp.templateId` (campos de banco, workspace-scoped), nunca input do cliente | S3 object keys |
 
 ---
@@ -41,7 +41,7 @@ created: 2026-06-23
 | T-08-02-04 | Repudiation | duplicateLpAction VITE_SPA sem assets | accept | Duplicação = nova linha referenciando o mesmo template; auditoria via timestamps Prisma | closed |
 | T-08-03-01 | Tampering | BrandConfig.primaryColor → CSS injection | accept | hex pré-validado; `buildBrandStyleTag` usa template literal com valor safe | closed |
 | T-08-03-02 | Information Disclosure | serve route: BrandConfig via bare prisma | mitigate | workspaceId vem das claims HMAC verificadas (`verifyServeToken`); `claims.templateId !== tplId`→403 — **verificado** `serve/[tplId]/route.ts:15-16` | closed |
-| T-08-03-03 | Information Disclosure | iframe sandbox breakout | mitigate | `sandbox="allow-scripts"` sem `allow-same-origin` → origem opaca — **verificado** `preview/page.tsx:84` + confirmado em UAT (document.cookie → SecurityError) | closed |
+| T-08-03-03 | Information Disclosure | iframe sandbox breakout | mitigate | **REVISADO (debug `vite-spa-preview-blank`):** a mitigação original (origem opaca via omissão de `allow-same-origin`) **quebrava o render** da SPA (módulo `<script type="module" crossorigin>` CORS-blocked + `localStorage` SecurityError → tela branca). O SecurityError reportado na UAT v2.0 era o **bug**, não prova de isolamento. Mitigação revisada: `sandbox="allow-scripts allow-same-origin"`; o isolamento é preservado por **(1)** subdomínio de serve cross-origin distinto do dashboard, **(2)** cookies de sessão host-only do better-auth (sem atributo `Domain` → não enviados a `*.serve.localhost`), **(3)** CSP `frame-ancestors` no serve handler. `allow-same-origin` só dá ao iframe acesso à SUA PRÓPRIA origem de serve, nunca ao dashboard — **verificado** `preview/page.tsx:84` (sandbox), `lib/auth/auth.ts` (sem cookieDomain → host-only), `serve/route.ts:91` (frame-ancestors). Ver AR-08-08. | closed |
 | T-08-03-04 | Elevation of Privilege | entryPath no iframe URL | accept | `lp.entryRoute ?? "/"` do banco (não URL param); SPA fallback não expõe arquivo inesperado | closed |
 | T-08-03-05 | Tampering | stream S3 consumido duas vezes | mitigate | index.html via `transformToString()`, assets via `transformToWebStream()` — branch mutuamente exclusivo — **verificado** `export/route.ts` | closed |
 | T-08-04-01 | Information Disclosure | S3 prefix para dist/ no export | mitigate | Prefix de workspaceId (campo banco); LP resolvida em contexto de workspace do usuário + IDOR colapsado no lookup (miss→404, sem vazar existência cross-tenant) — **verificado e reforçado** `export/route.ts` (ver Audit Trail) | closed |
@@ -68,6 +68,7 @@ created: 2026-06-23
 | AR-08-05 | T-08-04-03 | DoS via dist/ gigante fora do perfil real (dezenas de assets); streaming bounded | owner | 2026-06-23 |
 | AR-08-06 | T-08-04-04 | Ausência de CSP no export VITE_SPA é decisão locked (D-12); ZIP estático local; exportador é owner/admin | owner | 2026-06-23 |
 | AR-08-07 | T-08-05-01 | UAT visual feito pelo dono do workspace sobre dados do próprio workspace | owner | 2026-06-23 |
+| AR-08-08 | T-08-03-03 | `allow-same-origin` no preview VITE_SPA é seguro: o iframe é servido de subdomínio cross-origin (`{tplId}.serve.localhost` / `serve.{SERVE_DOMAIN}`), distinto do dashboard. Cookies de sessão são host-only (sem `Domain` na config better-auth) → não vazam para `*.serve.localhost`. CSP `frame-ancestors` restringe quem pode embutir. A combinação perigosa (`allow-scripts allow-same-origin` removendo o próprio sandbox) só se aplica a conteúdo **same-origin** ao embutidor, o que NÃO é o caso aqui. | owner | 2026-06-24 |
 
 *Accepted risks do not resurface in future audit runs.*
 
@@ -78,13 +79,24 @@ created: 2026-06-23
 | Audit Date | Threats Total | Closed | Open | Run By |
 |------------|---------------|--------|------|--------|
 | 2026-06-23 | 19 | 19 | 0 | /gsd-secure-phase (inline verification) |
+| 2026-06-24 | 19 | 19 | 0 | /gsd-debug (re-eval T-08-03-03 — sandbox revisado, isolamento reconfirmado) |
 
 ### Notas da auditoria 2026-06-23
 
 - **Register authored at plan time:** todos os 5 PLAN.md (08-01..08-05) continham `<threat_model>` parseável → modo "verificar mitigações", não scan de novos threats.
 - **9 mitigações verificadas no código** (T-08-01-02, 02-01, 02-02, 02-03, 03-02, 03-03, 03-05, 04-01, 04-05) + **10 riscos aceitos documentados**.
 - **Achado positivo (reforço de T-08-04-01):** durante a UAT v2.0, o route `/api/lps/[lpId]/export` retornava 404 porque lia `landing_page`/`brand_config` com o client Prisma cru, sem contexto de workspace (ambas com FORCE RLS). O fix aplicado passou a resolver a LP **dentro do contexto de workspace do usuário** (via `member` table → `set_config('app.current_workspace_id')` por transação) e **colapsou o IDOR check no próprio lookup** — uma LP de outro tenant agora resulta em 404 sem revelar sua existência. Isso **mantém e fortalece** a mitigação de Information Disclosure prevista para o export.
-- T-08-03-03 confirmado **empiricamente** na UAT: o iframe do preview VITE_SPA reportou `document.cookie → SecurityError (isolado)`, comprovando a origem opaca.
+- ~~T-08-03-03 confirmado empiricamente na UAT: `document.cookie → SecurityError` comprovando a origem opaca.~~ **CORRIGIDO na re-eval 2026-06-24:** esse `SecurityError` NÃO comprovava isolamento — era o **bug** `vite-spa-preview-blank` (a origem opaca bloqueava o módulo Vite `crossorigin` e quebrava o `localStorage`, deixando a SPA em branco). Ver entrada do registro T-08-03-03 e AR-08-08 para a mitigação revisada (cross-origin subdomain + cookies host-only + CSP frame-ancestors).
+
+### Notas da re-eval 2026-06-24 (debug vite-spa-preview-blank)
+
+- **Mudança de decisão:** T-08-03-03 migrou de "origem opaca (sem `allow-same-origin`)" para "`allow-scripts allow-same-origin` sobre subdomínio de serve cross-origin". Razão: a origem opaca impedia a execução do entry ESM `crossorigin` do Vite (CORS) e lançava `SecurityError` em `localStorage`, resultando em preview totalmente branco.
+- **Isolamento preservado — três camadas independentes da origem opaca:**
+  1. **Cross-origin:** o iframe carrega de `{tplId}.serve.localhost:3000` (dev) / `serve.{SERVE_DOMAIN}` (prod) — origem distinta do dashboard `localhost:3000`. SOP impede a SPA de ler o DOM/`document.cookie`/`localStorage` do dashboard.
+  2. **Cookies host-only:** `lib/auth/auth.ts` não define `cookieDomain`/`crossSubDomainCookies` → better-auth emite cookies sem atributo `Domain` (host-only para `localhost`), que NÃO são enviados a `*.serve.localhost`. Verificado por ausência de qualquer override (`grep cookieDomain/crossSubDomain/domain:` em `lib/auth/` → 0 resultados).
+  3. **CSP `frame-ancestors`:** `serve/route.ts:91` emite `Content-Security-Policy: frame-ancestors {DASHBOARD_ORIGIN}` → só o dashboard pode embutir a SPA.
+- **`allow-same-origin` aqui é seguro:** dá ao iframe acesso apenas à SUA própria origem de serve. A combinação perigosa (`allow-scripts allow-same-origin` permitindo ao conteúdo remover o próprio sandbox) só vale quando o conteúdo embutido é **same-origin ao embutidor** — não é o caso (cross-origin subdomain).
+- **Relacionado, FORA do escopo deste fix:** o export standalone (`index.html` aberto via `file://`) usa o mesmo `<script type="module" crossorigin>`. Sob `file://` o fetch CORS de módulos tipicamente falha (origem `null`), então o ZIP exportado pode não renderizar ao abrir o `index.html` localmente com duplo-clique. Isso é um **bug separado** (não afeta o preview no iframe) e deve abrir sua própria sessão de debug. Não foi corrigido aqui.
 
 ---
 

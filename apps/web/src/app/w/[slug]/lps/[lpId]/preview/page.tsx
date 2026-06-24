@@ -17,8 +17,11 @@
  * Security:
  * - requireWorkspace: any member can preview (lp.preview).
  * - db.lp.findById filters by workspaceId (T-04-02-04: IDOR prevention).
- * - VITE_SPA: sandbox="allow-scripts" only (no allow-same-*): iframe origin is
- *   opaque — document.cookie/localStorage inaccessible to the SPA (T-08-03-03).
+ * - VITE_SPA: sandbox="allow-scripts allow-same-origin" (T-08-03-03 revised):
+ *   isolation comes from the cross-origin serve subdomain + host-only session
+ *   cookies + CSP frame-ancestors, NOT from an opaque origin. allow-same-origin
+ *   is required so the Vite <script type="module" crossorigin> entry executes
+ *   (opaque origin CORS-blocks the module + breaks localStorage → blank page).
  * - Token scoped to {workspaceId, templateId} — NOT lpId (T-08-03-04).
  */
 import { redirect } from "next/navigation";
@@ -75,13 +78,26 @@ export default async function LpPreviewPage({ params }: LpPreviewPageProps) {
         {lp.entryRoute && (
           <p className="text-sm text-gray-500">Route: {lp.entryRoute}</p>
         )}
-        {/* sandbox="allow-scripts" only (T-08-03-03):
-            Omitting allow-same-origin keeps the iframe origin opaque — document.cookie
-            and localStorage are inaccessible to the SPA's JavaScript.
-            DO NOT add allow-same-* flags — that would expose the PageForge session. */}
+        {/* sandbox="allow-scripts allow-same-origin" (T-08-03-03, revised):
+            allow-same-origin gives the iframe document its REAL origin
+            ({tplId}.serve.localhost / serve.{SERVE_DOMAIN}), which is a distinct
+            CROSS-ORIGIN host vs the dashboard. This is required because Vite emits
+            the SPA entry as <script type="module" crossorigin> — under an opaque
+            origin (no allow-same-origin) the module fetch is CORS-blocked and
+            localStorage throws SecurityError, so React never mounts (blank page).
+
+            Why this is still safe (isolation preserved by cross-origin subdomain,
+            not by the opaque origin):
+            - The serve host is a separate origin from the dashboard, so the SPA
+              cannot read the PageForge DOM, document.cookie, or localStorage.
+            - PageForge session cookies are host-only (no Domain attr in better-auth
+              config) → they are NOT sent to *.serve.localhost.
+            - CSP frame-ancestors on the serve response restricts who may embed it.
+            allow-same-origin here only exposes the iframe to ITS OWN serve origin,
+            never to the dashboard. DO NOT add allow-top-navigation / allow-popups. */}
         <iframe
           src={`${serveOrigin}${entryPath}?t=${token}`}
-          sandbox="allow-scripts"
+          sandbox="allow-scripts allow-same-origin"
           style={{ width: "100%", height: "80vh", border: "none" }}
           title={`Preview: ${lp.name}`}
         />

@@ -202,10 +202,15 @@ Mirrors the existing `project-templates/[id]/preview/page.tsx` layout exactly. R
     <p class="text-sm text-gray-500">Route: {lp.entryRoute}</p>
   )}
 
-  <!-- Cross-origin sandboxed iframe (sandbox="allow-scripts" only) -->
+  <!-- Cross-origin sandboxed iframe.
+       sandbox="allow-scripts allow-same-origin" (T-08-03-03 revisado): allow-same-origin
+       é necessário porque o entry do Vite é <script type="module" crossorigin> — sob
+       origem opaca o módulo é bloqueado por CORS e localStorage lança SecurityError
+       (preview em branco). Isolamento vem do subdomínio de serve cross-origin +
+       cookies host-only + CSP frame-ancestors, NÃO da origem opaca. -->
   <iframe
     src={`${serveOrigin}${entryPath}?t=${token}`}
-    sandbox="allow-scripts"
+    sandbox="allow-scripts allow-same-origin"
     style={{ width: "100%", height: "80vh", border: "none" }}
     title={`Preview: ${lp.name}`}
   />
