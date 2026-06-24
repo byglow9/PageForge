@@ -150,10 +150,17 @@ describe("buildOverrideInjection — XSS safety", () => {
       ],
     };
     const result = buildOverrideInjection(xssValues);
-    // The literal '</script>' from the value must NOT appear in overridesJson
-    expect(result.overridesJson).not.toContain("</script>");
+    // Extract the JSON content between the outer <script ...> and closing </script> tag.
+    // The outer </script> is the legitimate closing tag of the sentinel element;
+    // what we must verify is that the VALUE's </script> is unicode-escaped so it cannot
+    // break out of the script tag context.
+    const jsonContent = result.overridesJson
+      .replace(/^<script[^>]*>/, "")
+      .replace(/<\/script>$/, "");
+    // The literal '</script>' from the value must NOT appear in the JSON blob
+    expect(jsonContent).not.toContain("</script>");
     // Instead it should be unicode-escaped
-    expect(result.overridesJson).toContain("\\u003c/script\\u003e");
+    expect(jsonContent).toContain("\\u003c/script\\u003e");
   });
 
   it("overridesJson unicode-escapes < and > characters", () => {
