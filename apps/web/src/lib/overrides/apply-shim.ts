@@ -3,10 +3,11 @@
  *
  * This module provides:
  *
- * 1. hexToHslTripletShim — the SAME hex→HSL algorithm as theme.ts hexToHslTriplet,
- *    exported as a pure Node-testable function AND serialized into the inline shim script.
- *    This ensures the browser shim's color conversion provably matches the server-side
- *    brand injection (W2 guarantee: preview color == export color).
+ * 1. hexToHslTripletShim — a re-export of theme.ts hexToHslTriplet (single source of
+ *    truth, IN-01) that is also serialized into the inline shim script. Because preview
+ *    color and export color now share ONE implementation, the browser shim's color
+ *    conversion provably matches the server-side brand injection and cannot drift
+ *    (W2 guarantee: preview color == export color).
  *
  * 2. buildOverrideInjection — builds the two HTML fragments to embed in index.html:
  *    - overridesJson: <script id="pf-overrides" type="application/json">{...}</script>
@@ -30,64 +31,29 @@
  */
 
 import type { ViteSpaValues } from "@/lib/lps/schema";
+import { hexToHslTriplet } from "@/lib/brand/theme";
 
 // -----------------------------------------------------------------------
 // hexToHslTripletShim
 //
-// IDENTICAL algorithm to theme.ts hexToHslTriplet — kept in sync manually.
+// IN-01: single source of truth. The hex→HSL algorithm lives ONCE in
+// theme.ts (hexToHslTriplet). We re-export it here as hexToHslTripletShim
+// (preserving the historical export name used by callers and W2 tests) and
+// serialize that SAME function into the inline shim script via .toString().
+// This makes it structurally impossible for preview color and export color
+// to drift — there is now only one implementation.
+//
+// theme.ts is a pure, dependency-free module with no "use server" directive,
+// so importing it here keeps the shim self-contained: the serialized function
+// body is fully inlined into the shimScript string (see buildOverrideInjection).
+//
 // Exported for:
 //   1. W2 unit tests that assert shim output == theme.ts output for reference values.
 //   2. Embedding the function body (via .toString()) into the shimScript string so
 //      the browser shim and Node-tested helper are provably the same code.
 // -----------------------------------------------------------------------
 
-/**
- * Convert a 6-digit hex color string to a shadcn HSL triplet.
- *
- * Input:  "#RRGGBB" (pre-validated by SaveViteSpaOverridesSchema regex)
- * Output: "H S% L%" — no "hsl(" wrapper, matching shadcn CSS var convention
- *
- * Algorithm: standard hex→RGB→HSL, with Math.round for all three components.
- * MUST remain identical to theme.ts hexToHslTriplet for W2 (preview == export color).
- *
- * W2 contract: hexToHslTripletShim('#06356f') === '213 90% 23%'
- *              hexToHslTripletShim('#0d4080') === '213 82% 28%'
- */
-export function hexToHslTripletShim(hex: string): string {
-  const r = parseInt(hex.slice(1, 3), 16) / 255;
-  const g = parseInt(hex.slice(3, 5), 16) / 255;
-  const b = parseInt(hex.slice(5, 7), 16) / 255;
-
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
-  const delta = max - min;
-
-  const l = (max + min) / 2;
-
-  let s = 0;
-  if (delta !== 0) {
-    s = delta / (1 - Math.abs(2 * l - 1));
-  }
-
-  let h = 0;
-  if (delta !== 0) {
-    if (max === r) {
-      h = ((g - b) / delta) % 6;
-    } else if (max === g) {
-      h = (b - r) / delta + 2;
-    } else {
-      h = (r - g) / delta + 4;
-    }
-    h = h * 60;
-    if (h < 0) h += 360;
-  }
-
-  const hRounded = Math.round(h);
-  const sRounded = Math.round(s * 100);
-  const lRounded = Math.round(l * 100);
-
-  return `${hRounded} ${sRounded}% ${lRounded}%`;
-}
+export const hexToHslTripletShim = hexToHslTriplet;
 
 // -----------------------------------------------------------------------
 // escapeJsonForHtml
@@ -95,13 +61,17 @@ export function hexToHslTripletShim(hex: string): string {
 // Unicode-escape < > & in a JSON string so the embedded JSON blob cannot
 // break out of the <script type="application/json"> tag context.
 // T-09-02-01: prevents script tag breakout / XSS via override values.
+//
+// IN-02: single-pass regex (no chained .replace ordering hazard) that also
+// escapes the U+2028 / U+2029 line separators, which are valid JSON but can
+// break out of inline <script> contexts in some parsers.
 // -----------------------------------------------------------------------
 
 function escapeJsonForHtml(json: string): string {
-  return json
-    .replace(/</g, "\\u003c")
-    .replace(/>/g, "\\u003e")
-    .replace(/&/g, "\\u0026");
+  return json.replace(
+    /[<>&\u2028\u2029]/g,
+    (c) => "\\u" + c.charCodeAt(0).toString(16).padStart(4, "0")
+  );
 }
 
 // -----------------------------------------------------------------------
@@ -140,9 +110,12 @@ export function buildOverrideInjection(
   const escapedJson = escapeJsonForHtml(rawJson);
   const overridesJson = `<script id="pf-overrides" type="application/json">${escapedJson}</script>`;
 
-  // Serialize the hexToHslTripletShim function body to embed it verbatim in the shim.
-  // This ensures browser shim and Node-tested helper are provably the same code (W2).
-  const hexFnBody = hexToHslTripletShim.toString();
+  // Serialize the single source-of-truth function (theme.ts hexToHslTriplet, re-exported
+  // as hexToHslTripletShim) and bind it to a stable name inside the shim. Binding to a
+  // const decouples the shim's call site from whatever name .toString() emits, so the
+  // shim keeps working regardless of the underlying function's declared name (IN-01).
+  // This embeds the exact same code that the Node-tested helper runs (W2 guarantee).
+  const hexFnSource = hexToHslTripletShim.toString();
 
   // Build the inline shim script
   // The entire handler is wrapped in try/catch; each individual override also has
@@ -150,7 +123,7 @@ export function buildOverrideInjection(
   const shimScript = `<script>
 (function() {
   try {
-    ${hexFnBody}
+    var hexToHslTripletShim = ${hexFnSource};
 
     function pathToNode(path) {
       try {
@@ -216,8 +189,11 @@ export function injectOverrides(
   if (!shimScript && !overridesJson) return html;
 
   const insertion = `${overridesJson}\n${shimScript}`;
-  const headCloseTag = "</head>";
-  const idx = html.indexOf(headCloseTag);
+  // IN-04: case-insensitive </head> search (matches injectBrandStyle). Slice on
+  // the ORIGINAL html so the document's casing is preserved. A </HEAD> variant
+  // must not fall through to the prepend fallback, which would place the shim
+  // outside <head>.
+  const idx = html.toLowerCase().indexOf("</head>");
 
   if (idx !== -1) {
     return html.slice(0, idx) + insertion + "\n" + html.slice(idx);
