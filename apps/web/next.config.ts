@@ -10,6 +10,13 @@ const nextConfig: NextConfig = {
   // support that is not yet stable in Next.js 16).
   transpilePackages: ["pageforge-engine", "file-type"],
   experimental: {
+    // Project-template ZIP upload posts the dist/ tree to a Server Action via
+    // FormData (ProjectTemplateForm). Next defaults Server Action bodies to 1 MB,
+    // which rejects any real Vite/Lovable dist/ (>1MB) with HTTP 413. Align the
+    // limit with the 50 MB cap the upload form already documents.
+    serverActions: {
+      bodySizeLimit: "50mb",
+    },
     // Map .js extension imports to their TypeScript source files.
     // The engine uses NodeNext ESM imports with explicit .js extensions (e.g. './parser.js'),
     // but the source files are .ts. This alias lets webpack resolve them correctly when
