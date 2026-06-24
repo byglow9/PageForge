@@ -460,14 +460,16 @@ export async function duplicateLpAction(
         return { ok: false, error: "Landing page not found in this workspace." };
       }
 
-      // VITE_SPA branch — copy only templateId, entryRoute, kind; sentinel values; no LpAssets.
+      // VITE_SPA branch — copy templateId, entryRoute, kind, and values; no LpAssets.
+      // D-12: duplicate is a "full independent copy" — origin.values carries the
+      // overrides array + primaryColorOverride, so it MUST be copied (WR-01).
       if (origin.kind === "VITE_SPA") {
         const viteCopy = await db.lp.create({
           templateId: origin.templateId ?? undefined,
           name: `Copy of ${origin.name}`,
           markupSnapshot: "",
           schemaVersion: 0,
-          values: {},
+          values: (origin.values as object) ?? {},
           kind: "VITE_SPA",
           entryRoute: origin.entryRoute ?? null,
         });
