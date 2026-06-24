@@ -402,12 +402,18 @@ export async function updateLpAction(
             return { ok: false, error: "Validation failed", fieldErrors };
           }
 
-          // Merge with existing values — do not overwrite fields absent from payload
+          // Merge with existing values — do not overwrite fields absent from payload.
+          // WR-02: build the primaryColorOverride key conditionally so an absent color
+          // stays ABSENT in the jsonb object rather than being serialized as an
+          // `undefined`/`null` key. "Absent" means preserve; payload wins over existing.
           const existingValues = (existing.values as ViteSpaValues | null) ?? ({} as ViteSpaValues);
           valuesUpdate = {
             overrides: overridesParsed.data.overrides ?? existingValues.overrides ?? [],
-            primaryColorOverride:
-              overridesParsed.data.primaryColorOverride ?? existingValues.primaryColorOverride,
+            ...(overridesParsed.data.primaryColorOverride !== undefined
+              ? { primaryColorOverride: overridesParsed.data.primaryColorOverride }
+              : existingValues.primaryColorOverride !== undefined
+                ? { primaryColorOverride: existingValues.primaryColorOverride }
+                : {}),
           };
         }
 
