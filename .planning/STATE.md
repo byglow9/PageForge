@@ -5,7 +5,7 @@ milestone_name: Editor visual de conteúdo VITE_SPA
 status: executing
 stopped_at: Roadmap v2.1 created (Fases 9–12) — 15/15 requisitos mapeados
 last_updated: "2026-06-24T18:12:37.618Z"
-last_activity: 2026-06-25 -- Completed quick task 260625-i1c: Dashboard do workspace
+last_activity: 2026-06-25 -- Completed quick task 260625-ihz: Redesign da Dashboard
 progress:
   total_phases: 4
   completed_phases: 0
@@ -115,6 +115,8 @@ None yet.
 | (fast) | Bloquear viewer (redirect) das rotas /templates e /brand via requireWorkspaceRole | 2026-06-17 | 1484303 | (gsd-fast) |
 | (fast) | Fix: serverActions.bodySizeLimit=50mb no next.config (upload de project-template ZIP estourava limite default de 1MB → HTTP 413) | 2026-06-24 | 090efe4 | (gsd-fast) |
 | 260625-i1c | Dashboard do workspace: título "Dashboard" + item no menu lateral (active exato) + cards de métricas reais (Templates/LPs/Members via Prisma) + atalhos role-gated | 2026-06-25 | 7d496f5 | [260625-i1c](./quick/260625-i1c-transformar-a-pagina-inicial-do-workspac/) |
+| (fast) | Remover card "Your role" da Dashboard | 2026-06-25 | 13d79a4 | (gsd-fast) |
+| 260625-ihz | Redesign da Dashboard: alertas de setup (marca/convites) + métricas clicáveis (+"LPs sem pasta") + "Continuar de onde parou" (5 LPs recentes c/ Editar/Preview/Exportar) + "Começar de um template" — removido Quick access | 2026-06-25 | a16c7dd | [260625-ihz](./quick/260625-ihz-redesenhar-a-dashboard-do-workspace-com-/) |
 
 ## Deferred Items
 
