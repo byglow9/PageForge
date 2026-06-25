@@ -44,7 +44,7 @@ Declared values (multiples of 4):
 
 Phase-specific fixed dimensions:
 - Edit toolbar height: **48px** (`h-12`) — matches the existing preview-page toolbar pattern.
-- Active-edit banner height: **32px** (`py-1.5` on 14px text) — single-line strip below the toolbar.
+- Active-edit banner height: **32px** — fixed via `h-8` with `py-1` (4px) vertical padding on 14px text; the fixed height preserves the 32px strip without a 6px (non-grid) padding value.
 - Iframe active-edit border: **3px** solid (see Color).
 
 Exceptions: none. All values are multiples of 4.
@@ -56,11 +56,11 @@ Exceptions: none. All values are multiples of 4.
 | Role | Size | Weight | Line Height | Where |
 |------|------|--------|-------------|-------|
 | Heading (toolbar title) | 20px (`text-xl`) | 600 semibold | 1.2 | LP name in the edit toolbar |
-| Body / Button | 14px (`text-sm`) | 500 medium (buttons) / 400 (body) | 1.5 | Button labels, banner copy, dialog body |
-| Label / Dirty count | 14px (`text-sm`) | 500 medium | 1.5 | "N alterações não salvas" indicator |
-| Caption / Badge | 12px (`text-xs`) | 500 medium | 1.4 | "Vite SPA" badge, selection hint chip |
+| Body | 14px (`text-sm`) | 400 regular | 1.5 | Banner copy, dialog body |
+| Button / Label / Dirty count | 14px (`text-sm`) | 600 semibold | 1.5 | Button labels, "N alterações não salvas" indicator |
+| Caption / Badge | 12px (`text-xs`) | 600 semibold | 1.4 | "Vite SPA" badge, selection hint chip |
 
-Declared sizes: **12, 14, 20** (3 sizes). Declared weights: **400 regular + 600 semibold** (medium 500 is the design-system Button/Badge default and is treated as the semibold lane for controls). Body line-height 1.5; heading line-height 1.2.
+Declared sizes: **12, 14, 20** (3 sizes). Declared weights: **400 regular + 600 semibold** (exactly 2). The shadcn Button and Badge defaults (`font-medium`, 500) are overridden to `font-semibold` (600) in this phase so all controls land on the 600 lane. Body line-height 1.5; heading line-height 1.2.
 
 ---
 
@@ -121,10 +121,10 @@ Viewer copy: **none**. Viewers see no edit control, no banner, no hint — the t
 | **Edit mode — dirty** | `Descartar` (outline) · `Salvar alterações` (primary) · `{N} alterações não salvas` badge (blue tint) | `Concluir` is replaced by the Save/Discard pair once edits exist. |
 | **Saving** | `Descartar` (disabled) · `Salvando…` (primary, disabled, no spinner-only-text) | All controls disabled; iframe not interactive. |
 
-Button mapping to design system: primary actions → `<Button>` default variant (near-black). `Descartar` → `<Button variant="outline">`. `Concluir` → `<Button variant="ghost">`. Dirty count → `<Badge>` with blue-tint className override (`bg-[#eff6ff] text-[#1d4ed8] border-[#bfdbfe]`).
+Button mapping to design system: primary actions → `<Button>` default variant (near-black). `Descartar` → `<Button variant="outline">`. `Concluir` → `<Button variant="ghost">`. Dirty count → `<Badge>` with blue-tint className override (`bg-[#eff6ff] text-[#1d4ed8] border-[#bfdbfe]`). All Button and Badge text is `font-semibold` (600) in this phase, overriding the shadcn `font-medium` (500) default.
 
 ### Active-Edit Banner (below toolbar)
-- Renders ONLY in edit mode. `bg-[#eff6ff] border-b border-[#bfdbfe] text-[#1d4ed8] text-sm px-4 py-1.5`.
+- Renders ONLY in edit mode. `bg-[#eff6ff] border-b border-[#bfdbfe] text-[#1d4ed8] text-sm h-8 px-4 py-1` (fixed 32px height; 4px vertical padding — no off-grid `py-1.5`).
 - Content swaps: idle → `Modo de edição ativo — clique em um texto para editar`; element selected → `Editando texto — Enter para confirmar, Esc para cancelar`.
 
 ### Preview Frame Treatment
