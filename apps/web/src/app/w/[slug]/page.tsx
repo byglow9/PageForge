@@ -72,18 +72,6 @@ export default async function WorkspacePage({ params }: WorkspacePageProps) {
         </Card>
       </div>
 
-      {/* Role card */}
-      <Card className="max-w-xs">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">
-            Your role
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-xl font-bold capitalize text-gray-900">{ctx.role}</p>
-        </CardContent>
-      </Card>
-
       {/* Shortcut links */}
       <div>
         <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
