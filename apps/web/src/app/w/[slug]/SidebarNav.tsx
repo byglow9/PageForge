@@ -10,7 +10,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FileText, LayoutTemplate, Palette, Users } from "lucide-react";
+import { FileText, LayoutDashboard, LayoutTemplate, Palette, Users } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -24,6 +24,7 @@ interface NavItem {
   href: string;
   label: string;
   icon: LucideIcon;
+  exact?: boolean;
 }
 
 export function SidebarNav({
@@ -34,6 +35,7 @@ export function SidebarNav({
   const pathname = usePathname();
 
   const items: NavItem[] = [
+    { href: `/w/${slug}`, label: "Dashboard", icon: LayoutDashboard, exact: true },
     ...(canAuthorTemplates
       ? [
           {
@@ -53,8 +55,10 @@ export function SidebarNav({
   return (
     <nav className="flex-1 py-4">
       <ul className="space-y-1 px-2">
-        {items.map(({ href, label, icon: Icon }) => {
-          const active = pathname === href || pathname.startsWith(`${href}/`);
+        {items.map(({ href, label, icon: Icon, exact }) => {
+          const active = exact
+            ? pathname === href
+            : pathname === href || pathname.startsWith(`${href}/`);
           return (
             <li key={href}>
               <Link

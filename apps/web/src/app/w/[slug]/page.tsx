@@ -1,12 +1,16 @@
 /**
  * Workspace dashboard page — /w/[slug]
  *
- * This is the root page of the workspace shell. The workspace context
- * (membership and role) is already validated by the parent layout.tsx.
+ * Real dashboard with live Prisma counts and role-gated shortcut links.
+ * The workspace context (membership and role) is validated by requireWorkspace.
  *
  * D-05: Active workspace resolved from /w/{slug} + server session membership.
  */
-import { requireWorkspace } from "@/lib/workspaces/guards";
+import Link from "next/link";
+import { FileText, LayoutTemplate, Palette, Users } from "lucide-react";
+import { requireWorkspace, can } from "@/lib/workspaces/guards";
+import { prisma } from "@/lib/db/prisma";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 interface WorkspacePageProps {
   params: Promise<{ slug: string }>;
@@ -15,78 +19,116 @@ interface WorkspacePageProps {
 export default async function WorkspacePage({ params }: WorkspacePageProps) {
   const { slug } = await params;
 
-  // The layout already guards this page, but we re-fetch context here
-  // to access workspaceId and role for rendering content.
+  // Session-validated context — workspaceId is sourced from DB, not URL.
   const ctx = await requireWorkspace(slug);
 
+  // Fetch all counts in parallel; workspaceId from session context (T-i1c-01).
+  const [templateCount, lpCount, memberCount] = await Promise.all([
+    prisma.template.count({ where: { workspaceId: ctx.workspaceId } }),
+    prisma.landingPage.count({ where: { workspaceId: ctx.workspaceId } }),
+    // Member uses organizationId — authoritative better-auth table (T-i1c-02).
+    prisma.member.count({ where: { organizationId: ctx.workspaceId } }),
+  ]);
+
+  const canAuthorTemplates = can(ctx.role, "template", "create");
+  const canEditBrand = can(ctx.role, "brand", "update");
+
   return (
-    <div className="px-8 py-6">
-      <h1 style={{ fontSize: "1.5rem", fontWeight: "bold", marginBottom: "0.5rem" }}>
-        {ctx.workspaceSlug}
-      </h1>
-      <p style={{ color: "#6b7280", marginBottom: "1.5rem" }}>
-        Workspace dashboard — templates and LPs will appear here in Phase 3+.
-      </p>
+    <div className="px-8 py-6 space-y-8">
+      {/* Page header */}
+      <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-          gap: "1rem",
-        }}
-      >
-        <div
-          style={{
-            padding: "1rem",
-            border: "1px solid #e5e7eb",
-            borderRadius: "8px",
-            background: "#f9fafb",
-          }}
-        >
-          <h2 style={{ fontSize: "0.875rem", fontWeight: "600", marginBottom: "0.25rem" }}>
+      {/* Metric cards row */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Templates
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold text-gray-900">{templateCount}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Landing Pages
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold text-gray-900">{lpCount}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Members
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold text-gray-900">{memberCount}</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Role card */}
+      <Card className="max-w-xs">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-medium text-muted-foreground">
             Your role
-          </h2>
-          <p
-            style={{
-              fontSize: "1.25rem",
-              fontWeight: "bold",
-              textTransform: "capitalize",
-            }}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-xl font-bold capitalize text-gray-900">{ctx.role}</p>
+        </CardContent>
+      </Card>
+
+      {/* Shortcut links */}
+      <div>
+        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          Quick access
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {/* Landing Pages — always visible */}
+          <Link
+            href={`/w/${slug}/lps`}
+            className="flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 transition-colors"
           >
-            {ctx.role}
-          </p>
-        </div>
+            <FileText className="h-5 w-5 text-gray-500 shrink-0" aria-hidden="true" />
+            <span className="text-sm font-medium text-gray-900">Landing Pages</span>
+          </Link>
 
-        <div
-          style={{
-            padding: "1rem",
-            border: "1px solid #e5e7eb",
-            borderRadius: "8px",
-            background: "#f9fafb",
-          }}
-        >
-          <h2 style={{ fontSize: "0.875rem", fontWeight: "600", marginBottom: "0.25rem" }}>
-            Templates
-          </h2>
-          <p style={{ color: "#6b7280", fontSize: "0.875rem" }}>
-            Coming in Phase 3
-          </p>
-        </div>
+          {/* Members — always visible */}
+          <Link
+            href={`/w/${slug}/members`}
+            className="flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 transition-colors"
+          >
+            <Users className="h-5 w-5 text-gray-500 shrink-0" aria-hidden="true" />
+            <span className="text-sm font-medium text-gray-900">Members</span>
+          </Link>
 
-        <div
-          style={{
-            padding: "1rem",
-            border: "1px solid #e5e7eb",
-            borderRadius: "8px",
-            background: "#f9fafb",
-          }}
-        >
-          <h2 style={{ fontSize: "0.875rem", fontWeight: "600", marginBottom: "0.25rem" }}>
-            Landing Pages
-          </h2>
-          <p style={{ color: "#6b7280", fontSize: "0.875rem" }}>
-            Coming in Phase 4
-          </p>
+          {/* Templates — canAuthorTemplates only */}
+          {canAuthorTemplates && (
+            <Link
+              href={`/w/${slug}/templates`}
+              className="flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 transition-colors"
+            >
+              <LayoutTemplate className="h-5 w-5 text-gray-500 shrink-0" aria-hidden="true" />
+              <span className="text-sm font-medium text-gray-900">Templates</span>
+            </Link>
+          )}
+
+          {/* Brand Settings — canEditBrand only */}
+          {canEditBrand && (
+            <Link
+              href={`/w/${slug}/brand`}
+              className="flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-4 hover:bg-gray-50 transition-colors"
+            >
+              <Palette className="h-5 w-5 text-gray-500 shrink-0" aria-hidden="true" />
+              <span className="text-sm font-medium text-gray-900">Brand Settings</span>
+            </Link>
+          )}
         </div>
       </div>
     </div>
