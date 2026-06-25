@@ -1,14 +1,15 @@
 ---
-status: partial
+status: complete
 phase: 09-modelo-de-overrides-runtime-de-aplica-o
 source: [09-01-SUMMARY.md, 09-02-SUMMARY.md]
 started: 2026-06-25T00:00:00Z
-updated: 2026-06-25T16:50:00Z
+updated: 2026-06-25T16:55:00Z
+acceptance: "Usuário aceitou verificação por código (2026-06-25). E2e dispensado por ausência de LP VITE_SPA/dist real no ambiente; 38 testes do pipeline passam."
 ---
 
 ## Current Test
 
-[testing paused — 4 itens bloqueados em e2e; lógica verificada por testes de código]
+[testing complete — verificação por código aceita pelo usuário; e2e dispensado]
 
 ## Tests
 
