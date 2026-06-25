@@ -5,7 +5,7 @@ milestone_name: Editor visual de conteúdo VITE_SPA
 status: executing
 stopped_at: Roadmap v2.1 created (Fases 9–12) — 15/15 requisitos mapeados
 last_updated: "2026-06-24T18:12:37.618Z"
-last_activity: 2026-06-24 -- Phase 09 execution started
+last_activity: 2026-06-25 -- Completed quick task 260625-i1c: Dashboard do workspace
 progress:
   total_phases: 4
   completed_phases: 0
@@ -114,6 +114,7 @@ None yet.
 | (fast) | Esconder nav Templates/Brand Settings para viewer (via can()) | 2026-06-17 | 281e39f | (gsd-fast) |
 | (fast) | Bloquear viewer (redirect) das rotas /templates e /brand via requireWorkspaceRole | 2026-06-17 | 1484303 | (gsd-fast) |
 | (fast) | Fix: serverActions.bodySizeLimit=50mb no next.config (upload de project-template ZIP estourava limite default de 1MB → HTTP 413) | 2026-06-24 | 090efe4 | (gsd-fast) |
+| 260625-i1c | Dashboard do workspace: título "Dashboard" + item no menu lateral (active exato) + cards de métricas reais (Templates/LPs/Members via Prisma) + atalhos role-gated | 2026-06-25 | 7d496f5 | [260625-i1c](./quick/260625-i1c-transformar-a-pagina-inicial-do-workspac/) |
 
 ## Deferred Items
 
