@@ -143,8 +143,8 @@ Language: **Português brasileiro** — all copy is PT-BR (locked, D-11-01/D-11-
 | Image panel apply CTA — disabled reason (Tooltip) | `Envie um arquivo ou insira uma URL válida para aplicar` |
 | Image panel — uploading | `Enviando… {N}%` |
 | Image panel — uploaded label | `Imagem enviada` |
-| Image panel — cancel upload | `Cancelar` |
-| Image panel — remove image | `Remover` |
+| Image panel — cancel upload | `Cancelar envio` |
+| Image panel — remove image | `Remover imagem` |
 | Image panel upload error — invalid type | `Apenas PNG, JPG e WEBP são aceitos.` |
 | Image panel upload error — too large | `O arquivo excede o limite de 5 MB. Comprima ou redimensione e tente novamente.` |
 | Image panel upload error — network | `Falha no upload. Verifique sua conexão e tente novamente.` |
@@ -270,8 +270,8 @@ interface ImageSwapPanelProps {
 [ Upload zone (h-20 / 80px) ]
   idle:      dashed border + UploadCloud icon + "Arraste uma imagem ou clique para fazer upload" (text-sm) + "PNG, JPG, WEBP · Máx 5 MB" (text-xs text-muted-foreground)
   drag-over: border-blue-300 bg-blue-50
-  uploading: Progress bar (h-1.5) + "Enviando… {N}%" + Cancel button
-  uploaded:  green-50 bg, 48×48 thumbnail, "Imagem enviada" (text-sm font-medium text-gray-900), Remove button (X icon)
+  uploading: Progress bar (h-1.5) + "Enviando… {N}%" + cancel button ("Cancelar envio", text button)
+  uploaded:  green-50 bg, 48×48 thumbnail, "Imagem enviada" (text-sm font-medium text-gray-900), remove button (icon + aria-label — see note below)
   error:     red-50 bg, AlertCircle icon, errorMessage (text-sm text-red-600), "Tentar novamente" link
 
 [ Separator: 1px line + "ou" centered (text-xs text-muted-foreground) ]
@@ -286,6 +286,16 @@ interface ImageSwapPanelProps {
   disabled when: uploadState === 'uploading' || (uploadState !== 'uploaded' && !isUrlValid)
   Tooltip wraps disabled state: "Envie um arquivo ou insira uma URL válida para aplicar"
 ```
+
+**Remove button (uploaded state) — accessible form:** icon-only button with an aria-label, no visible text:
+```tsx
+<Button variant="ghost" size="icon" aria-label="Remover imagem">
+  <X className="h-4 w-4" aria-hidden="true" />
+</Button>
+```
+The accessible name comes from `aria-label="Remover imagem"`; the `X` lucide icon is `aria-hidden`. This mirrors the existing `ImageUploadField.tsx` remove pattern (icon + `aria-label`), now using the verb+noun label.
+
+**Cancel-upload button (uploading state):** text button labeled `Cancelar envio` (not icon-only), aborts the in-flight XHR.
 
 **Confirm logic:** "Aplicar imagem" resolves the final URL as follows:
 - If `uploadState === 'uploaded'`: use `uploadedUrl` (S3 public URL).
