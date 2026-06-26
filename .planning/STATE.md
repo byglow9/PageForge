@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v2.1
 milestone_name: Editor visual de conteúdo VITE_SPA
 status: executing
-stopped_at: Phase 11 context gathered
-last_updated: "2026-06-26T14:32:27.264Z"
+stopped_at: Phase 11 UI-SPEC approved
+last_updated: "2026-06-26T17:41:15.386Z"
 last_activity: 2026-06-26 -- Phase 10 execution started
 progress:
   total_phases: 4
@@ -135,9 +135,9 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-26T14:32:27.258Z
-Stopped at: Phase 11 context gathered
-Resume file: .planning/phases/11-imagens-links/11-CONTEXT.md
+Last session: 2026-06-26T17:41:15.381Z
+Stopped at: Phase 11 UI-SPEC approved
+Resume file: .planning/phases/11-imagens-links/11-UI-SPEC.md
 
 ## Operator Next Steps
 
