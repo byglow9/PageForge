@@ -25,12 +25,12 @@
  * - Token scoped to {workspaceId, templateId} — NOT lpId (T-08-03-04).
  */
 import { redirect } from "next/navigation";
-import { requireWorkspace } from "@/lib/workspaces/guards";
+import { requireWorkspace, can } from "@/lib/workspaces/guards";
 import { withTenantDb } from "@/lib/db/tenant-db";
 import { renderLp } from "@/lib/lps/render";
 import { LpPreview } from "@/components/lps/LpPreview";
 import { mintServeToken } from "@/lib/serve/token";
-import { Badge } from "@/components/ui/badge";
+import { ViteSpaPreviewEditor } from "./ViteSpaPreviewEditor";
 
 interface LpPreviewPageProps {
   params: Promise<{ slug: string; lpId: string }>;
@@ -69,47 +69,26 @@ export default async function LpPreviewPage({ params }: LpPreviewPageProps) {
     // entryPath: persisted entry route (e.g. "/grecia") or root "/" if absent (D-01).
     const entryPath = lp.entryRoute ?? "/";
 
-    return (
-      <div className="px-8 py-6 space-y-4">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold text-gray-900">{lp.name}</h1>
-          <Badge variant="outline">Vite SPA</Badge>
-        </div>
-        {lp.entryRoute && (
-          <p className="text-sm text-gray-500">Route: {lp.entryRoute}</p>
-        )}
-        {/* sandbox="allow-scripts allow-same-origin" (T-08-03-03, revised):
-            allow-same-origin gives the iframe document its REAL origin
-            ({tplId}.serve.localhost / serve.{SERVE_DOMAIN}), which is a distinct
-            CROSS-ORIGIN host vs the dashboard. This is required because Vite emits
-            the SPA entry as <script type="module" crossorigin> — under an opaque
-            origin (no allow-same-origin) the module fetch is CORS-blocked and
-            localStorage throws SecurityError, so React never mounts (blank page).
+    // Role gate: can edit if owner/admin/editor; viewer gets canEdit=false → no 'Editar' button.
+    // Computed server-side from session role (never from client input) — T-10-03-01 UI gate.
+    // Authoritative gate is requireWorkspaceRole inside updateLpAction (dual-gate pattern).
+    const canEdit = can(ctx.role, "lp", "update");
 
-            Why this is still safe (isolation preserved by cross-origin subdomain,
-            not by the opaque origin):
-            - The serve host is a separate origin from the dashboard, so the SPA
-              cannot read the PageForge DOM, document.cookie, or localStorage.
-            - PageForge session cookies are host-only (no Domain attr in better-auth
-              config) → they are NOT sent to *.serve.localhost.
-            - CSP frame-ancestors on the serve response restricts who may embed it.
-            allow-same-origin here only exposes the iframe to ITS OWN serve origin,
-            never to the dashboard. DO NOT add allow-top-navigation / allow-popups. */}
-        <iframe
-          src={`${serveOrigin}${entryPath}?t=${token}`}
-          sandbox="allow-scripts allow-same-origin"
-          style={{ width: "100%", height: "80vh", border: "none" }}
-          title={`Preview: ${lp.name}`}
-        />
-        <div className="flex justify-end">
-          <a
-            href={`/w/${slug}/lps`}
-            className="text-sm text-gray-700 underline underline-offset-4 hover:text-gray-900"
-          >
-            Back to catalog
-          </a>
-        </div>
-      </div>
+    // ViteSpaPreviewEditor renders its own full-viewport shell (toolbar + banner + iframe).
+    // Security invariants preserved:
+    //   - workspaceId from ctx.workspaceId (requireWorkspace), never URL params (T-08-03-02)
+    //   - token from mintServeToken(ctx.workspaceId, lp.templateId!), never client-supplied
+    //   - canEdit from can(ctx.role,...), server-resolved, never from client input
+    return (
+      <ViteSpaPreviewEditor
+        lpId={lpId}
+        lpName={lp.name}
+        slug={slug}
+        serveOrigin={serveOrigin}
+        entryPath={entryPath}
+        token={token}
+        canEdit={canEdit}
+      />
     );
   }
 
