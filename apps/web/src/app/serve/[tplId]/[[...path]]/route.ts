@@ -123,6 +123,15 @@ export async function GET(
 
     let workspaceId: string;
 
+    // Phase 10: edit mode signal and LP disambiguation (RESEARCH Unknown 2).
+    // Declared at function scope so they are accessible in the HTML path below.
+    // These are convenience signals — security gates are the HMAC token (already
+    // verified in the HTML branch) and requireWorkspaceRole inside updateLpAction.
+    // T-10-02-01: editMode enables DOM manipulation but cannot persist edits.
+    // T-10-02-04: lpIdParam used only for WHERE clause with workspaceId from token.
+    let editMode = false;
+    let lpIdParam: string | null = null;
+
     if (isHtmlRequest) {
       // Token required for index.html — validate HMAC signature, expiry, scope
       const token = new URL(request.url).searchParams.get("t");
@@ -134,6 +143,11 @@ export async function GET(
       }
 
       workspaceId = claims.workspaceId;
+
+      // Extract edit mode params AFTER token is verified (only relevant for HTML path).
+      const searchParams = new URL(request.url).searchParams;
+      editMode = searchParams.get("edit") === "1";
+      lpIdParam = searchParams.get("lpId");
     } else {
       // Asset request — no token required
       // Derive workspaceId from DB using unscoped prisma lookup (tplId is UUID = non-enumerable)
@@ -244,23 +258,31 @@ export async function GET(
         })
       );
 
-      // Phase 9: Look up the LP for this template to inject overrides + per-LP color.
-      // CR-01: a template may back multiple LPs (e.g. /grecia, /turquia). The previous
-      // findFirst(createdAt asc) silently picked the OLDEST LP, so the preview could show
-      // LP-A's overrides while the export of LP-B contained LP-B's — breaking the
-      // preview == export guarantee. Until per-LP preview disambiguation arrives in
-      // Phase 10 (via postMessage lpId), we FAIL SAFE: when more than one LP matches,
-      // render the SPA with NO overrides and NO per-LP color (honest preview), rather
-      // than misleadingly applying one arbitrary LP's overrides. When exactly one LP
-      // matches, the preview is unambiguous and we keep the full Phase 9 behavior.
-      const lps = await servingRead((tx) =>
-        tx.landingPage.findMany({
-          where: { templateId: tplId, workspaceId },
-          select: { values: true },
-          orderBy: { createdAt: "asc" },
-        })
-      );
-      const lp = lps.length === 1 ? lps[0] : null;
+      // Phase 10: LP lookup — prefer findUnique by lpId when available (RESEARCH Unknown 2).
+      // When lpIdParam is present (from ?lpId= URL param), use findUnique for unambiguous
+      // per-LP override injection. workspaceId is always from HMAC token claims — never
+      // from URL params (T-10-02-04 cross-tenant safety).
+      // Fallback (no lpIdParam): preserve the Phase 9 findMany + single-LP fail-safe.
+      let lp: { values: unknown } | null;
+      if (lpIdParam) {
+        lp = await servingRead((tx) =>
+          tx.landingPage.findUnique({
+            where: { id: lpIdParam!, templateId: tplId, workspaceId },
+            select: { values: true },
+          })
+        );
+      } else {
+        // Phase 9 fail-safe: when more than one LP matches, render with NO overrides
+        // (honest preview) rather than applying one arbitrary LP's overrides (CR-01).
+        const lps = await servingRead((tx) =>
+          tx.landingPage.findMany({
+            where: { templateId: tplId, workspaceId },
+            select: { values: true },
+            orderBy: { createdAt: "asc" },
+          })
+        );
+        lp = lps.length === 1 ? lps[0] : null;
+      }
 
       // D-05: inject only --primary as HSL triplet (T-08-03-01: hex validated by SaveBrandConfigSchema).
       // Phase 9: LP color override takes precedence over workspace color (buildBrandStyleTagForLp).
@@ -279,9 +301,24 @@ export async function GET(
       const injection = buildOverrideInjection(lpValues);
       const finalHtml = injectOverrides(themedHtml, injection);
 
+      // Phase 10: inject edit script IIFE when ?edit=1 and ?lpId= are both present.
+      // Dynamic import keeps the edit-script module off the hot path for normal requests.
+      // HMAC token is already verified above — editMode is a convenience signal, not auth.
+      // T-10-02-03: export route never reads ?edit=1 — edit script is never in exports.
+      let editableHtml = finalHtml;
+      if (editMode && lpIdParam) {
+        const { buildEditScript, injectEditScript } = await import(
+          "@/lib/overrides/edit-script"
+        );
+        const editScript = buildEditScript(
+          process.env.DASHBOARD_ORIGIN ?? "http://localhost:3000"
+        );
+        editableHtml = injectEditScript(finalHtml, editScript);
+      }
+
       // Step 9: Return themed HTML response with security headers
       // frame-ancestors as HTTP header (NOT meta tag — Pitfall 6 / T-07-02-08)
-      return new NextResponse(finalHtml, {
+      return new NextResponse(editableHtml, {
         headers: buildSecurityHeaders(contentType),
       });
     } catch (s3Err) {
