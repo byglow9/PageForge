@@ -204,6 +204,8 @@ export function ViteSpaPreviewEditor({
         case "ELEMENT_CHANGED":
           // Update dirty count in parent (source of truth for save data is iframe's
           // pendingMap, sent in full via PENDING_EDITS when REQUEST_SAVE is received).
+          // Only fired by the iframe when the new text actually differs from the
+          // original — a plain select/blur with no change does NOT inflate the count.
           setPendingEdits((prev) => {
             const next = prev.filter((e) => e.path !== (msg.path as string));
             next.push({
@@ -214,6 +216,15 @@ export function ViteSpaPreviewEditor({
             });
             return next;
           });
+          break;
+
+        case "ELEMENT_REVERTED":
+          // Iframe reports an element whose text was restored to its original value
+          // (edited then reverted, or selected without changing). Drop it from the
+          // dirty count so the badge reflects only real, pending changes.
+          setPendingEdits((prev) =>
+            prev.filter((e) => e.path !== (msg.path as string))
+          );
           break;
 
         case "PENDING_EDITS":
@@ -402,7 +413,13 @@ export function ViteSpaPreviewEditor({
         {/* Preview iframe                                                     */}
         {/* sandbox="allow-scripts allow-same-origin" (T-08-03-03 revised)   */}
         {/* outline: 3px solid #2563eb in edit mode (UI-SPEC Color)           */}
-        {/* onLoad resets iframeReady — wait for IFRAME_READY postMessage     */}
+        {/* Readiness is driven SOLELY by the IFRAME_READY postMessage        */}
+        {/* handshake. We deliberately do NOT reset iframeReady on the        */}
+        {/* iframe `load` event: for a resource-heavy Vite SPA, `load` fires  */}
+        {/* AFTER DOMContentLoaded (and thus after IFRAME_READY), which would */}
+        {/* flip iframeReady back to false with no follow-up handshake —      */}
+        {/* silently dropping REQUEST_SAVE. iframeReady is reset to false on   */}
+        {/* the src-changing transitions instead (handleEnterEdit, save).     */}
         {/* ---------------------------------------------------------------- */}
         <iframe
           ref={iframeRef}
@@ -415,7 +432,6 @@ export function ViteSpaPreviewEditor({
             outlineOffset: isEditMode ? "-3px" : undefined,
           }}
           title={`Preview: ${lpName}`}
-          onLoad={() => setIframeReady(false)}
         />
 
         {/* ---------------------------------------------------------------- */}

@@ -146,6 +146,19 @@ describe("buildEditScript — iframe→parent postMessage types", () => {
     const result = buildEditScript("http://localhost:3000");
     expect(result).toContain("ELEMENT_CHANGED");
   });
+
+  it("contains ELEMENT_REVERTED (blur with no real change)", () => {
+    const result = buildEditScript("http://localhost:3000");
+    expect(result).toContain("ELEMENT_REVERTED");
+  });
+
+  it("only records a pending edit when newText differs from the original", () => {
+    // Guards against the phantom-edit bug: selecting/blurring without changing
+    // text must not push to pendingMap nor emit ELEMENT_CHANGED.
+    const result = buildEditScript("http://localhost:3000");
+    expect(result).toContain("if (newText !== originalMap[path])");
+    expect(result).toContain("delete pendingMap[path]");
+  });
 });
 
 // -----------------------------------------------------------------------

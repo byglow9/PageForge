@@ -255,7 +255,7 @@ export function buildEditScript(dashboardOrigin: string): string {
       el.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.25)';
       el.focus();
 
-      // Blur: capture edited text, restore cursor/boxShadow, store in pendingMap.
+      // Blur: capture edited text, restore cursor/boxShadow, reconcile pendingMap.
       el.addEventListener('blur', function handleBlur() {
         el.removeEventListener('blur', handleBlur);
         var newText = el.textContent || '';
@@ -266,8 +266,17 @@ export function buildEditScript(dashboardOrigin: string): string {
           el.style.cursor = saved.cursor;
           el.style.boxShadow = saved.boxShadow;
         }
-        pendingMap[path] = { path: path, originalHash: originalHash, type: 'text', value: newText };
-        sendToParent({ type: 'ELEMENT_CHANGED', path: path, newText: newText });
+        // Only record a pending edit when the text actually changed. Selecting an
+        // element (click → blur) or editing then reverting must NOT count as a
+        // change — otherwise the dirty badge inflates with phantom edits and the
+        // saved overrides point at unchanged nodes.
+        if (newText !== originalMap[path]) {
+          pendingMap[path] = { path: path, originalHash: originalHash, type: 'text', value: newText };
+          sendToParent({ type: 'ELEMENT_CHANGED', path: path, newText: newText });
+        } else {
+          delete pendingMap[path];
+          sendToParent({ type: 'ELEMENT_REVERTED', path: path });
+        }
       });
 
       // Keydown: Enter confirms edit (blur); Escape reverts and blurs.
