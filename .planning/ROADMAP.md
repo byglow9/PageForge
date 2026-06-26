@@ -39,7 +39,7 @@ Adiciona o tipo de template **VITE_SPA** (projeto React/Vite do Lovable via `dis
 Override em runtime: edições de conteúdo (texto, imagem, link, cor) viram overrides `{path, originalHash, type, value}` por LP, reaplicados após o React montar no serve e no export. Abordagem de runtime é a única que funciona em SPA já compilado (conteúdo está no JS bundle, não nos templates). Limitações declaradas: botões com ação via handler JS (não `<a href>`) e conteúdo vindo do Supabase em runtime não são editáveis por override de DOM. Design completo: `~/.claude/plans/centralizar-horizontalmente-o-conte-do-bright-valley.md`.
 
 - [ ] **Phase 9: Modelo de overrides + runtime de aplicação** — Schema de overrides em `LandingPage.values`; shim de apply (texto + cor por LP) injetado no serve e no export; verificável semeando overrides via `updateLpAction`, sem UI de editor.
-- [ ] **Phase 10: Editor visual in-iframe (texto)** — Injeção de modo edição autorizada (owner/admin/editor); click-to-select + edição inline de texto; `postMessage` → Server Action de save; descartar edição.
+- [x] **Phase 10: Editor visual in-iframe (texto)** — Injeção de modo edição autorizada (owner/admin/editor); click-to-select + edição inline de texto; `postMessage` → Server Action de save; descartar edição. (completed 2026-06-26)
 - [ ] **Phase 11: Imagens + links** — Troca de imagem (upload S3 presigned / URL) e edição de `href` em âncoras, com validação de URL.
 - [ ] **Phase 12: Hardening + aceitação** — `MutationObserver` re-apply sem loop; detecção de drift por `originalHash`; sanitização server-side; isolamento por LP e cross-tenant; fidelidade preview==export; aceitação v2.1.
 
@@ -73,7 +73,7 @@ Plans:
 Plans:
 - [x] 10-01-PLAN.md — Migration 0010: serving_read RLS policy on landing_page (O-2 blocker fix)
 - [x] 10-02-PLAN.md — edit-script.ts (buildEditScript + injectEditScript + unit tests) + serve route ?edit=1 injection + findUnique LP lookup
-- [ ] 10-03-PLAN.md — ViteSpaPreviewEditor Client Component (toolbar, postMessage bridge, banner, dialog) + preview/page.tsx RSC wiring
+- [x] 10-03-PLAN.md — ViteSpaPreviewEditor Client Component (toolbar, postMessage bridge, banner, dialog) + preview/page.tsx RSC wiring
 **UI hint**: yes
 
 ### Phase 11: Imagens + links
@@ -114,6 +114,6 @@ Plans:
 | 7. Isolated Serving + Sandboxed Preview | v2.0 | 3/3 | Complete | 2026-06-23 |
 | 8. LP Generation, Brand Theming, Export & v2.0 Acceptance | v2.0 | 5/5 | Complete | 2026-06-24 |
 | 9. Modelo de overrides + runtime de aplicação | v2.1 | 0/? | Not started | — |
-| 10. Editor visual in-iframe (texto) | v2.1 | 2/3 | In Progress|  |
+| 10. Editor visual in-iframe (texto) | v2.1 | 3/3 | Complete   | 2026-06-26 |
 | 11. Imagens + links | v2.1 | 0/? | Not started | — |
 | 12. Hardening + aceitação | v2.1 | 0/? | Not started | — |
