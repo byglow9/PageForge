@@ -85,7 +85,12 @@ Plans:
   2. O usuário pode selecionar uma imagem da LP e substituí-la por uma URL externa válida (http/https); a imagem substituta aparece corretamente na preview e no export.
   3. O usuário pode selecionar um `<a>` da LP, editar seu `href` e salvar; o novo destino persiste (override de link) e o link abre para o endereço correto na preview e no export.
   4. Tentar salvar uma URL de imagem ou `href` contendo `javascript:`, protocolo não-http(s) ou URL malformada é rejeitado com erro — nenhum override inválido é persistido.
-**Plans**: TBD
+**Plans**: 4 plans
+Plans:
+- [ ] 11-01-PLAN.md — validate-url.ts + apply-shim extension (image/href branches) + edit-script extension (isSelectableImage/isSelectableHref, PREVIEW_OVERRIDE handler)
+- [ ] 11-02-PLAN.md — updateLpAction URL validation (SEC-02) + export route VITE_SPA D-11-04 (S3 image download to ZIP)
+- [ ] 11-03-PLAN.md — ImageSwapPanel component (Popover + upload S3 + URL field + confirm logic)
+- [ ] 11-04-PLAN.md — ViteSpaPreviewEditor extension (slot D-04, banner 4 states, dialog copy, new state fields + handlers)
 **UI hint**: yes
 
 ### Phase 12: Hardening + aceitação
