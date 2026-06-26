@@ -99,7 +99,7 @@ describe("injectBrandStyle", () => {
 describe("GenerateViteSpaLpSchema", () => {
   it("parses minimal input and defaults entryRoute to null", () => {
     const result = GenerateViteSpaLpSchema.parse({
-      templateId: "cm1234567890abcdefghi",
+      templateId: "550e8400-e29b-41d4-a716-446655440000",
       name: "Test LP",
     });
     expect(result.entryRoute).toBeNull();
@@ -107,7 +107,7 @@ describe("GenerateViteSpaLpSchema", () => {
 
   it("passes entryRoute '/grecia' through unchanged", () => {
     const result = GenerateViteSpaLpSchema.parse({
-      templateId: "cm1234567890abcdefghi",
+      templateId: "550e8400-e29b-41d4-a716-446655440000",
       name: "Test LP",
       entryRoute: "/grecia",
     });
@@ -116,7 +116,7 @@ describe("GenerateViteSpaLpSchema", () => {
 
   it("normalizes empty string entryRoute to null", () => {
     const result = GenerateViteSpaLpSchema.parse({
-      templateId: "cm1234567890abcdefghi",
+      templateId: "550e8400-e29b-41d4-a716-446655440000",
       name: "Test LP",
       entryRoute: "",
     });
@@ -125,7 +125,7 @@ describe("GenerateViteSpaLpSchema", () => {
 
   it("prepends '/' to entryRoute without leading slash", () => {
     const result = GenerateViteSpaLpSchema.parse({
-      templateId: "cm1234567890abcdefghi",
+      templateId: "550e8400-e29b-41d4-a716-446655440000",
       name: "Test LP",
       entryRoute: "grecia",
     });
