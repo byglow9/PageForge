@@ -1,7 +1,8 @@
 ---
 phase: 11
 slug: imagens-links
-status: draft
+status: approved
+reviewed_at: 2026-06-26
 shadcn_initialized: true
 preset: base-nova (neutral, oklch CSS vars, lucide, Base UI primitives)
 created: 2026-06-26
