@@ -71,7 +71,7 @@ Plans:
   4. Cancelar/descartar uma edição antes de salvar não persiste nenhum valor — o conteúdo original é restaurado e nenhum override parcial é gravado.
 **Plans**: 3 plans
 Plans:
-- [ ] 10-01-PLAN.md — Migration 0010: serving_read RLS policy on landing_page (O-2 blocker fix)
+- [x] 10-01-PLAN.md — Migration 0010: serving_read RLS policy on landing_page (O-2 blocker fix)
 - [ ] 10-02-PLAN.md — edit-script.ts (buildEditScript + injectEditScript + unit tests) + serve route ?edit=1 injection + findUnique LP lookup
 - [ ] 10-03-PLAN.md — ViteSpaPreviewEditor Client Component (toolbar, postMessage bridge, banner, dialog) + preview/page.tsx RSC wiring
 **UI hint**: yes
@@ -114,6 +114,6 @@ Plans:
 | 7. Isolated Serving + Sandboxed Preview | v2.0 | 3/3 | Complete | 2026-06-23 |
 | 8. LP Generation, Brand Theming, Export & v2.0 Acceptance | v2.0 | 5/5 | Complete | 2026-06-24 |
 | 9. Modelo de overrides + runtime de aplicação | v2.1 | 0/? | Not started | — |
-| 10. Editor visual in-iframe (texto) | v2.1 | 3/3 | Not started | — |
+| 10. Editor visual in-iframe (texto) | v2.1 | 1/3 | In Progress|  |
 | 11. Imagens + links | v2.1 | 0/? | Not started | — |
 | 12. Hardening + aceitação | v2.1 | 0/? | Not started | — |
